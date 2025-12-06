@@ -66,20 +66,28 @@ test "PyDefaultDict" {
 
     const dd_dict = dd.asDict();
 
-    // Access a missing key, should create a new list
+    // Access a missing key using getItem (dict.get()) - should return null
+    // because dict.get() doesn't trigger default_factory
     const missing_key = try py.PyString.create("missing");
     defer missing_key.obj.decref();
 
     const default_val = try dd_dict.getItem(py.PyObject, missing_key);
-    try std.testing.expect(default_val != null);
-    if (default_val) |val| {
-        defer val.decref();
-        try std.testing.expect(try py.PyList(root).from.check(val));
-        try std.testing.expectEqual(@as(usize, 0), py.PyList(root).from.unchecked(val).length());
-    }
+    try std.testing.expect(default_val == null);
 
-    // Check that the key now exists
-    const contains = try dd_dict.contains("missing");
+    // The key should not exist yet (get() doesn't trigger default_factory)
+    var contains = try dd_dict.contains("missing");
+    try std.testing.expect(!contains);
+
+    // Now use __getitem__ to trigger the default_factory
+    const getitem = try dd.obj.get("__getitem__");
+    defer getitem.decref();
+    const default_val_getitem = try py.call(root, py.PyObject, getitem, .{missing_key}, .{});
+    defer default_val_getitem.decref();
+    try std.testing.expect(try py.PyList(root).from.check(default_val_getitem));
+    try std.testing.expectEqual(@as(usize, 0), py.PyList(root).from.unchecked(default_val_getitem).length());
+
+    // Now the key should exist
+    contains = try dd_dict.contains("missing");
     try std.testing.expect(contains);
 
     // Set and get a value normally

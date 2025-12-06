@@ -95,7 +95,7 @@ jobs:
           zig build pyz3-test-build --build-file pytest.build.zig
 
       # macOS-only workaround for Zig's "-lPython" library name
-      - name: macOS: create libPython symlink for Zig
+      - name: "macOS: create libPython symlink for Zig"
         if: runner.os == 'macOS'
         shell: bash
         run: |

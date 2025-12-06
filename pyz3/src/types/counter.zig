@@ -150,6 +150,6 @@ test "PyCounter" {
         elem.decref();
         elements_count += 1;
     }
-    // 6*a + 1*b + 2*c + 1*d + 1*r + 2*z = 13
-    try std.testing.expectEqual(@as(usize, 13), elements_count);
+    // 6*a + 1*b + 1*r + 1*c + 1*d + 2*z = 12
+    try std.testing.expectEqual(@as(usize, 12), elements_count);
 }
