@@ -366,8 +366,20 @@ fn getLibpython(allocator: std.mem.Allocator, python_exe: []const u8) ![]const u
 
     var libname = ldlibrary;
 
+    // Handle macOS Framework Python (e.g., "Python.framework/Versions/3.11/Python" or "Python")
+    if (std.mem.indexOf(u8, ldlibrary, ".framework/") != null) {
+        // Extract just the library name from framework path
+        // Python.framework/Versions/3.11/Python => Python
+        if (std.mem.lastIndexOfScalar(u8, ldlibrary, '/')) |last_slash| {
+            libname = ldlibrary[last_slash + 1 ..];
+        }
+        // Remove any extensions
+        const lastIdx = std.mem.lastIndexOfScalar(u8, libname, '.') orelse libname.len;
+        return libname[0..lastIdx];
+    }
+
     // Strip libpython3.11.a.so => python3.11.a.so
-    if (std.mem.eql(u8, ldlibrary[0..3], "lib")) {
+    if (libname.len >= 3 and std.mem.eql(u8, ldlibrary[0..3], "lib")) {
         libname = libname[3..];
     }
 

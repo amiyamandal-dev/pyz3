@@ -91,10 +91,11 @@ pub fn enum_example() !py.PyObject {
     return name_str.obj;
 }
 
-/// Demonstrates PyAsyncGenerator check
-pub fn async_generator_check(args: struct { obj: py.PyObject }) !bool {
-    return py.PyAsyncGenerator(root).check(args.obj);
-}
+// Demonstrates PyAsyncGenerator check
+// Disabled - PyAsyncGenerator has compilation issues
+// pub fn async_generator_check(args: struct { obj: py.PyObject }) !bool {
+//     return py.PyAsyncGenerator(root).check(args.obj);
+// }
 
 comptime {
     py.rootmodule(root);

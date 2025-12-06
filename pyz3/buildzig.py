@@ -29,9 +29,16 @@ PYVER_MINOR = ".".join(str(v) for v in sys.version_info[:2])
 PYVER_HEX = f"{sys.hexversion:#010x}"
 PYLDLIB = sysconfig.get_config_var("LDLIBRARY")
 
-# Strip libpython3.11.a.so => python3.11.a
-PYLDLIB = PYLDLIB[3:] if PYLDLIB.startswith("lib") else PYLDLIB
-PYLDLIB = os.path.splitext(PYLDLIB)[0]
+# Handle macOS Framework Python (e.g., "Python.framework/Versions/3.11/Python")
+if ".framework/" in PYLDLIB:
+    # Extract just the library name from framework path
+    # Python.framework/Versions/3.11/Python => Python
+    PYLDLIB = os.path.basename(PYLDLIB)
+    PYLDLIB = os.path.splitext(PYLDLIB)[0]
+else:
+    # Strip libpython3.11.a.so => python3.11.a
+    PYLDLIB = PYLDLIB[3:] if PYLDLIB.startswith("lib") else PYLDLIB
+    PYLDLIB = os.path.splitext(PYLDLIB)[0]
 
 
 def zig_build(argv: list[str], conf: config.ToolPydust | None = None):
@@ -91,11 +98,14 @@ def generate_build_zig(fileobj: TextIO, conf=None):
             # TODO(ngates): fix the out filename for non-limited modules
             assert ext_module.limited_api, "Only limited_api is supported for now"
 
+            # Convert Windows backslashes to forward slashes for Zig compatibility
+            root_path = str(ext_module.root).replace("\\", "/")
+
             b.write(
                 f"""
                 _ = pyz3.addPythonModule(.{{
                     .name = "{ext_module.name}",
-                    .root_source_file = b.path("{ext_module.root}"),
+                    .root_source_file = b.path("{root_path}"),
                     .limited_api = {str(ext_module.limited_api).lower()},
                     .target = target,
                     .optimize = optimize,
