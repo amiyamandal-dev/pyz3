@@ -38,7 +38,7 @@ pyz3.build.zig
 url: https://pypi.org/p/ziggy-pydust-template
 
 # Fixed
-url: https://pypi.org/p/pyZ3-template
+url: https://pypi.org/p/pyz3-template
 ```
 
 **Impact**: Low - Incorrect PyPI link in workflow

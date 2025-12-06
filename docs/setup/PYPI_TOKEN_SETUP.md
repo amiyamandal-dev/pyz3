@@ -83,7 +83,7 @@ publish:
   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
   environment:
     name: pypi
-    url: https://pypi.org/p/pyZ3
+    url: https://pypi.org/p/pyz3
   permissions:
     # Remove this line if using token:
     # id-token: write

@@ -16,7 +16,7 @@ jobs:
   publish:
     environment:
       name: pypi
-      url: https://pypi.org/p/pyZ3
+      url: https://pypi.org/p/pyz3
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6

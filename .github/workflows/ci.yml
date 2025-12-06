@@ -65,13 +65,13 @@ jobs:
         run: poetry run python -m ziglang build test
 
       - name: Build test binaries
-        run: poetry run python -m ziglang build pyz3-test-build --build-file pytest.build.zig
+        run:  poetry run python -m ziglang build pyz3-test-build --build-file ./pytest.build.zig
 
       - name: Pytest
         run: poetry run pytest test/
 
       - name: Check generated stubs
-        run: poetry run python -m ziglang build --build-file pytest.build.zig generate-stubs -Dcheck-stubs=true
+        run: poetry run python -m ziglang build --build-file ./pytest.build.zig generate-stubs -Dcheck-stubs=true
 
       - name: Zig Docs Build
         run: poetry run python -m ziglang build docs
