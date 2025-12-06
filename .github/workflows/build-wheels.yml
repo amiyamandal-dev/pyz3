@@ -46,27 +46,54 @@ jobs:
           import sysconfig, pathlib, os
 
           libdir = sysconfig.get_config_var("LIBDIR") or sysconfig.get_config_var("LIBPL")
-          libname = sysconfig.get_config_var("LDLIBRARY")
+          ldlibrary = sysconfig.get_config_var("LDLIBRARY")
 
           print("LIBDIR:", libdir)
-          print("LDLIBRARY:", libname)
+          print("LDLIBRARY:", ldlibrary)
 
-          if not libdir or not libname:
+          if not libdir or not ldlibrary:
               raise SystemExit("Could not determine Python library path")
 
           libdir_path = pathlib.Path(libdir)
-          target = libdir_path / libname
+
+          # Handle macOS Framework Python where LDLIBRARY is like:
+          # "Python.framework/Versions/3.11/Python" or just "Python"
+          if "framework" in ldlibrary.lower():
+              # Extract just the library name from the framework path
+              # Python.framework/Versions/3.11/Python -> Python
+              libname = pathlib.Path(ldlibrary).name
+              # Framework Python library is in a different location
+              # Go up from lib directory to framework root, then down to the library
+              framework_root = libdir_path.parent.parent
+              target = framework_root / ldlibrary.split("/", 1)[-1] if "/" in ldlibrary else framework_root / libname
+          else:
+              # Standard library name
+              libname = ldlibrary
+              target = libdir_path / libname
+
+          print(f"Looking for library at: {target}")
 
           if not target.exists():
-              raise SystemExit(f"Python shared lib not found at {target}")
+              # Try alternative paths for framework Python
+              alt_target = libdir_path.parent / "Python"
+              print(f"Trying alternative path: {alt_target}")
+              if alt_target.exists():
+                  target = alt_target
+                  libname = "Python"
+              else:
+                  raise SystemExit(f"Python shared lib not found at {target} or {alt_target}")
 
           # Zig is looking for 'libPython.dylib'
           link = libdir_path / "libPython.dylib"
           if link.exists():
-              print("libPython.dylib already exists:", link)
+              print(f"libPython.dylib already exists: {link}")
           else:
-              os.symlink(target.name, link)
-              print("Created symlink", link, "->", target.name)
+              # Create symlink using relative path if in same parent directory
+              if target.parent == link.parent:
+                  os.symlink(target.name, link)
+              else:
+                  os.symlink(os.path.relpath(target, link.parent), link)
+              print(f"Created symlink {link} -> {target}")
           PY
 
       - name: Build test binaries
