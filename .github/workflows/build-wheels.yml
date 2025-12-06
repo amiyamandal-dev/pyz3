@@ -35,12 +35,8 @@ jobs:
       - name: Install dependencies
         run: poetry install --with test
 
-      - name: Build test binaries
-        shell: bash
-        run: |
-          ls -la && poetry run python -m ziglang build pyz3-test-build --build-file ./pytest.build.zig
-
       # macOS-only workaround for Zig's "-lPython" library name
+      # Must run BEFORE building test binaries
       - name: "macOS: create libPython symlink for Zig"
         if: runner.os == 'macOS'
         shell: bash
@@ -72,6 +68,11 @@ jobs:
               os.symlink(target.name, link)
               print("Created symlink", link, "->", target.name)
           PY
+
+      - name: Build test binaries
+        shell: bash
+        run: |
+          poetry run python -m ziglang build pyz3-test-build --build-file pytest.build.zig
 
       - name: Run tests
         shell: bash
