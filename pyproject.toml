@@ -1,0 +1,147 @@
+[tool.poetry]
+name = "pyZ3"
+version = "0.1.0"
+description = "Build high-performance Python extensions in Zig with automatic memory management, hot-reload, and NumPy integration. Inspired by ziggy-pydust."
+authors = ["Your Name <your.email@example.com>"]
+license = "Apache 2.0"
+readme = "README.md"
+homepage = "https://github.com/yourusername/pyZ3"
+repository = "https://github.com/yourusername/pyZ3"
+documentation = "https://github.com/yourusername/pyZ3"
+keywords = ["zig", "python", "extensions", "performance", "c-api", "bindings", "numpy", "pyz3"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Other",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Compilers",
+    "Operating System :: OS Independent",
+]
+packages = [{ include = "pyz3" }]
+include = ["src", "pyz3/src/**/*.zig", "pyz3/src/**/*.h", "scripts/*.sh"]
+exclude = ["example", "test", "docs"]
+
+[tool.poetry.plugins."pytest11"]
+pyz3 = "pyz3.pytest_plugin"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+ziglang = "^0.15.1"
+pydantic = "^2.3.0"
+setuptools = "^80.0.0"
+black = "^25.0.0"
+
+# Distribution dependencies
+build = { version = "^1.0.0", optional = true }
+twine = { version = "^5.0.0", optional = true }
+wheel = { version = "^0.43.0", optional = true }
+
+[tool.poetry.extras]
+dist = ["build", "twine", "wheel"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+ruff = "^0.14.0"
+
+[tool.poetry.group.docs.dependencies]
+# For generating docs
+ziglang = "^0.15.1"
+mkdocs-material = "^9.2.6"
+mkdocs-include-markdown-plugin = "^7.1.5"
+mike = "^2.0.0"
+
+[tool.poetry.group.test.dependencies]
+numpy = "^2.0.0"
+
+[tool.poetry.scripts]
+pyz3 = "pyz3.__main__:main"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["F", "E", "W", "UP", "I"]
+# Do not auto-fix unused variables. This is really annoying when IntelliJ runs autofix while editing.
+unfixable = ["F841"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["test", "example"]
+
+# Out test modules
+
+[tool.pyz3]
+root = "example/"
+build_zig = "pytest.build.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.args_types"
+root = "example/args_types.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.exceptions"
+root = "example/exceptions.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.hello"
+root = "example/hello.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.gil"
+root = "example/gil.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.memory"
+root = "example/memory.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.modules"
+root = "example/modules.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.pytest"
+root = "example/pytest.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.result_types"
+root = "example/result_types.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.functions"
+root = "example/functions.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.classes"
+root = "example/classes.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.buffers"
+root = "example/buffers.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.iterators"
+root = "example/iterators.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.operators"
+root = "example/operators.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.code"
+root = "example/code.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.new_container_types"
+root = "example/new_container_types.zig"

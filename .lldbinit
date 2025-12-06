@@ -1,0 +1,29 @@
+# LLDB initialization file for debugging Ziggy Pydust extensions
+# Place this in your project root or home directory (~/.lldbinit)
+
+# Pretty printing settings
+settings set target.process.stop-on-exec false
+settings set target.x86-disassembly-flavor intel
+
+# Python integration
+command script import lldb.macosx.crashlog
+command script import lldb.macosx.heap
+
+# Useful aliases
+command alias bd breakpoint disable
+command alias be breakpoint enable
+command alias bl breakpoint list
+command alias bp breakpoint set
+command alias bpl breakpoint set --file %1 --line %2
+
+# Pydust-specific helpers
+command regex pydust-break 's/(.+)/breakpoint set --name %1/'
+
+# Auto-load Python pretty printers (if available)
+# command script import /path/to/pydust_printers.py
+
+# Print helpful message
+script print("\n🐛 LLDB initialized for Pydust debugging")
+script print("   Use 'pydust-break function_name' to set breakpoints")
+script print("   Use 'image list' to see loaded modules")
+script print("   Use 'bt' for backtrace\n")

@@ -1,0 +1,176 @@
+name: Build pyZ3 Wheels
+
+on:
+  push:
+    branches: [main, develop]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  build_wheels:
+    name: Build wheel for ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: Linux x86_64
+            runner: ubuntu-latest
+            target: x86_64-linux-gnu
+            wheel-platform: manylinux_2_17_x86_64.manylinux2014_x86_64
+            python-arch: x64
+
+          - name: Linux aarch64
+            runner: ubuntu-latest
+            target: aarch64-linux-gnu
+            wheel-platform: manylinux_2_17_aarch64.manylinux2014_aarch64
+            python-arch: x64
+            setup-qemu: true
+
+          - name: macOS x86_64
+            runner: macos-13  # Intel runner
+            target: x86_64-macos
+            wheel-platform: macosx_10_9_x86_64
+            python-arch: x64
+
+          - name: macOS arm64
+            runner: macos-14  # Apple Silicon runner
+            target: aarch64-macos
+            wheel-platform: macosx_11_0_arm64
+            python-arch: arm64
+
+          - name: Windows x64
+            runner: windows-latest
+            target: x86_64-windows-gnu
+            wheel-platform: win_amd64
+            python-arch: x64
+
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (for ARM emulation)
+        if: matrix.platform.setup-qemu
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: ${{ matrix.platform.python-arch }}
+
+      - name: Install Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.15.2
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build wheel setuptools
+
+      - name: Install uv (for faster package installation)
+        run: pip install uv
+
+      - name: Install project dependencies
+        run: uv pip install -e ".[dev]" --system
+
+      - name: Build wheel
+        env:
+          ZIG_TARGET: ${{ matrix.platform.target }}
+          PYZ3_OPTIMIZE: ReleaseFast
+        run: |
+          python -m build --wheel --outdir dist/
+
+      - name: Repair wheel (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          pip install auditwheel
+          auditwheel repair dist/*.whl --plat ${{ matrix.platform.wheel-platform }} -w dist/repaired/
+          rm dist/*.whl
+          mv dist/repaired/*.whl dist/
+
+      - name: Repair wheel (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          pip install delocate
+          delocate-wheel -w dist/repaired/ dist/*.whl
+          rm dist/*.whl
+          mv dist/repaired/*.whl dist/
+
+      - name: Test wheel installation
+        run: |
+          pip install dist/*.whl
+          python -c "import pyz3; print(f'pyZ3 version: {pyz3.__version__}')"
+
+      - name: Run basic tests
+        run: |
+          pip install pytest
+          pytest test/test_hello.py -v
+
+      - name: Upload wheel as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-${{ matrix.platform.name }}-py${{ matrix.python-version }}
+          path: dist/*.whl
+          if-no-files-found: error
+
+  publish:
+    name: Publish to PyPI
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pyZ3
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+
+    steps:
+      - name: Download all wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          path: dist/
+          merge-multiple: true
+
+      - name: List wheels
+        run: ls -lh dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          skip-existing: true
+
+  create_release:
+    name: Create GitHub Release
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          path: dist/
+          merge-multiple: true
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.whl
+          generate_release_notes: true
+          draft: false
+          prerelease: false
