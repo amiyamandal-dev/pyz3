@@ -8,51 +8,8 @@ on:
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
-  build_wheel:
-    name: Build Pure Python Wheel
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 2.2.1
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      - name: Install dependencies
-        run: poetry install
-
-      - name: Build wheel
-        run: poetry build --format wheel
-
-      - name: Verify wheel
-        run: |
-          ls -lh dist/
-          WHEEL_NAME=$(ls dist/*.whl)
-          echo "Built wheel: $WHEEL_NAME"
-          if [[ ! $WHEEL_NAME == *"py3-none-any"* ]]; then
-            echo "ERROR: Expected pure Python wheel, got platform-specific wheel"
-            exit 1
-          fi
-
-      - name: Upload wheel as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheel
-          path: dist/*.whl
-          if-no-files-found: error
-
-  test_wheel:
-    name: Test on ${{ matrix.os }} - Python ${{ matrix.python-version }}
-    needs: build_wheel
+  build_and_test:
+    name: Build & Test on ${{ matrix.os }} - Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -68,12 +25,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Download wheel
-        uses: actions/download-artifact@v4
-        with:
-          name: wheel
-          path: dist/
-
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -81,17 +32,7 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
-      - name: Install wheel with Poetry
-        shell: bash
-        run: |
-          poetry run pip install dist/*.whl
-
-      - name: Verify installation
-        shell: bash
-        run: |
-          poetry run python -c "import pyz3; print('pyZ3 version:', pyz3.__version__)"
-
-      - name: Install test dependencies
+      - name: Install dependencies
         run: poetry install --with test
 
       - name: Build test binaries
@@ -132,14 +73,57 @@ jobs:
               print("Created symlink", link, "->", target.name)
           PY
 
-      - name: Run basic tests
+      - name: Run tests
         shell: bash
         run: |
-          poetry run pytest test/test_hello.py -v
+          poetry run pytest test/ -v
+
+  build_wheel:
+    name: Build Pure Python Wheel
+    needs: build_and_test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 2.2.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Build wheel
+        run: poetry build --format wheel
+
+      - name: Verify wheel
+        run: |
+          ls -lh dist/
+          WHEEL_NAME=$(ls dist/*.whl)
+          echo "Built wheel: $WHEEL_NAME"
+          if [[ ! $WHEEL_NAME == *"py3-none-any"* ]]; then
+            echo "ERROR: Expected pure Python wheel, got platform-specific wheel"
+            exit 1
+          fi
+
+      - name: Upload wheel as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel
+          path: dist/*.whl
+          if-no-files-found: error
 
   auto_release:
     name: Auto Tag and Release
-    needs: [build_wheel, test_wheel]
+    needs: build_wheel
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
