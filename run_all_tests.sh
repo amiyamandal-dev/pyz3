@@ -73,20 +73,29 @@ check_prerequisites() {
     fi
 
     # Check Python
-    if ! command -v python3 &> /dev/null; then
-        print_error "Python3 is not installed"
+    if ! command -v /Volumes/ssd/ziggy-pydust/.venv/bin/python &> /dev/null; then
+        print_error "Python virtual environment is not set up at /Volumes/ssd/ziggy-pydust/.venv/bin/python"
         all_good=false
     else
-        PYTHON_VERSION=$(python3 --version)
+        PYTHON_VERSION=$(/Volumes/ssd/ziggy-pydust/.venv/bin/python --version)
         print_success "$PYTHON_VERSION"
     fi
 
-    # Check pytest
-    if ! python3 -c "import pytest" 2>/dev/null; then
-        print_warning "pytest not found, installing..."
-        python3 -m pip install pytest pytest-xdist --user
+    # Check poetry
+    if ! command -v poetry &> /dev/null; then
+        print_error "Poetry is not installed"
+        all_good=false
     else
-        PYTEST_VERSION=$(python3 -m pytest --version | head -n1)
+        POETRY_VERSION=$(poetry --version)
+        print_success "$POETRY_VERSION"
+    fi
+
+    # Check pytest via poetry
+    if ! /Volumes/ssd/ziggy-pydust/.venv/bin/python -m poetry run pytest --version &> /dev/null; then
+        print_warning "pytest not found, installing via poetry..."
+        poetry install
+    else
+        PYTEST_VERSION=$(/Volumes/ssd/ziggy-pydust/.venv/bin/python -m poetry run pytest --version | head -n1)
         print_success "$PYTEST_VERSION"
     fi
 
@@ -351,7 +360,7 @@ sys.exit(0 if result.failed == 0 else 1)
 EOF
 
     chmod +x /tmp/test_new_types_compat.py
-    if python3 /tmp/test_new_types_compat.py; then
+    if /Volumes/ssd/ziggy-pydust/.venv/bin/python /tmp/test_new_types_compat.py; then
         print_success "All new type compatibility tests passed"
         return 0
     else
@@ -374,9 +383,9 @@ run_pytest_all() {
     echo -e "${BLUE}Found ${#test_files[@]} test files${NC}"
 
     # Run pytest with detailed output
-    print_info "Running pytest..."
+    print_info "Running pytest via poetry..."
 
-    if python3 -m pytest test/ -v --tb=short --color=yes 2>&1 | tee /tmp/pytest.log; then
+    if /Volumes/ssd/ziggy-pydust/.venv/bin/python -m poetry run pytest test/ -v --tb=short --color=yes 2>&1 | tee /tmp/pytest.log; then
         print_success "All pytest tests passed"
 
         # Extract statistics
@@ -403,7 +412,7 @@ run_specific_test() {
     local test_file=$1
     print_subheader "Running: $test_file"
 
-    if python3 -m pytest "$test_file" -v --tb=short; then
+    if /Volumes/ssd/ziggy-pydust/.venv/bin/python -m poetry run pytest "$test_file" -v --tb=short; then
         print_success "$test_file passed"
         return 0
     else
@@ -573,7 +582,7 @@ if __name__ == "__main__":
 EOF
 
     chmod +x /tmp/integration_test.py
-    if python3 /tmp/integration_test.py; then
+    if /Volumes/ssd/ziggy-pydust/.venv/bin/python /tmp/integration_test.py; then
         print_success "Integration test passed"
         return 0
     else
@@ -631,7 +640,7 @@ EOF
 quick_check() {
     print_header "QUICK VERIFICATION CHECK"
 
-    python3 << 'EOF'
+    /Volumes/ssd/ziggy-pydust/.venv/bin/python << 'EOF'
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path

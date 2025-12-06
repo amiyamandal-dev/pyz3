@@ -25,6 +25,7 @@ pub fn build(b: *std.Build) void {
     const pythonInc = getPythonIncludePath(python_exe, b.allocator) catch @panic("Missing python");
     const pythonLib = getPythonLibraryPath(python_exe, b.allocator) catch @panic("Missing python");
     const pythonVer = getPythonLDVersion(python_exe, b.allocator) catch @panic("Missing python");
+    const pythonHome = getPythonHome(python_exe, b.allocator) catch @panic("Missing python");
     const pythonLibName = std.fmt.allocPrint(b.allocator, "python{s}", .{pythonVer}) catch @panic("Missing python");
 
     const test_step = b.step("test", "Run library tests");
@@ -78,6 +79,7 @@ pub fn build(b: *std.Build) void {
     main_tests.root_module.addImport("pyconf", main_tests_mod);
 
     const run_main_tests = b.addRunArtifact(main_tests);
+    run_main_tests.setEnvironmentVariable("PYTHONHOME", pythonHome);
     test_step.dependOn(&run_main_tests.step);
 
     // Setup a library target to trick the Zig Language Server into providing completions for @import("pyz3")
@@ -141,6 +143,15 @@ fn getPythonLDVersion(python_exe: []const u8, allocator: std.mem.Allocator) ![]c
     });
     defer allocator.free(includeResult.stderr);
     return includeResult.stdout;
+}
+
+fn getPythonHome(python_exe: []const u8, allocator: std.mem.Allocator) ![]const u8 {
+    const homeResult = try runProcess(.{
+        .allocator = allocator,
+        .argv = &.{ python_exe, "-c", "import sys; print(sys.base_prefix, end='')" },
+    });
+    defer allocator.free(homeResult.stderr);
+    return homeResult.stdout;
 }
 
 const runProcess = if (builtin.zig_version.minor >= 12) std.process.Child.run else std.process.Child.exec;

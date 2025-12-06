@@ -29,8 +29,12 @@ PYVER_MINOR = ".".join(str(v) for v in sys.version_info[:2])
 PYVER_HEX = f"{sys.hexversion:#010x}"
 PYLDLIB = sysconfig.get_config_var("LDLIBRARY")
 
-# Handle macOS Framework Python (e.g., "Python.framework/Versions/3.11/Python")
-if ".framework/" in PYLDLIB:
+# Handle None case (Windows) and process library name
+if PYLDLIB is None:
+    # On Windows, LDLIBRARY may be None, fall back to default naming
+    PYLDLIB = f"python{PYVER_MINOR.replace('.', '')}"
+elif ".framework/" in PYLDLIB:
+    # Handle macOS Framework Python (e.g., "Python.framework/Versions/3.11/Python")
     # Extract just the library name from framework path
     # Python.framework/Versions/3.11/Python => Python
     PYLDLIB = os.path.basename(PYLDLIB)

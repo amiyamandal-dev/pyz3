@@ -87,7 +87,12 @@ jobs:
 
       - name: Install test dependencies
         run: |
-          pip install pytest
+          pip install pytest numpy
+
+      - name: Build test binaries
+        shell: bash
+        run: |
+          zig build pyz3-test-build --build-file pytest.build.zig
 
       # macOS-only workaround for Zig's "-lPython" library name
       - name: macOS: create libPython symlink for Zig
@@ -123,6 +128,7 @@ jobs:
           PY
 
       - name: Run basic tests
+        shell: bash
         run: |
           pytest test/test_hello.py -v
 
