@@ -1,6 +1,6 @@
 # Cookiecutter Template Conversion Summary
 
-This document summarizes the conversion of the ziggy-pyz3-template repository into a fully functional cookiecutter template.
+This document summarizes the conversion of the pyZ3-template repository into a fully functional cookiecutter template.
 
 ## What Was Done
 
@@ -9,7 +9,7 @@ This document summarizes the conversion of the ziggy-pyz3-template repository in
 The repository has been converted into a cookiecutter template with the following structure:
 
 ```
-ziggy-pyz3-template/                 (Template repository)
+pyZ3-template/                 (Template repository)
 ├── cookiecutter.json                  (Template configuration)
 ├── hooks/
 │   └── post_gen_project.py           (Post-generation hook)
@@ -132,7 +132,7 @@ Created `validate_template.py` to verify:
 
 2. **Generate a project**:
    ```bash
-   cookiecutter /path/to/ziggy-pyz3-template
+   cookiecutter /path/to/pyZ3-template
    ```
 
 3. **Set up the environment**:
@@ -255,7 +255,7 @@ To update the template:
 ## Support
 
 - **Template Issues**: Check USAGE.md or open an issue
-- **Pydust Questions**: Visit https://pyz3.fulcrum.so/
+- **pyZ3 Questions**: Visit https://pyz3.fulcrum.so/
 - **Zig Help**: Visit https://ziglang.org/documentation/
 
 ---

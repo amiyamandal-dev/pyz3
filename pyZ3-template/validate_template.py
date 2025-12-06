@@ -103,7 +103,7 @@ def validate_template():
 def main():
     """Run validation and report results."""
     print("=" * 60)
-    print("Ziggy Pydust Template Validator")
+    print("pyZ3 Template Validator")
     print("=" * 60)
     print()
 

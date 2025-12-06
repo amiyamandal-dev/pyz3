@@ -3,8 +3,6 @@ name: Build pyZ3 Wheels
 on:
   push:
     branches: [main, develop]
-    tags:
-      - 'v*'
   pull_request:
     branches: [main, develop]
   workflow_dispatch:  # Allow manual triggering
@@ -20,15 +18,16 @@ jobs:
           - name: Linux x86_64
             runner: ubuntu-latest
             target: x86_64-linux-gnu
-            wheel-platform: manylinux_2_17_x86_64.manylinux2014_x86_64
+            wheel-platform: manylinux_2_17_x86_64
             python-arch: x64
 
-          - name: Linux aarch64
-            runner: ubuntu-latest
-            target: aarch64-linux-gnu
-            wheel-platform: manylinux_2_17_aarch64.manylinux2014_aarch64
-            python-arch: x64
-            setup-qemu: true
+          # Temporarily disabled - requires native ARM runner or Docker build
+          # - name: Linux aarch64
+          #   runner: ubuntu-latest
+          #   target: aarch64-linux-gnu
+          #   wheel-platform: manylinux_2_17_aarch64
+          #   python-arch: x64
+          #   setup-qemu: true
 
           - name: macOS x86_64
             runner: macos-13  # Intel runner
@@ -52,12 +51,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up QEMU (for ARM emulation)
-        if: matrix.platform.setup-qemu
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -107,7 +100,7 @@ jobs:
       - name: Test wheel installation
         run: |
           pip install dist/*.whl
-          python -c "import pyz3; print(f'pyZ3 version: {pyz3.__version__}')"
+          python -c "import pyz3; print(f'✅ pyZ3 {pyz3.__version__} installed successfully')"
 
       - name: Run basic tests
         run: |
@@ -121,16 +114,71 @@ jobs:
           path: dist/*.whl
           if-no-files-found: error
 
-  publish:
-    name: Publish to PyPI
+  auto_release:
+    name: Auto Tag and Release
     needs: build_wheels
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from pyproject.toml
+        id: get_version
+        run: |
+          VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "v${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create and push tag
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "v${{ steps.get_version.outputs.version }}" -m "Release v${{ steps.get_version.outputs.version }}"
+          git push origin "v${{ steps.get_version.outputs.version }}"
+
+      - name: Download all wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          path: dist/
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: Release v${{ steps.get_version.outputs.version }}
+          files: dist/*.whl
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+
+  publish:
+    name: Publish to PyPI
+    needs: auto_release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
       name: pypi
       url: https://pypi.org/p/pyZ3
     permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write
 
     steps:
       - name: Download all wheels
@@ -148,29 +196,3 @@ jobs:
         with:
           packages-dir: dist/
           skip-existing: true
-
-  create_release:
-    name: Create GitHub Release
-    needs: build_wheels
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download all wheels
-        uses: actions/download-artifact@v4
-        with:
-          pattern: wheel-*
-          path: dist/
-          merge-multiple: true
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/*.whl
-          generate_release_notes: true
-          draft: false
-          prerelease: false

@@ -1,11 +1,11 @@
 # Cookiecutter Template Structure
 
-This document describes the structure of the ziggy-pyz3-template cookiecutter template after cleanup.
+This document describes the structure of the pyZ3-template cookiecutter template after cleanup.
 
 ## Repository Root Files
 
 ```
-ziggy-pyz3-template/
+pyZ3-template/
 ├── .cookiecutterrc              # Example cookiecutter configuration
 ├── .gitignore                   # Git ignore patterns
 ├── .github/                     # GitHub Actions for template repo
@@ -50,7 +50,7 @@ The `{{cookiecutter.project_slug}}/` directory contains all files that will be g
 │   ├── __init__.py
 │   └── test_{{cookiecutter.zig_file_name}}.py  # Tests
 ├── .gitignore                  # Standard Python/Zig gitignore
-├── build.py                    # Pydust build script
+├── build.py                    # pyZ3 build script
 ├── LICENSE                     # Apache 2.0 License
 ├── pyproject.toml             # Project configuration
 ├── README.md                  # Project documentation
@@ -76,7 +76,7 @@ Defined in `cookiecutter.json`:
 
 ## Usage Flow
 
-1. **User runs**: `cookiecutter /path/to/ziggy-pyz3-template`
+1. **User runs**: `cookiecutter /path/to/pyZ3-template`
 2. **Cookiecutter prompts** for variable values
 3. **Cookiecutter generates** project from template directory
 4. **Post-gen hook runs**: 

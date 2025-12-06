@@ -1,4 +1,4 @@
-# Using the Ziggy Pydust Cookiecutter Template
+# Using the pyZ3 Cookiecutter Template
 
 This document explains how to use this cookiecutter template to create new Zig Python extension projects.
 
@@ -25,13 +25,13 @@ This document explains how to use this cookiecutter template to create new Zig P
 ### Method 1: From GitHub (Recommended for published templates)
 
 ```bash
-cookiecutter gh:your-org/ziggy-pyz3-template
+cookiecutter gh:your-org/pyZ3-template
 ```
 
 ### Method 2: From Local Directory
 
 ```bash
-cookiecutter /path/to/ziggy-pyz3-template
+cookiecutter /path/to/pyZ3-template
 ```
 
 ### Method 3: Non-interactive Mode
@@ -50,7 +50,7 @@ default_context:
 Then run:
 
 ```bash
-cookiecutter /path/to/ziggy-pyz3-template --no-input --config-file my-config.yaml
+cookiecutter /path/to/pyZ3-template --no-input --config-file my-config.yaml
 ```
 
 ## Template Variables
@@ -103,7 +103,7 @@ Once the project is generated, follow these steps:
    This will:
    - Create a virtual environment
    - Install Python dependencies
-   - Install Pydust and Zig compiler
+   - Install pyZ3 and Zig compiler
    - Build your extension module
 
 3. **Run tests**:
@@ -269,7 +269,7 @@ poetry install
 
 ### Zig Not Found
 
-Pydust automatically installs Zig. If you see "zig not found":
+pyZ3 automatically installs Zig. If you see "zig not found":
 
 ```bash
 poetry run python -m ziglang version
@@ -285,7 +285,7 @@ poetry install  # This runs the build
 
 ## Learning Resources
 
-- [Pydust Documentation](https://pyz3.fulcrum.so/)
+- [pyZ3 Documentation](https://github.com/yourusername/pyZ3/)
 - [Zig Learn](https://ziglearn.org/)
 - [Python C API](https://docs.python.org/3/c-api/)
 - [Poetry Docs](https://python-poetry.org/docs/)
@@ -294,5 +294,5 @@ poetry install  # This runs the build
 
 For issues with:
 - **This template**: Open an issue in the template repository
-- **Pydust framework**: Visit [Pydust GitHub](https://github.com/fulcrum-so/ziggy-pyz3)
+- **pyZ3 framework**: Visit [pyZ3 GitHub](https://github.com/yourusername/pyZ3)
 - **Zig language**: Check [Zig forums](https://github.com/ziglang/zig)

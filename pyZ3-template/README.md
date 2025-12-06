@@ -1,13 +1,13 @@
-# Ziggy Pydust Cookiecutter Template
+# pyZ3 Cookiecutter Template
 
-A [Cookiecutter](https://github.com/cookiecutter/cookiecutter) template for creating Python extension modules in Zig using [Pydust](https://github.com/fulcrum-so/ziggy-pyz3).
+A [Cookiecutter](https://github.com/cookiecutter/cookiecutter) template for creating Python extension modules in Zig using [pyZ3](https://github.com/yourusername/pyZ3).
 
 ## Features
 
 This template generates a complete project structure including:
 
 - **Python Poetry project** - Modern Python packaging and dependency management
-- **Zig source files** - Example Fibonacci implementation showcasing Pydust features
+- **Zig source files** - Example Fibonacci implementation showcasing pyZ3 features
 - **Type stubs (.pyi)** - Full type hints for your Python IDE
 - **Pytest setup** - Run both Python and Zig unit tests with a single command
 - **GitHub Actions** - CI/CD workflows for testing and publishing to PyPI
@@ -22,7 +22,7 @@ This template generates a complete project structure including:
   - [uv](https://github.com/astral-sh/uv) (recommended - `pip install uv`)
   - [Poetry](https://python-poetry.org/)
   - Standard pip with venv
-- [Zig](https://ziglang.org/) (will be installed automatically by Pydust)
+- [Zig](https://ziglang.org/) (will be installed automatically by pyZ3)
 
 ## Quick Start
 
@@ -35,9 +35,9 @@ pip install cookiecutter
 ### 2. Generate Your Project
 
 ```bash
-cookiecutter gh:fulcrum-so/ziggy-pyz3-template
+cookiecutter gh:yourusername/pyZ3-template
 # Or if running locally:
-# cookiecutter /path/to/ziggy-pyz3-template
+# cookiecutter /path/to/pyZ3-template
 ```
 
 You'll be prompted for:
@@ -181,7 +181,7 @@ After generating your project, you can:
 
 ## Learning Resources
 
-- [Pydust Documentation](https://pyz3.fulcrum.so/latest/getting_started/)
+- [pyZ3 Documentation](https://github.com/yourusername/pyZ3)
 - [Zig Language Reference](https://ziglang.org/documentation/master/)
 - [Poetry Documentation](https://python-poetry.org/docs/)
 

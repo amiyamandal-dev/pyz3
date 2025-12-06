@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get up and running with the Ziggy Pydust Cookiecutter Template in 5 minutes.
+Get up and running with the pyZ3 Cookiecutter Template in 5 minutes.
 
 ## Prerequisites
 
@@ -24,12 +24,12 @@ pip install uv          # Option 1: uv (recommended - fastest)
 
 **From local directory:**
 ```bash
-cookiecutter /path/to/ziggy-pyz3-template
+cookiecutter /path/to/pyZ3-template
 ```
 
 **From GitHub (when published):**
 ```bash
-cookiecutter gh:your-org/ziggy-pyz3-template
+cookiecutter gh:yourusername/pyZ3-template
 ```
 
 ### 2. Answer the prompts
@@ -40,7 +40,7 @@ project_slug [fast-math-library]:
 package_name [fast_math_library]:
 zig_file_name [fast_math_library]:
 module_name [_lib]:
-description [A Python extension module written in Zig using Pydust]: Fast mathematical operations using Zig
+description [A Python extension module written in Zig using pyZ3]: Fast mathematical operations using Zig
 author_name [Your Name]: Jane Developer
 author_email [you@example.com]: jane@example.com
 version [0.1.0]:
@@ -244,7 +244,7 @@ python -m ziglang build generate-stubs
 
 ## Resources
 
-- [Pydust Documentation](https://pyz3.fulcrum.so/)
+- [pyZ3 Documentation](https://github.com/yourusername/pyZ3)
 - [Zig Language](https://ziglang.org/documentation/master/)
 - [Example Zig file]({{cookiecutter.project_slug}}/src/{{cookiecutter.zig_file_name}}.zig)
 - [Full USAGE guide](USAGE.md)
@@ -252,7 +252,7 @@ python -m ziglang build generate-stubs
 ## Getting Help
 
 - Template issues: Open an issue in the template repo
-- Pydust questions: [Pydust GitHub](https://github.com/fulcrum-so/ziggy-pyz3)
+- pyZ3 questions: [pyZ3 GitHub](https://github.com/yourusername/pyZ3)
 - Zig questions: [Zig Forums](https://github.com/ziglang/zig/discussions)
 
 Happy coding!

@@ -2,7 +2,7 @@
 
 {{ cookiecutter.description }}
 
-This project uses [Pydust](https://github.com/fulcrum-so/ziggy-pyz3) to create a Python extension module written in Zig.
+This project uses [pyZ3](https://github.com/yourusername/pyZ3) to create a Python extension module written in Zig.
 
 ## Installation
 
@@ -85,6 +85,6 @@ for num in fib_sequence:
 
 ## About
 
-This project was generated from the [Ziggy Pydust Template](https://github.com/fulcrum-so/ziggy-pyz3-template).
+This project was generated from the [pyZ3 Template](https://github.com/yourusername/pyZ3-template).
 
-For more information, visit the [Pydust documentation](https://pyz3.fulcrum.so/latest/getting_started/).
+For more information, visit the [pyZ3 documentation](https://github.com/yourusername/pyZ3).
