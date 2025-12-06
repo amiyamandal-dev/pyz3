@@ -12,7 +12,7 @@
 
 const std = @import("std");
 const ffi = @import("ffi");
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 const PyError = @import("../errors.zig").PyError;
 
 /// Python UUID object wrapper
@@ -32,14 +32,14 @@ pub const PyUUID = extern struct {
         const str_obj = try py.PyString.create(uuid_str);
         defer str_obj.obj.decref();
 
-        const uuid_obj = try py.call(@import("../pydust.zig"), uuid_class, .{str_obj.obj});
+        const uuid_obj = try py.call(@import("../pyz3.zig"), uuid_class, .{str_obj.obj});
         return .{ .obj = uuid_obj };
     }
 
     /// Create a UUID from bytes (16 bytes)
     pub fn fromBytes(bytes: []const u8) !Self {
         if (bytes.len != 16) {
-            return py.ValueError(@import("../pydust.zig")).raise("UUID bytes must be exactly 16 bytes");
+            return py.ValueError(@import("../pyz3.zig")).raise("UUID bytes must be exactly 16 bytes");
         }
 
         const uuid_mod = try py.import("uuid");
@@ -129,7 +129,7 @@ pub const PyUUID = extern struct {
         const uuid4_fn = try uuid_mod.getAttribute("uuid4");
         defer uuid4_fn.decref();
 
-        const uuid_obj = try py.call0(@import("../pydust.zig"), uuid4_fn);
+        const uuid_obj = try py.call0(@import("../pyz3.zig"), uuid4_fn);
         return .{ .obj = uuid_obj };
     }
 
@@ -144,7 +144,7 @@ pub const PyUUID = extern struct {
         const name_str = try py.PyString.create(name);
         defer name_str.obj.decref();
 
-        const uuid_obj = try py.call(@import("../pydust.zig"), uuid5_fn, .{ namespace.obj, name_str.obj });
+        const uuid_obj = try py.call(@import("../pyz3.zig"), uuid5_fn, .{ namespace.obj, name_str.obj });
         return .{ .obj = uuid_obj };
     }
 
@@ -159,7 +159,7 @@ pub const PyUUID = extern struct {
         const name_str = try py.PyString.create(name);
         defer name_str.obj.decref();
 
-        const uuid_obj = try py.call(@import("../pydust.zig"), uuid3_fn, .{ namespace.obj, name_str.obj });
+        const uuid_obj = try py.call(@import("../pyz3.zig"), uuid3_fn, .{ namespace.obj, name_str.obj });
         return .{ .obj = uuid_obj };
     }
 
@@ -207,7 +207,7 @@ pub const PyUUID = extern struct {
         const uuid_class = uuid_mod.getAttribute("UUID") catch return false;
         defer uuid_class.decref();
 
-        return py.isinstance(@import("../pydust.zig"), obj, uuid_class) catch false;
+        return py.isinstance(@import("../pyz3.zig"), obj, uuid_class) catch false;
     }
 
     /// Convert UUID to string
@@ -215,7 +215,7 @@ pub const PyUUID = extern struct {
         const str_fn = try py.import("builtins").getAttribute("str");
         defer str_fn.decref();
 
-        const result = try py.call(@import("../pydust.zig"), str_fn, .{self.obj});
+        const result = try py.call(@import("../pyz3.zig"), str_fn, .{self.obj});
         return .{ .obj = result };
     }
 
@@ -252,7 +252,7 @@ pub const PyUUID = extern struct {
             return null;
         }
 
-        return try py.as(i64, @import("../pydust.zig"), version_attr);
+        return try py.as(i64, @import("../pyz3.zig"), version_attr);
     }
 
     /// Get the 128-bit integer value
@@ -265,7 +265,7 @@ pub const PyUUID = extern struct {
         const str_fn = try py.import("builtins").getAttribute("str");
         defer str_fn.decref();
 
-        const str_obj = try py.call(@import("../pydust.zig"), str_fn, .{int_attr});
+        const str_obj = try py.call(@import("../pyz3.zig"), str_fn, .{int_attr});
         defer str_obj.decref();
 
         const str_val = try py.PyString.asSlice(str_obj);
@@ -273,7 +273,7 @@ pub const PyUUID = extern struct {
 
         // Parse the string as i128
         return std.fmt.parseInt(i128, str_val.buf, 10) catch {
-            return py.ValueError(@import("../pydust.zig")).raise("UUID int value too large for i128");
+            return py.ValueError(@import("../pyz3.zig")).raise("UUID int value too large for i128");
         };
     }
 
@@ -282,9 +282,9 @@ pub const PyUUID = extern struct {
         const eq_method = try self.obj.getAttribute("__eq__");
         defer eq_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), eq_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), eq_method, .{other.obj});
         defer result.decref();
 
-        return try py.as(bool, @import("../pydust.zig"), result);
+        return try py.as(bool, @import("../pyz3.zig"), result);
     }
 };

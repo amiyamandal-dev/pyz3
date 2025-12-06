@@ -81,7 +81,7 @@ def generate_build_zig(fileobj: TextIO, conf=None):
 
             const test_step = b.step("test", "Run library tests");
 
-            const pyz3 = py.addPydust(b, .{
+            const pyz3 = py.addPyZ3(b, .{
                 .test_step = test_step,
             });
             """

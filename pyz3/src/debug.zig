@@ -12,7 +12,7 @@
 
 const std = @import("std");
 const ffi = @import("ffi");
-const py = @import("./pydust.zig");
+const py = @import("./pyz3.zig");
 const builtin = @import("builtin");
 
 /// Debug logging levels

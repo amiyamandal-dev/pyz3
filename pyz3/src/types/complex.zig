@@ -12,7 +12,7 @@
 
 const std = @import("std");
 const ffi = @import("ffi");
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 const PyError = @import("../errors.zig").PyError;
 
 /// Python complex number object wrapper
@@ -99,7 +99,7 @@ pub const PyComplex = extern struct {
 
         const denominator = b.real * b.real + b.imag * b.imag;
         if (denominator == 0.0) {
-            return py.ZeroDivisionError(@import("../pydust.zig")).raise("complex division by zero");
+            return py.ZeroDivisionError(@import("../pyz3.zig")).raise("complex division by zero");
         }
 
         const real_part = (a.real * b.real + a.imag * b.imag) / denominator;

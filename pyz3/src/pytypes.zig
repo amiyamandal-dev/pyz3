@@ -14,7 +14,7 @@
 
 const std = @import("std");
 const ffi = @import("ffi");
-const py = @import("pydust.zig");
+const py = @import("pyz3.zig");
 const discovery = @import("discovery.zig");
 const Attributes = @import("attributes.zig").Attributes;
 const State = @import("discovery.zig").State;

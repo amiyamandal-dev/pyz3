@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const py = @import("./pydust.zig");
+const py = @import("./pyz3.zig");
 const tramp = @import("./trampoline.zig");
 const pytypes = @import("./pytypes.zig");
 const State = @import("./discovery.zig").State;

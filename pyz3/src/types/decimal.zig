@@ -12,7 +12,7 @@
 
 const std = @import("std");
 const ffi = @import("ffi");
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 const PyError = @import("../errors.zig").PyError;
 
 /// Python Decimal object wrapper for precise decimal arithmetic
@@ -32,7 +32,7 @@ pub const PyDecimal = extern struct {
         const val = try py.PyLong.from(value);
         defer val.obj.decref();
 
-        const decimal_obj = try py.call(@import("../pydust.zig"), decimal_class, .{val.obj});
+        const decimal_obj = try py.call(@import("../pyz3.zig"), decimal_class, .{val.obj});
         return .{ .obj = decimal_obj };
     }
 
@@ -47,7 +47,7 @@ pub const PyDecimal = extern struct {
         const val = try py.PyString.create(value);
         defer val.obj.decref();
 
-        const decimal_obj = try py.call(@import("../pydust.zig"), decimal_class, .{val.obj});
+        const decimal_obj = try py.call(@import("../pyz3.zig"), decimal_class, .{val.obj});
         return .{ .obj = decimal_obj };
     }
 
@@ -62,7 +62,7 @@ pub const PyDecimal = extern struct {
         const val = try py.PyFloat.from(value);
         defer val.obj.decref();
 
-        const decimal_obj = try py.call(@import("../pydust.zig"), decimal_class, .{val.obj});
+        const decimal_obj = try py.call(@import("../pyz3.zig"), decimal_class, .{val.obj});
         return .{ .obj = decimal_obj };
     }
 
@@ -74,7 +74,7 @@ pub const PyDecimal = extern struct {
         const decimal_class = decimal_mod.getAttribute("Decimal") catch return false;
         defer decimal_class.decref();
 
-        return py.isinstance(@import("../pydust.zig"), obj, decimal_class) catch false;
+        return py.isinstance(@import("../pyz3.zig"), obj, decimal_class) catch false;
     }
 
     /// Convert to float
@@ -85,10 +85,10 @@ pub const PyDecimal = extern struct {
         const float_fn = try builtins.getAttribute("float");
         defer float_fn.decref();
 
-        const result = try py.call(@import("../pydust.zig"), float_fn, .{self.obj});
+        const result = try py.call(@import("../pyz3.zig"), float_fn, .{self.obj});
         defer result.decref();
 
-        return try py.as(f64, @import("../pydust.zig"), result);
+        return try py.as(f64, @import("../pyz3.zig"), result);
     }
 
     /// Convert to integer
@@ -99,10 +99,10 @@ pub const PyDecimal = extern struct {
         const int_fn = try builtins.getAttribute("int");
         defer int_fn.decref();
 
-        const result = try py.call(@import("../pydust.zig"), int_fn, .{self.obj});
+        const result = try py.call(@import("../pyz3.zig"), int_fn, .{self.obj});
         defer result.decref();
 
-        return try py.as(i64, @import("../pydust.zig"), result);
+        return try py.as(i64, @import("../pyz3.zig"), result);
     }
 
     /// Convert to string
@@ -110,7 +110,7 @@ pub const PyDecimal = extern struct {
         const str_fn = try py.import("builtins").getAttribute("str");
         defer str_fn.decref();
 
-        const result = try py.call(@import("../pydust.zig"), str_fn, .{self.obj});
+        const result = try py.call(@import("../pyz3.zig"), str_fn, .{self.obj});
         return .{ .obj = result };
     }
 
@@ -119,7 +119,7 @@ pub const PyDecimal = extern struct {
         const add_method = try self.obj.getAttribute("__add__");
         defer add_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), add_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), add_method, .{other.obj});
         return .{ .obj = result };
     }
 
@@ -128,7 +128,7 @@ pub const PyDecimal = extern struct {
         const sub_method = try self.obj.getAttribute("__sub__");
         defer sub_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), sub_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), sub_method, .{other.obj});
         return .{ .obj = result };
     }
 
@@ -137,7 +137,7 @@ pub const PyDecimal = extern struct {
         const mul_method = try self.obj.getAttribute("__mul__");
         defer mul_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), mul_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), mul_method, .{other.obj});
         return .{ .obj = result };
     }
 
@@ -146,7 +146,7 @@ pub const PyDecimal = extern struct {
         const div_method = try self.obj.getAttribute("__truediv__");
         defer div_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), div_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), div_method, .{other.obj});
         return .{ .obj = result };
     }
 
@@ -155,7 +155,7 @@ pub const PyDecimal = extern struct {
         const div_method = try self.obj.getAttribute("__floordiv__");
         defer div_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), div_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), div_method, .{other.obj});
         return .{ .obj = result };
     }
 
@@ -164,7 +164,7 @@ pub const PyDecimal = extern struct {
         const mod_method = try self.obj.getAttribute("__mod__");
         defer mod_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), mod_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), mod_method, .{other.obj});
         return .{ .obj = result };
     }
 
@@ -173,7 +173,7 @@ pub const PyDecimal = extern struct {
         const pow_method = try self.obj.getAttribute("__pow__");
         defer pow_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), pow_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), pow_method, .{other.obj});
         return .{ .obj = result };
     }
 
@@ -182,7 +182,7 @@ pub const PyDecimal = extern struct {
         const abs_method = try self.obj.getAttribute("__abs__");
         defer abs_method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), abs_method);
+        const result = try py.call0(@import("../pyz3.zig"), abs_method);
         return .{ .obj = result };
     }
 
@@ -191,7 +191,7 @@ pub const PyDecimal = extern struct {
         const neg_method = try self.obj.getAttribute("__neg__");
         defer neg_method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), neg_method);
+        const result = try py.call0(@import("../pyz3.zig"), neg_method);
         return .{ .obj = result };
     }
 
@@ -200,10 +200,10 @@ pub const PyDecimal = extern struct {
         const eq_method = try self.obj.getAttribute("__eq__");
         defer eq_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), eq_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), eq_method, .{other.obj});
         defer result.decref();
 
-        return try py.as(bool, @import("../pydust.zig"), result);
+        return try py.as(bool, @import("../pyz3.zig"), result);
     }
 
     /// Compare less than
@@ -211,10 +211,10 @@ pub const PyDecimal = extern struct {
         const lt_method = try self.obj.getAttribute("__lt__");
         defer lt_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), lt_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), lt_method, .{other.obj});
         defer result.decref();
 
-        return try py.as(bool, @import("../pydust.zig"), result);
+        return try py.as(bool, @import("../pyz3.zig"), result);
     }
 
     /// Compare less than or equal
@@ -222,10 +222,10 @@ pub const PyDecimal = extern struct {
         const le_method = try self.obj.getAttribute("__le__");
         defer le_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), le_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), le_method, .{other.obj});
         defer result.decref();
 
-        return try py.as(bool, @import("../pydust.zig"), result);
+        return try py.as(bool, @import("../pyz3.zig"), result);
     }
 
     /// Round to n decimal places
@@ -243,7 +243,7 @@ pub const PyDecimal = extern struct {
         const quantum = try ten.pow(neg_places);
         defer quantum.obj.decref();
 
-        const result = try py.call(@import("../pydust.zig"), quantize_method, .{quantum.obj});
+        const result = try py.call(@import("../pyz3.zig"), quantize_method, .{quantum.obj});
         return .{ .obj = result };
     }
 
@@ -252,7 +252,7 @@ pub const PyDecimal = extern struct {
         const sqrt_method = try self.obj.getAttribute("sqrt");
         defer sqrt_method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), sqrt_method);
+        const result = try py.call0(@import("../pyz3.zig"), sqrt_method);
         return .{ .obj = result };
     }
 
@@ -261,7 +261,7 @@ pub const PyDecimal = extern struct {
         const ln_method = try self.obj.getAttribute("ln");
         defer ln_method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), ln_method);
+        const result = try py.call0(@import("../pyz3.zig"), ln_method);
         return .{ .obj = result };
     }
 
@@ -270,7 +270,7 @@ pub const PyDecimal = extern struct {
         const log10_method = try self.obj.getAttribute("log10");
         defer log10_method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), log10_method);
+        const result = try py.call0(@import("../pyz3.zig"), log10_method);
         return .{ .obj = result };
     }
 
@@ -279,7 +279,7 @@ pub const PyDecimal = extern struct {
         const exp_method = try self.obj.getAttribute("exp");
         defer exp_method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), exp_method);
+        const result = try py.call0(@import("../pyz3.zig"), exp_method);
         return .{ .obj = result };
     }
 
@@ -288,10 +288,10 @@ pub const PyDecimal = extern struct {
         const method = try self.obj.getAttribute("is_finite");
         defer method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), method);
+        const result = try py.call0(@import("../pyz3.zig"), method);
         defer result.decref();
 
-        return try py.as(bool, @import("../pydust.zig"), result);
+        return try py.as(bool, @import("../pyz3.zig"), result);
     }
 
     /// Check if the decimal is infinite
@@ -299,10 +299,10 @@ pub const PyDecimal = extern struct {
         const method = try self.obj.getAttribute("is_infinite");
         defer method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), method);
+        const result = try py.call0(@import("../pyz3.zig"), method);
         defer result.decref();
 
-        return try py.as(bool, @import("../pydust.zig"), result);
+        return try py.as(bool, @import("../pyz3.zig"), result);
     }
 
     /// Check if the decimal is NaN
@@ -310,9 +310,9 @@ pub const PyDecimal = extern struct {
         const method = try self.obj.getAttribute("is_nan");
         defer method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), method);
+        const result = try py.call0(@import("../pyz3.zig"), method);
         defer result.decref();
 
-        return try py.as(bool, @import("../pydust.zig"), result);
+        return try py.as(bool, @import("../pyz3.zig"), result);
     }
 };

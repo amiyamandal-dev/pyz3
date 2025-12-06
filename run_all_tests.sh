@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Comprehensive test runner for Ziggy Pydust
+# Comprehensive test runner for pyz3
 # Tests all existing tests + new type implementations
 
 set -e  # Exit on error
@@ -592,7 +592,7 @@ generate_report() {
 ║                      TEST EXECUTION SUMMARY                     ║
 ╚════════════════════════════════════════════════════════════════╝
 
-Project: Ziggy Pydust
+Project: pyz3
 Date: $(date '+%Y-%m-%d %H:%M:%S')
 
 Test Categories:
@@ -744,7 +744,7 @@ EOF
             ;;
 
         --all|*)
-            print_header "ZIGGY PYDUST - COMPREHENSIVE TEST SUITE"
+            print_header "pyz3 - COMPREHENSIVE TEST SUITE"
 
             check_prerequisites
             build_project

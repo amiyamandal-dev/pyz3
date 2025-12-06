@@ -17,7 +17,7 @@ pub fn build(b: *std.Build) void {
     // Support cross-compilation via ZIG_TARGET environment variable
     const target = getTargetFromEnv(b) orelse b.standardTargetOptions(.{});
 
-    // Support optimization level via PYDUST_OPTIMIZE environment variable
+    // Support optimization level via PYZ3_OPTIMIZE environment variable
     const optimize = getOptimizeFromEnv(b) orelse b.standardOptimizeOption(.{});
 
     const python_exe = b.option([]const u8, "python-exe", "Python executable to use") orelse "python";
@@ -31,7 +31,7 @@ pub fn build(b: *std.Build) void {
     const docs_step = b.step("docs", "Generate docs");
 
     const translate_c = b.addTranslateC(.{
-        .root_source_file = b.path("pydust/src/ffi.h"),
+        .root_source_file = b.path("pyz3/src/ffi.h"),
         .target = target,
         .optimize = optimize,
     });
@@ -39,31 +39,31 @@ pub fn build(b: *std.Build) void {
     translate_c.addIncludePath(.{ .cwd_relative = pythonInc });
 
     // We never build this lib, but we use it to generate docs.
-    const pydust_lib = b.addLibrary(.{
+    const pyz3_lib = b.addLibrary(.{
         .linkage = .dynamic,
         .name = "pyz3",
         .root_module = b.createModule(.{
-            .root_source_file = b.path("pydust/src/pydust.zig"),
+            .root_source_file = b.path("pyz3/src/pyz3.zig"),
             .target = target,
             .optimize = optimize,
         }),
     });
-    const pydust_lib_mod = b.createModule(.{ .root_source_file = b.path("./pyconf.dummy.zig") });
-    pydust_lib_mod.addIncludePath(.{ .cwd_relative = pythonInc });
-    pydust_lib.root_module.addImport("ffi", translate_c.createModule());
-    pydust_lib.root_module.addImport("pyconf", pydust_lib_mod);
+    const pyz3_lib_mod = b.createModule(.{ .root_source_file = b.path("./pyconf.dummy.zig") });
+    pyz3_lib_mod.addIncludePath(.{ .cwd_relative = pythonInc });
+    pyz3_lib.root_module.addImport("ffi", translate_c.createModule());
+    pyz3_lib.root_module.addImport("pyconf", pyz3_lib_mod);
 
-    const pydust_docs = b.addInstallDirectory(.{
-        .source_dir = pydust_lib.getEmittedDocs(),
+    const pyz3_docs = b.addInstallDirectory(.{
+        .source_dir = pyz3_lib.getEmittedDocs(),
         // Emit the Zig docs into zig-out/../docs/zig
         .install_dir = .{ .custom = "../docs" },
         .install_subdir = "zig",
     });
-    docs_step.dependOn(&pydust_docs.step);
+    docs_step.dependOn(&pyz3_docs.step);
 
     const main_tests = b.addTest(.{
         .root_module = b.createModule(.{
-            .root_source_file = b.path("pydust/src/pydust.zig"),
+            .root_source_file = b.path("pyz3/src/pyz3.zig"),
             .target = target,
             .optimize = optimize,
         }),
@@ -94,7 +94,7 @@ pub fn build(b: *std.Build) void {
     example_lib.addLibraryPath(.{ .cwd_relative = pythonLib });
     example_lib.linkSystemLibrary(pythonLibName);
     example_lib.addRPath(.{ .cwd_relative = pythonLib });
-    const example_lib_mod = b.createModule(.{ .root_source_file = b.path("pydust/src/pydust.zig") });
+    const example_lib_mod = b.createModule(.{ .root_source_file = b.path("pyz3/src/pyz3.zig") });
     example_lib_mod.addIncludePath(.{ .cwd_relative = pythonInc });
     example_lib.root_module.addImport("ffi", translate_c.createModule());
     example_lib.root_module.addImport("pyz3", example_lib_mod);
@@ -160,9 +160,9 @@ fn getTargetFromEnv(b: *std.Build) ?std.Build.ResolvedTarget {
     return b.resolveTargetQuery(query);
 }
 
-/// Get optimization mode from PYDUST_OPTIMIZE environment variable if set
+/// Get optimization mode from PYZ3_OPTIMIZE environment variable if set
 fn getOptimizeFromEnv(b: *std.Build) ?std.builtin.OptimizeMode {
-    const optimize_str = std.process.getEnvVarOwned(b.allocator, "PYDUST_OPTIMIZE") catch return null;
+    const optimize_str = std.process.getEnvVarOwned(b.allocator, "PYZ3_OPTIMIZE") catch return null;
     defer b.allocator.free(optimize_str);
 
     if (optimize_str.len == 0) return null;
@@ -172,6 +172,6 @@ fn getOptimizeFromEnv(b: *std.Build) ?std.builtin.OptimizeMode {
     if (std.mem.eql(u8, optimize_str, "ReleaseFast")) return .ReleaseFast;
     if (std.mem.eql(u8, optimize_str, "ReleaseSmall")) return .ReleaseSmall;
 
-    std.debug.print("Warning: Invalid PYDUST_OPTIMIZE '{s}', using default\n", .{optimize_str});
+    std.debug.print("Warning: Invalid PYZ3_OPTIMIZE '{s}', using default\n", .{optimize_str});
     return null;
 }

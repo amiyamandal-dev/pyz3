@@ -1,5 +1,5 @@
 """
-Comprehensive tests for debugging support in Ziggy Pydust.
+Comprehensive tests for debugging support in pyz3.
 
 Tests cover:
 1. Debug logging
@@ -65,8 +65,10 @@ class TestDebugHelpers:
     def test_attach_debugger_lldb(self):
         """Test debugger attach command generation for LLDB."""
         from pyz3.debug import DebugHelper
+        # Import a real extension module first
+        import example.hello  # noqa: F401
 
-        cmd = DebugHelper.attach_debugger('sys', debugger='lldb')
+        cmd = DebugHelper.attach_debugger('example.hello', debugger='lldb')
         assert isinstance(cmd, str)
         assert 'lldb' in cmd.lower()
         assert str(os.getpid()) in cmd
@@ -74,8 +76,10 @@ class TestDebugHelpers:
     def test_attach_debugger_gdb(self):
         """Test debugger attach command generation for GDB."""
         from pyz3.debug import DebugHelper
+        # Import a real extension module first
+        import example.hello  # noqa: F401
 
-        cmd = DebugHelper.attach_debugger('sys', debugger='gdb')
+        cmd = DebugHelper.attach_debugger('example.hello', debugger='gdb')
         assert isinstance(cmd, str)
         assert 'gdb' in cmd.lower()
         assert str(os.getpid()) in cmd
@@ -132,7 +136,7 @@ class TestDebuggerConfiguration:
         assert lldbinit.exists(), ".lldbinit should exist"
 
         content = lldbinit.read_text()
-        assert 'Pydust' in content or 'pydust' in content
+        assert 'pyz3' in content or 'pyz3' in content
 
     def test_gdb_config_exists(self):
         """Verify .gdbinit exists."""
@@ -140,7 +144,7 @@ class TestDebuggerConfiguration:
         assert gdbinit.exists(), ".gdbinit should exist"
 
         content = gdbinit.read_text()
-        assert 'Pydust' in content or 'pydust' in content
+        assert 'pyz3' in content or 'pyz3' in content
 
 
 class TestDebugConvenience:
@@ -164,12 +168,12 @@ class TestDebugExamples:
 
     def test_debug_module_loads(self):
         """Test that the debug module loads successfully."""
-        from pyz3 import debug as pydust_debug
+        from pyz3 import debug as pyz3_debug
 
         # Should have debug utilities
-        assert hasattr(pydust_debug, 'LogLevel')
-        assert hasattr(pydust_debug, 'enableDebug')
-        assert hasattr(pydust_debug, 'disableDebug')
+        assert hasattr(pyz3_debug, 'LogLevel')
+        assert hasattr(pyz3_debug, 'enableDebug')
+        assert hasattr(pyz3_debug, 'disableDebug')
 
     def test_log_levels_defined(self):
         """Test that log levels are properly defined."""
@@ -178,7 +182,7 @@ class TestDebugExamples:
         import pyz3
 
         # Should not crash
-        assert pydust.debug is not None
+        assert pyz3.debug is not None
 
 
 class TestIntegration:
@@ -187,15 +191,17 @@ class TestIntegration:
     def test_full_debugging_workflow(self):
         """Test a complete debugging workflow."""
         from pyz3.debug import DebugHelper, inspect_extension
+        # Import a real extension module first
+        import example.hello  # noqa: F401
 
         # 1. Enable core dumps
         DebugHelper.enable_core_dumps()
 
         # 2. Get debugger commands
-        lldb_cmd = DebugHelper.attach_debugger('sys', debugger='lldb')
+        lldb_cmd = DebugHelper.attach_debugger('example.hello', debugger='lldb')
         assert 'lldb' in lldb_cmd.lower()
 
-        gdb_cmd = DebugHelper.attach_debugger('sys', debugger='gdb')
+        gdb_cmd = DebugHelper.attach_debugger('example.hello', debugger='gdb')
         assert 'gdb' in gdb_cmd.lower()
 
         # 3. Print mixed traceback
@@ -228,10 +234,10 @@ def test_debugging_feature_completeness():
 
     # Zig-side debugging
     import pyz3
-    assert hasattr(pydust, 'debug')
+    assert hasattr(pyz3, 'debug')
 
     # Python-side debugging
-    from pyz3 import debug as pydust_debug
+    from pyz3 import debug as pyz3_debug
     from pyz3.debug import (
         DebugHelper,
         BreakpointContext,
@@ -245,7 +251,7 @@ def test_debugging_feature_completeness():
     assert breakpoint_here is not None
     assert inspect_extension is not None
     assert create_debug_session_script is not None
-    assert pydust_debug is not None
+    assert pyz3_debug is not None
 
     # Configuration files
     assert Path('.vscode/launch.json').exists()

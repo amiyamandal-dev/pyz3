@@ -13,7 +13,7 @@
 const std = @import("std");
 const ffi = @import("ffi");
 const PyError = @import("../errors.zig").PyError;
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 
 /// Python coroutine object wrapper
 /// Represents a Python coroutine created by an async function.

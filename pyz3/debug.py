@@ -17,8 +17,27 @@ import subprocess
 import sys
 import tempfile
 import traceback
+from enum import Enum
 from pathlib import Path
 from typing import Any
+
+
+class LogLevel(Enum):
+    """Debug log levels matching Zig implementation."""
+    DEBUG = 0
+    INFO = 1
+    WARN = 2
+    ERROR = 3
+
+
+def enableDebug():
+    """Enable debug mode (placeholder for Zig-level functionality)."""
+    pass
+
+
+def disableDebug():
+    """Disable debug mode (placeholder for Zig-level functionality)."""
+    pass
 
 
 class DebugHelper:

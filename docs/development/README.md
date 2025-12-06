@@ -31,7 +31,7 @@ These documents are primarily for:
 ### Security & Fixes
 
 - **FIXES_APPLIED.md** - Critical bug fixes and security patches (Dec 2025)
-- **ZIGGY_PYDUST_ANALYSIS.md** - Comprehensive code analysis
+- **ZIGGY_pyz3_ANALYSIS.md** - Comprehensive code analysis
 - **SECURITY_IMPLEMENTATION_COMPLETE.md** - Phase 1 security improvements
 - **SECURITY_IMPLEMENTATION_PHASE2.md** - Phase 2 security enhancements
 - **SECURITY_IMPROVEMENTS.md** - Security hardening details

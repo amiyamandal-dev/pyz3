@@ -18,7 +18,7 @@
 
 const std = @import("std");
 const ffi = @import("ffi");
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 const PyError = @import("../errors.zig").PyError;
 
 /// NumPy data type enumeration
@@ -140,7 +140,7 @@ pub fn PyArray(comptime root: type) type {
         }
 
         /// Create a new array from a Zig slice with specified dtype
-        pub fn fromSliceTyped(comptime T: type, data: []const T, dtype: DType) PyError!Self {
+        pub fn fromSliceTyped(comptime T: type, data: []const T, array_dtype: DType) PyError!Self {
             const np = try importNumPy(root);
             defer np.decref();
 
@@ -158,7 +158,7 @@ pub fn PyArray(comptime root: type) type {
             }
 
             // Get dtype object
-            const dtype_str = try getDTypeName(dtype);
+            const dtype_str = try getDTypeName(array_dtype);
             const dtype_obj = try createDType(root, dtype_str);
             defer dtype_obj.decref();
 
@@ -201,7 +201,7 @@ pub fn PyArray(comptime root: type) type {
         }
 
         /// Create a zero-filled array
-        pub fn zeros(comptime T: type, shape: []const usize) PyError!Self {
+        pub fn zeros(comptime T: type, array_shape: []const usize) PyError!Self {
             const np = try importNumPy(root);
             defer np.decref();
 
@@ -209,12 +209,12 @@ pub fn PyArray(comptime root: type) type {
             defer zeros_func.decref();
 
             // Create shape tuple
-            const shape_tuple = try shapeToTuple(root, shape);
+            const shape_tuple = try shapeToTuple(root, array_shape);
             defer shape_tuple.decref();
 
             // Get dtype
-            const dtype = DType.fromType(T);
-            const dtype_str = try getDTypeName(dtype);
+            const array_dtype = DType.fromType(T);
+            const dtype_str = try getDTypeName(array_dtype);
             const dtype_obj = try createDType(root, dtype_str);
             defer dtype_obj.decref();
 
@@ -228,18 +228,18 @@ pub fn PyArray(comptime root: type) type {
         }
 
         /// Create a ones-filled array
-        pub fn ones(comptime T: type, shape: []const usize) PyError!Self {
+        pub fn ones(comptime T: type, array_shape: []const usize) PyError!Self {
             const np = try importNumPy(root);
             defer np.decref();
 
             const ones_func = try np.get("ones");
             defer ones_func.decref();
 
-            const shape_tuple = try shapeToTuple(root, shape);
+            const shape_tuple = try shapeToTuple(root, array_shape);
             defer shape_tuple.decref();
 
-            const dtype = DType.fromType(T);
-            const dtype_str = try getDTypeName(dtype);
+            const array_dtype = DType.fromType(T);
+            const dtype_str = try getDTypeName(array_dtype);
             const dtype_obj = try createDType(root, dtype_str);
             defer dtype_obj.decref();
 
@@ -252,14 +252,14 @@ pub fn PyArray(comptime root: type) type {
         }
 
         /// Create an array filled with a specific value
-        pub fn full(comptime T: type, shape: []const usize, fill_value: T) PyError!Self {
+        pub fn full(comptime T: type, array_shape: []const usize, fill_value: T) PyError!Self {
             const np = try importNumPy(root);
             defer np.decref();
 
             const full_func = try np.get("full");
             defer full_func.decref();
 
-            const shape_tuple = try shapeToTuple(root, shape);
+            const shape_tuple = try shapeToTuple(root, array_shape);
             defer shape_tuple.decref();
 
             const fill_obj = try py.create(root, fill_value);
@@ -316,12 +316,12 @@ pub fn PyArray(comptime root: type) type {
             defer shape_obj.decref();
 
             const shape_tuple = try py.PyTuple(root).from.checked(root, shape_obj);
-            const ndim = shape_tuple.length();
+            const num_dims = shape_tuple.length();
 
-            const result = try py.allocator.alloc(usize, ndim);
+            const result = try py.allocator.alloc(usize, num_dims);
             errdefer py.allocator.free(result);
 
-            for (0..ndim) |i| {
+            for (0..num_dims) |i| {
                 const dim = try shape_tuple.getItem(py.PyLong, i);
                 result[i] = try dim.as(usize);
             }

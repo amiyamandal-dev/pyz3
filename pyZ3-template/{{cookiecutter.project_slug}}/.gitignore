@@ -162,7 +162,7 @@ zig-out/
 /build-*/
 /docgen_tmp/
 
-pydust.build.zig
+pyz3.build.zig
 build.zig
 
 # IDE

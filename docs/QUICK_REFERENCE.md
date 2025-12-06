@@ -1,4 +1,4 @@
-# Ziggy Pydust - Quick Reference
+# pyz3 - Quick Reference
 
 Fast reference for common tasks and commands.
 

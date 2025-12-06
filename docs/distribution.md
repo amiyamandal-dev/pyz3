@@ -43,7 +43,7 @@ pyZ3 supports cross-compilation using Zig's built-in cross-compilation capabilit
 export ZIG_TARGET=x86_64-linux-gnu
 
 # Set optimization level
-export PYDUST_OPTIMIZE=ReleaseFast
+export PYZ3_OPTIMIZE=ReleaseFast
 
 # Build
 python -m build --wheel
@@ -281,7 +281,7 @@ Tips for reducing wheel size:
 
 1. **Use `ReleaseSmall` optimization**:
    ```bash
-   export PYDUST_OPTIMIZE=ReleaseSmall
+   export PYZ3_OPTIMIZE=ReleaseSmall
    ```
 
 2. **Strip debug symbols**:

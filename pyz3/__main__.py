@@ -85,7 +85,7 @@ watch_sp.add_argument(
 # Maturin-like commands
 init_sp = sub.add_parser(
     "init",
-    help="Initialize a new Pydust project in the current directory",
+    help="Initialize a new pyz3 project in the current directory",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 init_sp.add_argument(
@@ -114,7 +114,7 @@ init_sp.add_argument(
 
 new_sp = sub.add_parser(
     "new",
-    help="Create a new Pydust project directory",
+    help="Create a new pyz3 project directory",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 new_sp.add_argument(
@@ -389,7 +389,7 @@ def watch_mode(args):
 
 
 def init_project(args):
-    """Initialize a new Pydust project in the current directory."""
+    """Initialize a new pyz3 project in the current directory."""
     author_name = None
     author_email = args.email if hasattr(args, "email") else None
 
@@ -412,7 +412,7 @@ def init_project(args):
 
 
 def new_project(args):
-    """Create a new Pydust project directory."""
+    """Create a new pyz3 project directory."""
     init.new_project(
         name=args.name,
         path=args.path,

@@ -12,7 +12,7 @@
 
 const std = @import("std");
 const ffi = @import("ffi");
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 const PyError = @import("../errors.zig").PyError;
 
 /// Python generator object wrapper
@@ -58,7 +58,7 @@ pub const PyGenerator = extern struct {
         const throw_method = try self.obj.getAttribute("throw");
         defer throw_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), throw_method, .{exception});
+        const result = try py.call(@import("../pyz3.zig"), throw_method, .{exception});
         return result;
     }
 
@@ -67,7 +67,7 @@ pub const PyGenerator = extern struct {
         const close_method = try self.obj.getAttribute("close");
         defer close_method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), close_method);
+        const result = try py.call0(@import("../pyz3.zig"), close_method);
         defer result.decref();
     }
 
@@ -94,7 +94,7 @@ pub const PyGenerator = extern struct {
     pub fn isRunning(self: Self) !bool {
         const gi_running = try self.obj.getAttribute("gi_running");
         defer gi_running.decref();
-        return try py.as(bool, @import("../pydust.zig"), gi_running);
+        return try py.as(bool, @import("../pyz3.zig"), gi_running);
     }
 
     /// Check if the generator has been exhausted
@@ -163,10 +163,10 @@ pub const PyGenerator = extern struct {
         while (try self.next()) |item| {
             defer item.decref();
 
-            const result = try py.call(@import("../pydust.zig"), predicate, .{item});
+            const result = try py.call(@import("../pyz3.zig"), predicate, .{item});
             defer result.decref();
 
-            const is_true = try py.as(bool, @import("../pydust.zig"), result);
+            const is_true = try py.as(bool, @import("../pyz3.zig"), result);
             if (is_true) return true;
         }
         return false;
@@ -177,10 +177,10 @@ pub const PyGenerator = extern struct {
         while (try self.next()) |item| {
             defer item.decref();
 
-            const result = try py.call(@import("../pydust.zig"), predicate, .{item});
+            const result = try py.call(@import("../pyz3.zig"), predicate, .{item});
             defer result.decref();
 
-            const is_true = try py.as(bool, @import("../pydust.zig"), result);
+            const is_true = try py.as(bool, @import("../pyz3.zig"), result);
             if (!is_true) return false;
         }
         return true;

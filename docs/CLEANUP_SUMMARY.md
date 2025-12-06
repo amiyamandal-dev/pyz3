@@ -5,7 +5,7 @@
 
 ## Overview
 
-Cleaned up and organized the Ziggy Pydust repository to create a professional, maintainable structure with clear separation between user-facing and development documentation.
+Cleaned up and organized the pyz3 repository to create a professional, maintainable structure with clear separation between user-facing and development documentation.
 
 ## Actions Taken
 

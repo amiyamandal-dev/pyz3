@@ -1,6 +1,6 @@
 # Repository Structure
 
-Clean, organized structure for the Ziggy Pydust framework.
+Clean, organized structure for the pyz3 framework.
 
 ## Root Directory
 

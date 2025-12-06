@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}Ziggy Pydust Wheel Builder${NC}\n"
+echo -e "${BLUE}pyz3 Wheel Builder${NC}\n"
 
 # Parse arguments
 PLATFORM=""
@@ -79,7 +79,7 @@ fi
 # Run the wheel builder
 echo -e "${BLUE}Building wheels...${NC}\n"
 
-python -m pydust.wheel "${BUILD_ARGS[@]}"
+python -m pyz3.wheel "${BUILD_ARGS[@]}"
 
 echo -e "\n${GREEN}✓ Done!${NC}"
 echo -e "\nWheels saved to: ${BLUE}dist/${NC}"

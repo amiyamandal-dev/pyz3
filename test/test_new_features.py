@@ -96,9 +96,9 @@ class TestWatchMode:
         assert args.test is True
 
         # With pytest mode
-        args = parser.parse_args(["watch", "--pytest", "-v"])
+        args = parser.parse_args(["watch", "--pytest", "test/"])
         assert args.pytest is True
-        assert args.pytest_args == ["-v"]
+        assert args.pytest_args == ["test/"]
 
 
 @pytest.mark.asyncio
@@ -176,7 +176,7 @@ class TestIntegration:
 
         # Example 2: Watch mode (CLI)
         # Would be run like:
-        # $ pydust watch --optimize Debug --test
+        # $ pyz3 watch --optimize Debug --test
 
         # Example 3: Async/await (Zig side)
         # Would be used like:

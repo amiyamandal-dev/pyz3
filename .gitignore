@@ -165,7 +165,7 @@ zig-out/
 
 .idea
 
-/pydust.build.zig
+/pyz3.build.zig
 pytest.build.zig
 test.build.zig
 zls.build.json

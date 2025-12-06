@@ -76,17 +76,17 @@ def load() -> ToolPydust:
 
     # Since Poetry doesn't support locking the build-system.requires dependencies,
     # we perform a check here to prevent the versions from diverging.
-    pyz3_version = importlib.metadata.version("ziggy-pyz3")
+    pyz3_version = importlib.metadata.version("pyZ3")
 
     # Skip 0.1.0 as it's the development version when installed locally.
     if pyz3_version != "0.1.0":
         for req in pyproject["build-system"]["requires"]:
-            if not req.startswith("ziggy-pyz3"):
+            if not req.startswith("pyZ3"):
                 continue
-            expected = f"ziggy-pyz3=={pyz3_version}"
+            expected = f"pyZ3=={pyz3_version}"
             if req != expected:
                 raise ValueError(
-                    "Detected misconfigured ziggy-pyz3. "
+                    "Detected misconfigured pyZ3. "
                     f'You must include "{expected}" in build-system.requires in pyproject.toml'
                 )
 

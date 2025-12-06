@@ -12,7 +12,7 @@
 
 const std = @import("std");
 const ffi = @import("ffi");
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 const PyError = @import("../errors.zig").PyError;
 
 /// Python bytearray object wrapper (mutable byte sequence)
@@ -96,7 +96,7 @@ pub const PyByteArray = extern struct {
     pub fn get(self: Self, index: usize) !u8 {
         const slice = try self.asSlice();
         if (index >= slice.len) {
-            return py.IndexError(@import("../pydust.zig")).raise("bytearray index out of range");
+            return py.IndexError(@import("../pyz3.zig")).raise("bytearray index out of range");
         }
         return slice[index];
     }
@@ -105,7 +105,7 @@ pub const PyByteArray = extern struct {
     pub fn set(self: Self, index: usize, byte: u8) !void {
         const slice = try self.asSlice();
         if (index >= slice.len) {
-            return py.IndexError(@import("../pydust.zig")).raise("bytearray index out of range");
+            return py.IndexError(@import("../pyz3.zig")).raise("bytearray index out of range");
         }
         slice[index] = byte;
     }
@@ -139,13 +139,13 @@ pub const PyByteArray = extern struct {
         const length = slice.len;
 
         if (length == 0) {
-            return py.IndexError(@import("../pydust.zig")).raise("pop from empty bytearray");
+            return py.IndexError(@import("../pyz3.zig")).raise("pop from empty bytearray");
         }
 
         const idx = if (index) |i| blk: {
             const normalized = if (i < 0) @as(usize, @intCast(@as(isize, @intCast(length)) + i)) else @as(usize, @intCast(i));
             if (normalized >= length) {
-                return py.IndexError(@import("../pydust.zig")).raise("pop index out of range");
+                return py.IndexError(@import("../pyz3.zig")).raise("pop index out of range");
             }
             break :blk normalized;
         } else length - 1;
@@ -188,7 +188,7 @@ pub const PyByteArray = extern struct {
             }
         }
 
-        return py.ValueError(@import("../pydust.zig")).raise("bytearray.remove(x): x not in bytearray");
+        return py.ValueError(@import("../pyz3.zig")).raise("bytearray.remove(x): x not in bytearray");
     }
 
     /// Count occurrences of a byte value

@@ -15,7 +15,7 @@
 //!
 //! See https://docs.python.org/3/library/functions.html for full reference.
 const std = @import("std");
-const py = @import("./pydust.zig");
+const py = @import("./pyz3.zig");
 const pytypes = @import("./pytypes.zig");
 const State = @import("./discovery.zig").State;
 const ffi = @import("ffi");

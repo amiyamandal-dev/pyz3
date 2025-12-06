@@ -11,7 +11,7 @@
 // limitations under the License.
 
 const std = @import("std");
-const py = @import("./pydust.zig");
+const py = @import("./pyz3.zig");
 
 /// Test allocator with leak detection support
 /// This wraps Zig's GeneralPurposeAllocator to track allocations

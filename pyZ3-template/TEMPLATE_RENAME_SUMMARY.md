@@ -12,7 +12,7 @@ The pyZ3-template (formerly ziggy-pydust-template) has been completely rebranded
 ### 1. Branding Updates
 
 All references updated from:
-- `Ziggy Pydust` → `pyZ3`
+- `pyz3` → `pyZ3`
 - `ziggy-pydust` → `pyZ3`
 - `Pydust` → `pyZ3`
 - `pydust` → `pyz3`
@@ -149,7 +149,7 @@ Users should:
 
 ## Summary
 
-The pyZ3-template is now fully consistent with the pyZ3 framework branding. All references to the old Ziggy Pydust / Pydust names have been removed and replaced with pyZ3.
+The pyZ3-template is now fully consistent with the pyZ3 framework branding. All references to the old pyz3 / Pydust names have been removed and replaced with pyZ3.
 
 ---
 

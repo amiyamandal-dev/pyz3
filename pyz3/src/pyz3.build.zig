@@ -15,8 +15,8 @@ const Step = std.Build.Step;
 const LazyPath = std.Build.LazyPath;
 const GeneratedFile = std.Build.GeneratedFile;
 
-pub const PydustOptions = struct {
-    // Optionally pass your test_step and we will hook up the Pydust Zig tests.
+pub const PyZ3Options = struct {
+    // Optionally pass your test_step and we will hook up the pyZ3 Zig tests.
     test_step: ?*Step = null,
 };
 
@@ -41,15 +41,15 @@ pub const PythonModule = struct {
     test_step: *std.Build.Step.Compile,
 };
 
-/// Configure a Pydust step in the build. From this, you can define Python modules.
-pub fn addPydust(b: *std.Build, options: PydustOptions) *PydustStep {
-    return PydustStep.add(b, options);
+/// Configure a pyZ3 step in the build. From this, you can define Python modules.
+pub fn addPyZ3(b: *std.Build, options: PyZ3Options) *PyZ3Step {
+    return PyZ3Step.add(b, options);
 }
 
-pub const PydustStep = struct {
+pub const PyZ3Step = struct {
     owner: *std.Build,
     allocator: std.mem.Allocator,
-    options: PydustOptions,
+    options: PyZ3Options,
 
     test_build_step: *Step,
     generate_stubs: *Step,
@@ -59,12 +59,12 @@ pub const PydustStep = struct {
     libpython: []const u8,
     hexversion: []const u8,
 
-    pydust_source_file: []const u8,
+    pyz3_source_file: []const u8,
     python_include_dir: []const u8,
     python_library_dir: []const u8,
 
-    pub fn add(b: *std.Build, options: PydustOptions) *PydustStep {
-        const test_build_step = b.step("pydust-test-build", "Build Pydust test runners");
+    pub fn add(b: *std.Build, options: PyZ3Options) *PyZ3Step {
+        const test_build_step = b.step("pyz3-test-build", "Build pyZ3 test runners");
         const generate_stubs = b.step("generate-stubs", "Generate pyi stubs for the compiled binary");
         const check_stubs = b.option(bool, "check-stubs", "Check that existing stubs are up to date instead of generating new ones") orelse false;
 
@@ -107,8 +107,8 @@ pub const PydustStep = struct {
             std.process.exit(1);
         };
 
-        var self = b.allocator.create(PydustStep) catch |err| {
-            std.debug.print("\n❌ Out of memory creating PydustStep\n", .{});
+        var self = b.allocator.create(PyZ3Step) catch |err| {
+            std.debug.print("\n❌ Out of memory creating PyZ3Step\n", .{});
             std.debug.print("   Error: {}\n", .{err});
             std.process.exit(1);
         };
@@ -123,7 +123,7 @@ pub const PydustStep = struct {
             .python_exe = python_exe,
             .libpython = libpython,
             .hexversion = hexversion,
-            .pydust_source_file = "",
+            .pyz3_source_file = "",
             .python_include_dir = "",
             .python_library_dir = "",
         };
@@ -145,12 +145,12 @@ pub const PydustStep = struct {
             std.debug.print("   Python executable: {s}\n", .{python_exe});
             std.process.exit(1);
         };
-        self.pydust_source_file = self.pythonOutput(
-            "import pydust; import os; print(os.path.relpath(os.path.join(os.path.dirname(pydust.__file__), 'src/pydust.zig')), end='')",
+        self.pyz3_source_file = self.pythonOutput(
+            "import pyz3; import os; print(os.path.relpath(os.path.join(os.path.dirname(pyz3.__file__), 'src/pyz3.zig')), end='')",
         ) catch |err| {
-            std.debug.print("\n❌ Failed to locate pydust source files\n", .{});
+            std.debug.print("\n❌ Failed to locate pyz3 source files\n", .{});
             std.debug.print("   Error: {}\n", .{err});
-            std.debug.print("   Ensure pydust package is installed: pip install pydust\n", .{});
+            std.debug.print("   Ensure pyz3 package is installed: pip install pyz3\n", .{});
             std.debug.print("   Or install in development mode: pip install -e .\n", .{});
             std.process.exit(1);
         };
@@ -176,7 +176,7 @@ pub const PydustStep = struct {
             });
             testdebug.root_module.addOptions("pyconf", pyconf);
             const testdebug_module = b.createModule(.{
-                .root_source_file = b.path(self.pydust_source_file),
+                .root_source_file = b.path(self.pyz3_source_file),
                 .imports = &.{.{ .name = "pyconf", .module = pyconf.createModule() }},
             });
             testdebug_module.addIncludePath(b.path(self.python_include_dir));
@@ -194,9 +194,9 @@ pub const PydustStep = struct {
         return self;
     }
 
-    /// Adds a Pydust Python module. The resulting library and test binaries can be further configured with
+    /// Adds a pyZ3 Python module. The resulting library and test binaries can be further configured with
     /// additional dependencies or modules.
-    pub fn addPythonModule(self: *PydustStep, options: PythonModuleOptions) PythonModule {
+    pub fn addPythonModule(self: *PyZ3Step, options: PythonModuleOptions) PythonModule {
         const b = self.owner;
 
         const short_name = options.short_name();
@@ -221,7 +221,7 @@ pub const PydustStep = struct {
         const translate_c = self.addTranslateC(options);
         translate_c.addIncludePath(b.path(self.python_include_dir));
         const lib_module = b.createModule(.{
-            .root_source_file = b.path(self.pydust_source_file),
+            .root_source_file = b.path(self.pyz3_source_file),
             .imports = &.{
                 .{ .name = "pyconf", .module = pyconf.createModule() },
                 .{ .name = "ffi", .module = translate_c.createModule() },
@@ -252,9 +252,9 @@ pub const PydustStep = struct {
             std.process.exit(1);
         };
         const genArgs: []const []const u8 = if (self.check_stubs)
-            &.{ self.python_exe, "-m", "pydust.generate_stubs", options.name, workingDir, "--check" }
+            &.{ self.python_exe, "-m", "pyz3.generate_stubs", options.name, workingDir, "--check" }
         else
-            &.{ self.python_exe, "-m", "pydust.generate_stubs", options.name, workingDir };
+            &.{ self.python_exe, "-m", "pyz3.generate_stubs", options.name, workingDir };
         const stubs = b.addSystemCommand(genArgs);
         stubs.step.dependOn(&install.step);
         self.generate_stubs.dependOn(&stubs.step);
@@ -270,7 +270,7 @@ pub const PydustStep = struct {
         });
         libtest.root_module.addOptions("pyconf", pyconf);
         const libtest_module = b.createModule(.{
-            .root_source_file = b.path(self.pydust_source_file),
+            .root_source_file = b.path(self.pyz3_source_file),
             .imports = &.{
                 .{ .name = "pyconf", .module = pyconf.createModule() },
                 .{ .name = "ffi", .module = translate_c.createModule() },
@@ -311,7 +311,7 @@ pub const PydustStep = struct {
         const name = options.name;
 
         if (!options.limited_api) {
-            std.debug.print("\n❌ Pydust currently only supports limited API (PEP 384)\n", .{});
+            std.debug.print("\n❌ pyz3 currently only supports limited API (PEP 384)\n", .{});
             std.debug.print("   Please set 'limited_api: true' in PythonModuleOptions\n", .{});
             std.debug.print("   Module: {s}\n", .{name});
             std.process.exit(1);
@@ -340,14 +340,14 @@ pub const PydustStep = struct {
         return destPath;
     }
 
-    fn pythonOutput(self: *PydustStep, code: []const u8) ![]const u8 {
+    fn pythonOutput(self: *PyZ3Step, code: []const u8) ![]const u8 {
         return getPythonOutput(self.allocator, self.python_exe, code);
     }
 
-    fn addTranslateC(self: PydustStep, options: PythonModuleOptions) *std.Build.Step.TranslateC {
+    fn addTranslateC(self: PyZ3Step, options: PythonModuleOptions) *std.Build.Step.TranslateC {
         const b = self.owner;
         const translate_c = b.addTranslateC(.{
-            .root_source_file = b.path("pydust/src/ffi.h"),
+            .root_source_file = b.path("pyz3/src/ffi.h"),
             .target = b.resolveTargetQuery(options.target),
             .optimize = options.optimize,
         });

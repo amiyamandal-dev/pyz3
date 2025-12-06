@@ -12,7 +12,7 @@
 
 const std = @import("std");
 const ffi = @import("ffi");
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 const PyError = @import("../errors.zig").PyError;
 
 /// Python range object wrapper (immutable sequence)
@@ -32,7 +32,7 @@ pub const PyRange = extern struct {
         const stop_obj = try py.PyLong.from(stop_value);
         defer stop_obj.obj.decref();
 
-        const range_obj = try py.call(@import("../pydust.zig"), range_type, .{stop_obj.obj});
+        const range_obj = try py.call(@import("../pyz3.zig"), range_type, .{stop_obj.obj});
         return .{ .obj = range_obj };
     }
 
@@ -50,14 +50,14 @@ pub const PyRange = extern struct {
         const stop_obj = try py.PyLong.from(stop_value);
         defer stop_obj.obj.decref();
 
-        const range_obj = try py.call(@import("../pydust.zig"), range_type, .{ start_obj.obj, stop_obj.obj });
+        const range_obj = try py.call(@import("../pyz3.zig"), range_type, .{ start_obj.obj, stop_obj.obj });
         return .{ .obj = range_obj };
     }
 
     /// Create a range with start, stop, and step: range(start, stop, step)
     pub fn fromStartStopStep(start_value: i64, stop_value: i64, step_value: i64) !Self {
         if (step_value == 0) {
-            return py.ValueError(@import("../pydust.zig")).raise("range() arg 3 must not be zero");
+            return py.ValueError(@import("../pyz3.zig")).raise("range() arg 3 must not be zero");
         }
 
         const builtins = try py.import("builtins");
@@ -75,7 +75,7 @@ pub const PyRange = extern struct {
         const step_obj = try py.PyLong.from(step_value);
         defer step_obj.obj.decref();
 
-        const range_obj = try py.call(@import("../pydust.zig"), range_type, .{ start_obj.obj, stop_obj.obj, step_obj.obj });
+        const range_obj = try py.call(@import("../pyz3.zig"), range_type, .{ start_obj.obj, stop_obj.obj, step_obj.obj });
         return .{ .obj = range_obj };
     }
 
@@ -87,28 +87,28 @@ pub const PyRange = extern struct {
         const range_type = builtins.getAttribute("range") catch return false;
         defer range_type.decref();
 
-        return py.isinstance(@import("../pydust.zig"), obj, range_type) catch false;
+        return py.isinstance(@import("../pyz3.zig"), obj, range_type) catch false;
     }
 
     /// Get the start value of the range
     pub fn start(self: Self) !i64 {
         const start_obj = try self.obj.getAttribute("start");
         defer start_obj.decref();
-        return try py.as(i64, @import("../pydust.zig"), start_obj);
+        return try py.as(i64, @import("../pyz3.zig"), start_obj);
     }
 
     /// Get the stop value of the range
     pub fn stop(self: Self) !i64 {
         const stop_obj = try self.obj.getAttribute("stop");
         defer stop_obj.decref();
-        return try py.as(i64, @import("../pydust.zig"), stop_obj);
+        return try py.as(i64, @import("../pyz3.zig"), stop_obj);
     }
 
     /// Get the step value of the range
     pub fn step(self: Self) !i64 {
         const step_obj = try self.obj.getAttribute("step");
         defer step_obj.decref();
-        return try py.as(i64, @import("../pydust.zig"), step_obj);
+        return try py.as(i64, @import("../pyz3.zig"), step_obj);
     }
 
     /// Get the length of the range
@@ -146,7 +146,7 @@ pub const PyRange = extern struct {
         }
 
         const item_obj = py.PyObject{ .py = item };
-        return try py.as(i64, @import("../pydust.zig"), item_obj);
+        return try py.as(i64, @import("../pyz3.zig"), item_obj);
     }
 
     /// Count occurrences of a value in the range (always 0 or 1)
@@ -187,7 +187,7 @@ pub const PyRange = extern struct {
         const reversed_fn = try builtins.getAttribute("reversed");
         defer reversed_fn.decref();
 
-        const reversed_obj = try py.call(@import("../pydust.zig"), reversed_fn, .{self.obj});
+        const reversed_obj = try py.call(@import("../pyz3.zig"), reversed_fn, .{self.obj});
         return .{ .obj = reversed_obj };
     }
 };

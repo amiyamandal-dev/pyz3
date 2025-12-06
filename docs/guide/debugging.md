@@ -402,7 +402,7 @@ gdb -p <PID>
     "request": "launch",
     "program": "${file}",
     "env": {
-        "PYDUST_DEBUG": "1"
+        "pyz3_DEBUG": "1"
     }
 }
 ```

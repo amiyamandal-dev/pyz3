@@ -13,7 +13,7 @@
 const builtin = @import("builtin");
 const std = @import("std");
 const ffi = @import("ffi");
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 const PyError = @import("../errors.zig").PyError;
 const State = @import("../discovery.zig").State;
 
@@ -232,7 +232,7 @@ fn PyExc(comptime root: type, comptime name: [:0]const u8) type {
 
         pub fn raise(message: [:0]const u8) PyError {
             ffi.PyErr_SetString(asPyObject().py, message.ptr);
-            try augmentTraceback();
+            augmentTraceback() catch {};
             return PyError.PyRaised;
         }
 
@@ -284,8 +284,8 @@ fn PyExc(comptime root: type, comptime name: [:0]const u8) type {
                     const symbol_info: std.debug.Symbol = module.getSymbolAtAddress(debugInfo.allocator, address) catch continue;
                     const line_info = symbol_info.source_location orelse continue;
 
-                    // We also want to skip any Pydust internal frames, e.g. the function trampoline and also this current function!
-                    if (std.mem.indexOf(u8, line_info.file_name, "/pydust/src/")) |_| {
+                    // We also want to skip any PyZ3 internal frames, e.g. the function trampoline and also this current function!
+                    if (std.mem.indexOf(u8, line_info.file_name, "/pyz3/src/")) |_| {
                         continue;
                     }
 

@@ -41,14 +41,14 @@ Enhanced build.zig to support cross-compilation via environment variables:
 
 **Key Changes:**
 - ✅ `ZIG_TARGET` environment variable support for target platform
-- ✅ `PYDUST_OPTIMIZE` environment variable for optimization level
+- ✅ `PYZ3_OPTIMIZE` environment variable for optimization level
 - ✅ Automatic fallback to standard options if env vars not set
 - ✅ Helpful warning messages for invalid values
 
 **Usage:**
 ```bash
 export ZIG_TARGET=x86_64-linux-gnu
-export PYDUST_OPTIMIZE=ReleaseFast
+export PYZ3_OPTIMIZE=ReleaseFast
 zig build
 ```
 
@@ -250,7 +250,7 @@ Convenience function for simple builds.
 ### Build System
 
 - `ZIG_TARGET` - Override target platform (e.g., `x86_64-linux-gnu`)
-- `PYDUST_OPTIMIZE` - Override optimization level (Debug, ReleaseSafe, ReleaseFast, ReleaseSmall)
+- `PYZ3_OPTIMIZE` - Override optimization level (Debug, ReleaseSafe, ReleaseFast, ReleaseSmall)
 
 ### GitHub Actions
 

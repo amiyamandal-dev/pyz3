@@ -18,7 +18,7 @@ class TestInitCommand:
 
     def test_init_help(self):
         result = subprocess.run(
-            [sys.executable, "-m", "pydust", "init", "--help"],
+            [sys.executable, "-m", "pyz3", "init", "--help"],
             capture_output=True,
             text=True,
         )
@@ -37,7 +37,7 @@ class TestInitCommand:
                 [
                     sys.executable,
                     "-m",
-                    "pydust",
+                    "pyz3",
                     "init",
                     "-n",
                     "test_package",
@@ -76,7 +76,7 @@ class TestInitCommand:
                 [
                     sys.executable,
                     "-m",
-                    "pydust",
+                    "pyz3",
                     "new",
                     "my_test_project",
                     "-p",
@@ -105,7 +105,7 @@ class TestDeployCommand:
 
     def test_deploy_help(self):
         result = subprocess.run(
-            [sys.executable, "-m", "pydust", "deploy", "--help"],
+            [sys.executable, "-m", "pyz3", "deploy", "--help"],
             capture_output=True,
             text=True,
         )
@@ -118,7 +118,7 @@ class TestDeployCommand:
                 [
                     sys.executable,
                     "-m",
-                    "pydust",
+                    "pyz3",
                     "deploy",
                     "--dist-dir",
                     f"{tmpdir}/nonexistent",
@@ -137,7 +137,7 @@ class TestDeployCommand:
                 [
                     sys.executable,
                     "-m",
-                    "pydust",
+                    "pyz3",
                     "deploy",
                     "--dist-dir",
                     tmpdir,
@@ -155,7 +155,7 @@ class TestCheckCommand:
 
     def test_check_help(self):
         result = subprocess.run(
-            [sys.executable, "-m", "pydust", "check", "--help"],
+            [sys.executable, "-m", "pyz3", "check", "--help"],
             capture_output=True,
             text=True,
         )
@@ -168,7 +168,7 @@ class TestCheckCommand:
                 [
                     sys.executable,
                     "-m",
-                    "pydust",
+                    "pyz3",
                     "check",
                     "--dist-dir",
                     f"{tmpdir}/nonexistent",
@@ -185,8 +185,8 @@ class TestTemplateIntegration:
     def test_template_exists(self):
         from pyz3 import init
 
-        pydust_root = Path(init.__file__).parent.parent
-        template_path = pydust_root / "ziggy-pydust-template"
+        pyz3_root = Path(init.__file__).parent.parent
+        template_path = pyz3_root / "pyZ3-template"
 
         assert template_path.exists(), f"Template directory not found at {template_path}"
         assert (template_path / "cookiecutter.json").exists()

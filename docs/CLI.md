@@ -504,7 +504,7 @@ ls dist/*.whl
 Some pyZ3 commands respect environment variables:
 
 - `ZIG_TARGET` - Override target platform (e.g., `x86_64-linux-gnu`)
-- `PYDUST_OPTIMIZE` - Override optimization level
+- `PYZ3_OPTIMIZE` - Override optimization level
 - `PYTHON` - Python executable to use
 
 ---

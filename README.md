@@ -46,7 +46,7 @@ pyZ3 is a complete framework for building high-performance Python extension modu
 ## Quick Example
 
 ```zig
-const py = @import("pyz3");
+const py = @import("pyZ3");
 
 pub fn fibonacci(args: struct { n: u64 }) u64 {
     if (args.n < 2) return args.n;
@@ -75,7 +75,7 @@ print(mymodule.fibonacci(10))  # Output: 55
 ## NumPy Integration Example
 
 ```zig
-const py = @import("pyz3");
+const py = @import("pyZ3");
 
 pub fn double_array(args: struct { arr: py.PyArray(@This()) }) !py.PyArray(@This()) {
     // Zero-copy access to NumPy array
@@ -126,7 +126,7 @@ pip install pyZ3[dist]
 
 ```bash
 # Create project using cookiecutter template
-pyz3 init -n myproject --description "My awesome extension" --email "you@example.com" --no-interactive
+pyZ3 init -n myproject --description "My awesome extension" --email "you@example.com" --no-interactive
 
 cd myproject
 ```
@@ -141,7 +141,7 @@ zig build
 zig build -Doptimize=ReleaseFast
 
 # Watch mode (hot reload)
-pyz3 watch
+pyZ3 watch
 ```
 
 ### 3. Test Your Extension
@@ -161,11 +161,11 @@ pytest test/test_myproject.py -v
 python -m build --wheel
 
 # Build for all platforms (uses cross-compilation)
-pyz3 package --wheel --platform all
+pyZ3 build-wheel --all-platforms
 
 # Publish to PyPI
-pyz3 publish --repository testpypi  # Test first!
-pyz3 publish --repository pypi       # Production
+pyZ3 deploy --repository testpypi  # Test first!
+pyZ3 deploy --repository pypi       # Production
 ```
 
 ## CLI Commands
@@ -173,13 +173,13 @@ pyz3 publish --repository pypi       # Production
 pyZ3 provides a complete CLI for managing your extension projects:
 
 ```bash
-pyz3 init [OPTIONS]           # Initialize new project
-pyz3 build [OPTIONS]          # Build extension module
-pyz3 watch                    # Watch mode with hot reload
-pyz3 test [OPTIONS]           # Run tests
-pyz3 clean                    # Clean build artifacts
-pyz3 package [OPTIONS]        # Build distribution packages
-pyz3 publish [OPTIONS]        # Publish to PyPI
+pyZ3 init [OPTIONS]           # Initialize new project
+pyZ3 build [OPTIONS]          # Build extension module
+pyZ3 watch                    # Watch mode with hot reload
+pyZ3 test [OPTIONS]           # Run tests
+pyZ3 clean                    # Clean build artifacts
+pyZ3 build-wheel [OPTIONS]        # Build distribution packages
+pyZ3 deploy [OPTIONS]        # Publish to PyPI
 ```
 
 ## Key Features

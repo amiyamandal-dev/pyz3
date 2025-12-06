@@ -64,12 +64,12 @@ def init_project_cookiecutter(
 
     # Find the template directory
     pyz3_root = Path(__file__).parent.parent
-    template_path = pyz3_root / "ziggy-pyz3-template"
+    template_path = pyz3_root / "pyZ3-template"
 
     if not template_path.exists():
         logger.error(f"Template not found at {template_path}")
         print(f"❌ Error: Template directory not found at {template_path}")
-        print("\nPlease ensure ziggy-pyz3-template is in the repository root.")
+        print("\nPlease ensure pyZ3-template is in the repository root.")
         sys.exit(1)
 
     # Prepare cookiecutter context

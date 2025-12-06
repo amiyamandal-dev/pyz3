@@ -117,7 +117,7 @@ def watch_and_rebuild(optimize: str = "Debug", test_mode: bool = False):
         print("❌ No Zig files found to watch")
         sys.exit(1)
 
-    print(f"🚀 Ziggy Pydust Watch Mode")
+    print(f"🚀 pyz3 Watch Mode")
     print(f"   Optimize: {optimize}")
     print(f"   Test mode: {test_mode}")
     print()
@@ -190,7 +190,7 @@ def watch_pytest(optimize: str = "Debug", pytest_args: list[str] | None = None):
         print("❌ No files found to watch")
         sys.exit(1)
 
-    print(f"🚀 Ziggy Pydust Pytest Watch Mode")
+    print(f"🚀 pyz3 Pytest Watch Mode")
     print(f"   Optimize: {optimize}")
     print()
 

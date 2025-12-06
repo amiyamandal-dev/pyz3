@@ -11,7 +11,7 @@
 // limitations under the License.
 
 const std = @import("std");
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 const PyObjectMixin = @import("./obj.zig").PyObjectMixin;
 const ffi = py.ffi;
 const PyError = @import("../errors.zig").PyError;

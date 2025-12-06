@@ -35,7 +35,7 @@ class MemoryLeakError(Exception):
 
 def pytest_addoption(parser, pluginmanager):
     """Register Pytest command line options."""
-    group = parser.getgroup("ziggy pyz3")
+    group = parser.getgroup("pyZ3")
     group.addoption(
         "--zig-optimize",
         default="Debug",

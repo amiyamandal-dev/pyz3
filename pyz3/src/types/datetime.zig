@@ -12,7 +12,7 @@
 
 const std = @import("std");
 const ffi = @import("ffi");
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 const PyError = @import("../errors.zig").PyError;
 
 /// Python datetime object wrapper
@@ -44,7 +44,7 @@ pub const PyDateTime = extern struct {
         const us = try py.PyLong.from(@as(i64, microsecond));
         defer us.obj.decref();
 
-        const dt_obj = try py.call(@import("../pydust.zig"), datetime_class, .{ y.obj, mo.obj, d.obj, h.obj, mi.obj, s.obj, us.obj });
+        const dt_obj = try py.call(@import("../pyz3.zig"), datetime_class, .{ y.obj, mo.obj, d.obj, h.obj, mi.obj, s.obj, us.obj });
         return .{ .obj = dt_obj };
     }
 
@@ -59,7 +59,7 @@ pub const PyDateTime = extern struct {
         const now_method = try datetime_class.getAttribute("now");
         defer now_method.decref();
 
-        const dt_obj = try py.call0(@import("../pydust.zig"), now_method);
+        const dt_obj = try py.call0(@import("../pyz3.zig"), now_method);
         return .{ .obj = dt_obj };
     }
 
@@ -74,7 +74,7 @@ pub const PyDateTime = extern struct {
         const utcnow_method = try datetime_class.getAttribute("utcnow");
         defer utcnow_method.decref();
 
-        const dt_obj = try py.call0(@import("../pydust.zig"), utcnow_method);
+        const dt_obj = try py.call0(@import("../pyz3.zig"), utcnow_method);
         return .{ .obj = dt_obj };
     }
 
@@ -96,13 +96,13 @@ pub const PyDateTime = extern struct {
         defer microsecond_obj.decref();
 
         return .{
-            .year = @intCast(try py.as(i64, @import("../pydust.zig"), year_obj)),
-            .month = @intCast(try py.as(i64, @import("../pydust.zig"), month_obj)),
-            .day = @intCast(try py.as(i64, @import("../pydust.zig"), day_obj)),
-            .hour = @intCast(try py.as(i64, @import("../pydust.zig"), hour_obj)),
-            .minute = @intCast(try py.as(i64, @import("../pydust.zig"), minute_obj)),
-            .second = @intCast(try py.as(i64, @import("../pydust.zig"), second_obj)),
-            .microsecond = @intCast(try py.as(i64, @import("../pydust.zig"), microsecond_obj)),
+            .year = @intCast(try py.as(i64, @import("../pyz3.zig"), year_obj)),
+            .month = @intCast(try py.as(i64, @import("../pyz3.zig"), month_obj)),
+            .day = @intCast(try py.as(i64, @import("../pyz3.zig"), day_obj)),
+            .hour = @intCast(try py.as(i64, @import("../pyz3.zig"), hour_obj)),
+            .minute = @intCast(try py.as(i64, @import("../pyz3.zig"), minute_obj)),
+            .second = @intCast(try py.as(i64, @import("../pyz3.zig"), second_obj)),
+            .microsecond = @intCast(try py.as(i64, @import("../pyz3.zig"), microsecond_obj)),
         };
     }
 
@@ -111,7 +111,7 @@ pub const PyDateTime = extern struct {
         const method = try self.obj.getAttribute("isoformat");
         defer method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), method);
+        const result = try py.call0(@import("../pyz3.zig"), method);
         return .{ .obj = result };
     }
 
@@ -123,7 +123,7 @@ pub const PyDateTime = extern struct {
         const fmt = try py.PyString.create(format);
         defer fmt.obj.decref();
 
-        const result = try py.call(@import("../pydust.zig"), method, .{fmt.obj});
+        const result = try py.call(@import("../pyz3.zig"), method, .{fmt.obj});
         return .{ .obj = result };
     }
 };
@@ -149,7 +149,7 @@ pub const PyDate = extern struct {
         const d = try py.PyLong.from(@as(i64, day));
         defer d.obj.decref();
 
-        const date_obj = try py.call(@import("../pydust.zig"), date_class, .{ y.obj, mo.obj, d.obj });
+        const date_obj = try py.call(@import("../pyz3.zig"), date_class, .{ y.obj, mo.obj, d.obj });
         return .{ .obj = date_obj };
     }
 
@@ -164,7 +164,7 @@ pub const PyDate = extern struct {
         const today_method = try date_class.getAttribute("today");
         defer today_method.decref();
 
-        const date_obj = try py.call0(@import("../pydust.zig"), today_method);
+        const date_obj = try py.call0(@import("../pyz3.zig"), today_method);
         return .{ .obj = date_obj };
     }
 
@@ -178,9 +178,9 @@ pub const PyDate = extern struct {
         defer day_obj.decref();
 
         return .{
-            .year = @intCast(try py.as(i64, @import("../pydust.zig"), year_obj)),
-            .month = @intCast(try py.as(i64, @import("../pydust.zig"), month_obj)),
-            .day = @intCast(try py.as(i64, @import("../pydust.zig"), day_obj)),
+            .year = @intCast(try py.as(i64, @import("../pyz3.zig"), year_obj)),
+            .month = @intCast(try py.as(i64, @import("../pyz3.zig"), month_obj)),
+            .day = @intCast(try py.as(i64, @import("../pyz3.zig"), day_obj)),
         };
     }
 
@@ -189,7 +189,7 @@ pub const PyDate = extern struct {
         const method = try self.obj.getAttribute("isoformat");
         defer method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), method);
+        const result = try py.call0(@import("../pyz3.zig"), method);
         return .{ .obj = result };
     }
 };
@@ -217,7 +217,7 @@ pub const PyTime = extern struct {
         const us = try py.PyLong.from(@as(i64, microsecond));
         defer us.obj.decref();
 
-        const time_obj = try py.call(@import("../pydust.zig"), time_class, .{ h.obj, mi.obj, s.obj, us.obj });
+        const time_obj = try py.call(@import("../pyz3.zig"), time_class, .{ h.obj, mi.obj, s.obj, us.obj });
         return .{ .obj = time_obj };
     }
 
@@ -233,10 +233,10 @@ pub const PyTime = extern struct {
         defer microsecond_obj.decref();
 
         return .{
-            .hour = @intCast(try py.as(i64, @import("../pydust.zig"), hour_obj)),
-            .minute = @intCast(try py.as(i64, @import("../pydust.zig"), minute_obj)),
-            .second = @intCast(try py.as(i64, @import("../pydust.zig"), second_obj)),
-            .microsecond = @intCast(try py.as(i64, @import("../pydust.zig"), microsecond_obj)),
+            .hour = @intCast(try py.as(i64, @import("../pyz3.zig"), hour_obj)),
+            .minute = @intCast(try py.as(i64, @import("../pyz3.zig"), minute_obj)),
+            .second = @intCast(try py.as(i64, @import("../pyz3.zig"), second_obj)),
+            .microsecond = @intCast(try py.as(i64, @import("../pyz3.zig"), microsecond_obj)),
         };
     }
 
@@ -245,7 +245,7 @@ pub const PyTime = extern struct {
         const method = try self.obj.getAttribute("isoformat");
         defer method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), method);
+        const result = try py.call0(@import("../pyz3.zig"), method);
         return .{ .obj = result };
     }
 };
@@ -271,7 +271,7 @@ pub const PyTimeDelta = extern struct {
         const us = try py.PyLong.from(microseconds);
         defer us.obj.decref();
 
-        const td_obj = try py.call(@import("../pydust.zig"), timedelta_class, .{ d.obj, s.obj, us.obj });
+        const td_obj = try py.call(@import("../pyz3.zig"), timedelta_class, .{ d.obj, s.obj, us.obj });
         return .{ .obj = td_obj };
     }
 
@@ -286,7 +286,7 @@ pub const PyTimeDelta = extern struct {
         const s = try py.PyFloat.from(seconds);
         defer s.obj.decref();
 
-        const td_obj = try py.call(@import("../pydust.zig"), timedelta_class, .{s.obj});
+        const td_obj = try py.call(@import("../pyz3.zig"), timedelta_class, .{s.obj});
         return .{ .obj = td_obj };
     }
 
@@ -300,9 +300,9 @@ pub const PyTimeDelta = extern struct {
         defer microseconds_obj.decref();
 
         return .{
-            .days = try py.as(i64, @import("../pydust.zig"), days_obj),
-            .seconds = try py.as(i64, @import("../pydust.zig"), seconds_obj),
-            .microseconds = try py.as(i64, @import("../pydust.zig"), microseconds_obj),
+            .days = try py.as(i64, @import("../pyz3.zig"), days_obj),
+            .seconds = try py.as(i64, @import("../pyz3.zig"), seconds_obj),
+            .microseconds = try py.as(i64, @import("../pyz3.zig"), microseconds_obj),
         };
     }
 
@@ -311,10 +311,10 @@ pub const PyTimeDelta = extern struct {
         const method = try self.obj.getAttribute("total_seconds");
         defer method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), method);
+        const result = try py.call0(@import("../pyz3.zig"), method);
         defer result.decref();
 
-        return try py.as(f64, @import("../pydust.zig"), result);
+        return try py.as(f64, @import("../pyz3.zig"), result);
     }
 
     /// Add two timedeltas
@@ -322,7 +322,7 @@ pub const PyTimeDelta = extern struct {
         const add_method = try self.obj.getAttribute("__add__");
         defer add_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), add_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), add_method, .{other.obj});
         return .{ .obj = result };
     }
 
@@ -331,7 +331,7 @@ pub const PyTimeDelta = extern struct {
         const sub_method = try self.obj.getAttribute("__sub__");
         defer sub_method.decref();
 
-        const result = try py.call(@import("../pydust.zig"), sub_method, .{other.obj});
+        const result = try py.call(@import("../pyz3.zig"), sub_method, .{other.obj});
         return .{ .obj = result };
     }
 
@@ -343,7 +343,7 @@ pub const PyTimeDelta = extern struct {
         const s = try py.PyFloat.from(scalar);
         defer s.obj.decref();
 
-        const result = try py.call(@import("../pydust.zig"), mul_method, .{s.obj});
+        const result = try py.call(@import("../pyz3.zig"), mul_method, .{s.obj});
         return .{ .obj = result };
     }
 
@@ -352,7 +352,7 @@ pub const PyTimeDelta = extern struct {
         const abs_method = try self.obj.getAttribute("__abs__");
         defer abs_method.decref();
 
-        const result = try py.call0(@import("../pydust.zig"), abs_method);
+        const result = try py.call0(@import("../pyz3.zig"), abs_method);
         return .{ .obj = result };
     }
 };

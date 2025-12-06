@@ -16,7 +16,7 @@ const py = @import("pyz3");
 const root = @This();
 
 // --8<-- [start:example]
-test "pydust pytest" {
+test "pyz3 pytest" {
     py.initialize();
     defer py.finalize();
 
@@ -27,7 +27,7 @@ test "pydust pytest" {
 }
 // --8<-- [end:example]
 
-test "pydust-expected-failure" {
+test "pyz3-expected-failure" {
     py.initialize();
     defer py.finalize();
 

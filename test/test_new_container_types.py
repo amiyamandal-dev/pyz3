@@ -51,10 +51,10 @@ async def test_async_generator_check():
         yield 1
 
     agen = my_agen()
-    assert await new_container_types.async_generator_check(agen)
+    assert new_container_types.async_generator_check(agen)
 
     def my_gen():
         yield 1
-    
+
     gen = my_gen()
-    assert not await new_container_types.async_generator_check(gen)
+    assert not new_container_types.async_generator_check(gen)

@@ -11,7 +11,7 @@
 // limitations under the License.
 
 const std = @import("std");
-const py = @import("../pydust.zig");
+const py = @import("../pyz3.zig");
 const State = @import("../discovery.zig").State;
 
 const ffi = py.ffi;

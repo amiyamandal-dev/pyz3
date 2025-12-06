@@ -1,10 +1,10 @@
-# GDB initialization file for debugging Ziggy Pydust extensions
+# GDB initialization file for debugging pyz3 extensions
 # Place this in your project root or home directory (~/.gdbinit)
 
 # Enable Python support
 python
 import sys
-print("\n🐛 GDB initialized for Pydust debugging")
+print("\n🐛 GDB initialized for pyz3 debugging")
 end
 
 # Pretty printing
@@ -27,21 +27,21 @@ set pagination off
 catch throw
 
 # Useful aliases
-define pydust-info
+define pyz3-info
     info sharedlibrary
     info threads
 end
 
-define pydust-break
+define pyz3-break
     break $arg0
 end
 
 # Load Python pretty printers if available
-# python sys.path.insert(0, '/path/to/pydust/printers')
-# python import pydust_printers
-# python pydust_printers.register()
+# python sys.path.insert(0, '/path/to/pyz3/printers')
+# python import pyz3_printers
+# python pyz3_printers.register()
 
-echo \n🐛 GDB ready for Pydust debugging\n
-echo    Use 'pydust-break function_name' to set breakpoints\n
-echo    Use 'pydust-info' for module information\n
+echo \n🐛 GDB ready for pyz3 debugging\n
+echo    Use 'pyz3-break function_name' to set breakpoints\n
+echo    Use 'pyz3-info' for module information\n
 echo    Use 'bt' for backtrace\n\n
