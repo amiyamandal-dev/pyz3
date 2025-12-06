@@ -89,6 +89,39 @@ jobs:
         run: |
           pip install pytest
 
+      # macOS-only workaround for Zig's "-lPython" library name
+      - name: macOS: create libPython symlink for Zig
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -eux
+          python - << 'PY'
+          import sysconfig, pathlib, os
+
+          libdir = sysconfig.get_config_var("LIBDIR") or sysconfig.get_config_var("LIBPL")
+          libname = sysconfig.get_config_var("LDLIBRARY")
+
+          print("LIBDIR:", libdir)
+          print("LDLIBRARY:", libname)
+
+          if not libdir or not libname:
+              raise SystemExit("Could not determine Python library path")
+
+          libdir_path = pathlib.Path(libdir)
+          target = libdir_path / libname
+
+          if not target.exists():
+              raise SystemExit(f"Python shared lib not found at {target}")
+
+          # Zig is looking for 'libPython.dylib'
+          link = libdir_path / "libPython.dylib"
+          if link.exists():
+              print("libPython.dylib already exists:", link)
+          else:
+              os.symlink(target.name, link)
+              print("Created symlink", link, "->", target.name)
+          PY
+
       - name: Run basic tests
         run: |
           pytest test/test_hello.py -v

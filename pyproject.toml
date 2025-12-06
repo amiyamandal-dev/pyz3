@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pyZ3"
+name = "pyz3"
 version = "0.1.0"
 description = "Build high-performance Python extensions in Zig with automatic memory management, hot-reload, and NumPy integration. Inspired by ziggy-pydust."
 authors = ["Your Name <your.email@example.com>"]
