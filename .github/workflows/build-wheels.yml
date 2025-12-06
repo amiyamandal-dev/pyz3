@@ -38,7 +38,7 @@ jobs:
       - name: Build test binaries
         shell: bash
         run: |
-          ls -la && python -m poetry run python -m ziglang build pyz3-test-build --build-file ./pytest.build.zig
+          ls -la && poetry run python -m ziglang build pyz3-test-build --build-file ./pytest.build.zig
 
       # macOS-only workaround for Zig's "-lPython" library name
       - name: "macOS: create libPython symlink for Zig"
