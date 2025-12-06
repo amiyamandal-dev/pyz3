@@ -46,7 +46,7 @@ def main():
         run_command("git init", "Initializing git repository")
         run_command("git add .", "Adding files to git")
         run_command(
-            'git commit -m "Initial commit from ziggy-pyz3-template"',
+            'git commit -m "Initial commit from pyz3-template"',
             "Creating initial commit"
         )
 

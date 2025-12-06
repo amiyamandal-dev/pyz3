@@ -4,7 +4,7 @@ This document summarizes the cleanup of unnecessary files from the cookiecutter 
 
 ## Files Removed
 
-The following files from the original ziggy-pyz3-template were removed as they are no longer needed:
+The following files from the original pyz3-template were removed as they are no longer needed:
 
 ### 1. Original Project Files
 These were part of the original template project and are now only in the template directory:
@@ -39,7 +39,7 @@ These files were part of the **working example project** before conversion to co
 ## Current Clean Structure
 
 ```
-ziggy-pyz3-template/                    (Root - cookiecutter configuration)
+pyz3-template/                    (Root - cookiecutter configuration)
 ├── .cookiecutterrc                       # Example config
 ├── .gitignore                            # Git ignore
 ├── .github/                              # GitHub Actions (for template repo)
@@ -115,7 +115,7 @@ The cleanup doesn't change how to use the template:
 pip install cookiecutter
 
 # Generate a project
-cookiecutter /path/to/ziggy-pyz3-template
+cookiecutter /path/to/pyz3-template
 
 # Set up the generated project
 cd your-project-name

@@ -46,8 +46,8 @@ expected = f"pyZ3=={pyz3_version}"
 **Changes**:
 ```python
 # Before
-template_path = pyz3_root / "ziggy-pyz3-template"
-print("\nPlease ensure ziggy-pyz3-template is in the repository root.")
+template_path = pyz3_root / "pyz3-template"
+print("\nPlease ensure pyz3-template is in the repository root.")
 
 # After
 template_path = pyz3_root / "pyZ3-template"

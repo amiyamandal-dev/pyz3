@@ -1,4 +1,4 @@
-# Ziggy-pyZ3-Template Integration Architecture
+# pyz3-template Integration Architecture
 
 ## Overview
 

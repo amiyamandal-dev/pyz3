@@ -21,7 +21,7 @@ All references updated from:
 
 Updated all GitHub repository URLs:
 - `fulcrum-so/ziggy-pydust` → `yourusername/pyZ3`
-- `fulcrum-so/ziggy-pyz3-template` → `yourusername/pyZ3-template`
+- `fulcrum-so/pyz3-template` → `yourusername/pyZ3-template`
 - `fulcrum-so/ziggy-pyz3` → `yourusername/pyZ3`
 
 ### 3. Documentation URLs
