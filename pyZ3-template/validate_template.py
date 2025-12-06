@@ -14,8 +14,11 @@ def validate_template():
     errors = []
     warnings = []
 
+    base_dir = Path(__file__).resolve().parent
+    print(f"Checking template in: {base_dir}")
+
     # Check cookiecutter.json exists and is valid
-    cookiecutter_json = Path("cookiecutter.json")
+    cookiecutter_json = base_dir / "cookiecutter.json"
     if not cookiecutter_json.exists():
         errors.append("cookiecutter.json not found")
     else:
@@ -28,7 +31,7 @@ def validate_template():
             errors.append(f"cookiecutter.json is invalid JSON: {e}")
 
     # Check template directory exists
-    template_dir = Path("{{cookiecutter.project_slug}}")
+    template_dir = base_dir / "{{cookiecutter.project_slug}}"
     if not template_dir.exists():
         errors.append("Template directory {{cookiecutter.project_slug}} not found")
         return errors, warnings
@@ -81,7 +84,7 @@ def validate_template():
                 print(f"  ⚠ {file} doesn't contain cookiecutter variables")
 
     # Check hooks directory
-    hooks_dir = Path("hooks")
+    hooks_dir = base_dir / "hooks"
     if hooks_dir.exists():
         print(f"\n✓ Hooks directory exists")
         post_gen = hooks_dir / "post_gen_project.py"
