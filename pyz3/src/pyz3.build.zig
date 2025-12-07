@@ -336,6 +336,27 @@ pub const PyZ3Step = struct {
             libtest.addRPath(b.path(self.python_library_dir));
         }
 
+        // Apply C/C++ integration configuration to test build
+        for (options.c_include_dirs) |include_dir| {
+            libtest.addIncludePath(b.path(include_dir));
+            libtest_module.addIncludePath(b.path(include_dir));
+        }
+
+        for (options.c_sources) |c_source| {
+            libtest.addCSourceFile(.{
+                .file = b.path(c_source),
+                .flags = options.c_flags,
+            });
+        }
+
+        for (options.c_libraries) |c_lib| {
+            libtest.linkSystemLibrary(c_lib);
+        }
+
+        for (options.ld_flags) |ld_flag| {
+            libtest.root_module.addRPathSpecial(ld_flag);
+        }
+
         // Install the test binary
         const install_libtest = b.addInstallBinFile(
             libtest.getEmittedBin(),
