@@ -1,4 +1,4 @@
-# pyZ3 - Python Extensions in Zig
+# pyz3 - Python Extensions in Zig
 
 <p align="center">
     <em>A high-performance framework for writing Python extension modules in Zig with automatic memory management, hot-reload, and NumPy integration.</em>
@@ -9,16 +9,16 @@
 
 <p align="center">
 <a href="https://github.com/amiyamandal-dev/pyz3/actions" target="_blank">
-    <img src="https://img.shields.io/github/actions/workflow/status/yourusername/pyZ3/ci.yml?branch=main&logo=github" alt="Actions">
+    <img src="https://img.shields.io/github/actions/workflow/status/yourusername/pyz3/ci.yml?branch=main&logo=github" alt="Actions">
 </a>
-<a href="https://pypi.org/project/pyZ3" target="_blank">
-    <img src="https://img.shields.io/pypi/v/pyZ3" alt="Package version">
+<a href="https://pypi.org/project/pyz3" target="_blank">
+    <img src="https://img.shields.io/pypi/v/pyz3" alt="Package version">
 </a>
 <a href="https://docs.python.org/3/whatsnew/3.11.html" target="_blank">
-    <img src="https://img.shields.io/pypi/pyversions/pyZ3" alt="Python version">
+    <img src="https://img.shields.io/pypi/pyversions/pyz3" alt="Python version">
 </a>
 <a href="https://github.com/amiyamandal-dev/pyz3/blob/main/LICENSE" target="_blank">
-    <img src="https://img.shields.io/github/license/yourusername/pyZ3" alt="License">
+    <img src="https://img.shields.io/github/license/yourusername/pyz3" alt="License">
 </a>
 </p>
 
@@ -32,7 +32,7 @@
 
 ## Overview
 
-pyZ3 is a complete framework for building high-performance Python extension modules in Zig. It provides:
+pyz3 is a complete framework for building high-performance Python extension modules in Zig. It provides:
 
 - 🚀 **Seamless Python-Zig Interop** - Automatic argument marshalling and type conversion
 - 📊 **NumPy Integration** - Zero-copy array access with type-safe dtype mapping
@@ -46,7 +46,7 @@ pyZ3 is a complete framework for building high-performance Python extension modu
 ## Quick Example
 
 ```zig
-const py = @import("pyZ3");
+const py = @import("pyz3");
 
 pub fn fibonacci(args: struct { n: u64 }) u64 {
     if (args.n < 2) return args.n;
@@ -75,7 +75,7 @@ print(mymodule.fibonacci(10))  # Output: 55
 ## NumPy Integration Example
 
 ```zig
-const py = @import("pyZ3");
+const py = @import("pyz3");
 
 pub fn double_array(args: struct { arr: py.PyArray(@This()) }) !py.PyArray(@This()) {
     // Zero-copy access to NumPy array
@@ -111,13 +111,13 @@ print(result)  # Output: [2.0, 4.0, 6.0]
 ## Installation
 
 ```bash
-pip install pyZ3
+pip install pyz3
 ```
 
 Or with distribution extras for building wheels:
 
 ```bash
-pip install pyZ3[dist]
+pip install pyz3[dist]
 ```
 
 ## Quick Start
@@ -126,7 +126,7 @@ pip install pyZ3[dist]
 
 ```bash
 # Create project using cookiecutter template
-pyZ3 init -n myproject --description "My awesome extension" --email "you@example.com" --no-interactive
+pyz3 init -n myproject --description "My awesome extension" --email "you@example.com" --no-interactive
 
 cd myproject
 ```
@@ -141,7 +141,7 @@ zig build
 zig build -Doptimize=ReleaseFast
 
 # Watch mode (hot reload)
-pyZ3 watch
+pyz3 watch
 ```
 
 ### 3. Test Your Extension
@@ -161,25 +161,25 @@ pytest test/test_myproject.py -v
 python -m build --wheel
 
 # Build for all platforms (uses cross-compilation)
-pyZ3 build-wheel --all-platforms
+pyz3 build-wheel --all-platforms
 
 # Publish to PyPI
-pyZ3 deploy --repository testpypi  # Test first!
-pyZ3 deploy --repository pypi       # Production
+pyz3 deploy --repository testpypi  # Test first!
+pyz3 deploy --repository pypi       # Production
 ```
 
 ## CLI Commands
 
-pyZ3 provides a complete CLI for managing your extension projects:
+pyz3 provides a complete CLI for managing your extension projects:
 
 ```bash
-pyZ3 init [OPTIONS]           # Initialize new project
-pyZ3 build [OPTIONS]          # Build extension module
-pyZ3 watch                    # Watch mode with hot reload
-pyZ3 test [OPTIONS]           # Run tests
-pyZ3 clean                    # Clean build artifacts
-pyZ3 build-wheel [OPTIONS]        # Build distribution packages
-pyZ3 deploy [OPTIONS]        # Publish to PyPI
+pyz3 init [OPTIONS]           # Initialize new project
+pyz3 build [OPTIONS]          # Build extension module
+pyz3 watch                    # Watch mode with hot reload
+pyz3 test [OPTIONS]           # Run tests
+pyz3 clean                    # Clean build artifacts
+pyz3 build-wheel [OPTIONS]        # Build distribution packages
+pyz3 deploy [OPTIONS]        # Publish to PyPI
 ```
 
 ## Key Features
@@ -229,28 +229,6 @@ pub fn divide(args: struct { a: i64, b: i64 }) !i64 {
 }
 ```
 
-### NumPy Integration
-
-```zig
-// Create arrays
-pub fn create_zeros() !py.PyArray(@This()) {
-    return try py.PyArray(@This()).zeros(f64, &[_]usize{10, 10});
-}
-
-// Array operations
-pub fn array_stats(args: struct { arr: py.PyArray(@This()) }) !struct {
-    min: f64,
-    max: f64,
-    mean: f64,
-} {
-    return .{
-        .min = try args.arr.min(f64),
-        .max = try args.arr.max(f64),
-        .mean = try args.arr.mean(f64),
-    };
-}
-```
-
 ## Cross-Platform Distribution
 
 Build wheels for multiple platforms:
@@ -272,7 +250,7 @@ The build system automatically:
 
 ## Performance
 
-pyZ3 leverages Zig's performance advantages:
+pyz3 leverages Zig's performance advantages:
 
 - **Zero-cost abstractions** - No runtime overhead
 - **Compile-time optimizations** - Zig's comptime for metaprogramming
@@ -280,19 +258,11 @@ pyZ3 leverages Zig's performance advantages:
 - **Small binaries** - Smaller than equivalent Rust extensions
 - **Fast compilation** - Faster than Rust, comparable to C
 
-## Benchmarks
-
-| Operation | Python | NumPy | pyZ3 (Zig) |
-|-----------|--------|-------|-----------|
-| Fibonacci(30) | 832 ms | N/A | 0.3 ms (2773x) |
-| Array sum (1M elements) | 45 ms | 0.8 ms | 0.4 ms (112x vs Python) |
-| Matrix multiply (1000x1000) | 1250 ms | 42 ms | 38 ms (32x vs Python) |
-
 ## Acknowledgments
 
 This project is a hard fork of [ziggy-pydust](https://github.com/fulcrum-so/ziggy-pydust) by [Fulcrum](https://fulcrum.so).
 
-Major differences in pyZ3:
+Major differences in pyz3:
 - ✅ Built-in NumPy integration with zero-copy array access
 - ✅ Enhanced cross-compilation support
 - ✅ Updated CLI commands and workflows

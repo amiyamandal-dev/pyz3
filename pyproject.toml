@@ -1,14 +1,14 @@
 [tool.poetry]
 name = "pyz3"
-version = "0.3.0"
-description = "Build high-performance Python extensions in Zig with automatic memory management, hot-reload, and NumPy integration. Inspired by ziggy-pydust."
-authors = ["Your Name <your.email@example.com>"]
+version = "0.5.0"
+description = "Build high-performance Python extensions in Zig with automatic memory management. Inspired by ziggy-pydust."
+authors = ["amiya mandal <amiya19mandal@pm.me>"]
 license = "Apache 2.0"
 readme = "README.md"
 homepage = "https://github.com/amiyamandal-dev/pyz3"
 repository = "https://github.com/amiyamandal-dev/pyz3"
 documentation = "https://github.com/amiyamandal-dev/pyz3"
-keywords = ["zig", "python", "extensions", "performance", "c-api", "bindings", "numpy", "pyz3"]
+keywords = ["zig", "python", "extensions", "performance", "c-api", "bindings", "pyz3"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

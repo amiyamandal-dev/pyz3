@@ -70,6 +70,7 @@ if [ -n "$DRY_RUN" ]; then
   echo "  - pyproject.toml"
   echo "  - pyz3/__init__.py"
   echo "  - pyz3/pyZ3-template/cookiecutter.json"
+  echo "  - pyz3/pyZ3-template/{{cookiecutter.project_slug}}/pyproject.toml"
   echo "  - poetry.lock"
   exit 0
 else
@@ -112,6 +113,22 @@ else
   echo -e "${YELLOW}⚠${NC} (template not found)"
 fi
 
+# Update template pyproject.toml with new pyz3 version
+echo -n "Updating template pyproject.toml... "
+TEMPLATE_PYPROJECT="pyz3/pyZ3-template/{{cookiecutter.project_slug}}/pyproject.toml"
+if [ -f "$TEMPLATE_PYPROJECT" ]; then
+  # Update pyz3 version in build-system requires
+  if sed -i '' "s/\"pyz3==[0-9.]*\"/\"pyz3==$NEW_VERSION\"/" "$TEMPLATE_PYPROJECT" && \
+     sed -i '' "s/pyz3 = \"[0-9.]*\"/pyz3 = \"$NEW_VERSION\"/" "$TEMPLATE_PYPROJECT"; then
+    echo -e "${GREEN}✓${NC}"
+  else
+    echo -e "${RED}✗${NC}"
+    exit 1
+  fi
+else
+  echo -e "${YELLOW}⚠${NC} (template pyproject.toml not found)"
+fi
+
 # Update poetry.lock
 echo -n "Updating poetry.lock... "
 if poetry lock --no-update > /dev/null 2>&1; then
@@ -126,7 +143,7 @@ echo ""
 echo -e "${BLUE}Next steps:${NC}"
 echo "  1. Review changes: ${YELLOW}git diff${NC}"
 echo "  2. Commit changes:"
-echo "     ${YELLOW}git add pyproject.toml pyz3/__init__.py pyz3/pyZ3-template/cookiecutter.json poetry.lock${NC}"
+echo "     ${YELLOW}git add pyproject.toml pyz3/__init__.py pyz3/pyZ3-template/cookiecutter.json pyz3/pyZ3-template/{{cookiecutter.project_slug}}/pyproject.toml poetry.lock${NC}"
 echo "     ${YELLOW}git commit -m \"Bump version to $NEW_VERSION\"${NC}"
 echo "  3. Create git tag:"
 echo "     ${YELLOW}git tag v$NEW_VERSION${NC}"
