@@ -60,6 +60,7 @@ pub const PyZ3Step = struct {
     hexversion: []const u8,
 
     pyz3_source_file: []const u8,
+    ffi_header_file: []const u8,
     python_include_dir: []const u8,
     python_library_dir: []const u8,
 
@@ -124,6 +125,7 @@ pub const PyZ3Step = struct {
             .libpython = libpython,
             .hexversion = hexversion,
             .pyz3_source_file = "",
+            .ffi_header_file = "",
             .python_include_dir = "",
             .python_library_dir = "",
         };
@@ -149,6 +151,15 @@ pub const PyZ3Step = struct {
             "import pyz3; import os; print(os.path.relpath(os.path.join(os.path.dirname(pyz3.__file__), 'src/pyz3.zig')), end='')",
         ) catch |err| {
             std.debug.print("\n❌ Failed to locate pyz3 source files\n", .{});
+            std.debug.print("   Error: {}\n", .{err});
+            std.debug.print("   Ensure pyz3 package is installed: pip install pyz3\n", .{});
+            std.debug.print("   Or install in development mode: pip install -e .\n", .{});
+            std.process.exit(1);
+        };
+        self.ffi_header_file = self.pythonOutput(
+            "import pyz3; import os; print(os.path.abspath(os.path.join(os.path.dirname(pyz3.__file__), 'src/ffi.h')), end='')",
+        ) catch |err| {
+            std.debug.print("\n❌ Failed to locate pyz3 FFI header file\n", .{});
             std.debug.print("   Error: {}\n", .{err});
             std.debug.print("   Ensure pyz3 package is installed: pip install pyz3\n", .{});
             std.debug.print("   Or install in development mode: pip install -e .\n", .{});
@@ -353,7 +364,7 @@ pub const PyZ3Step = struct {
     fn addTranslateC(self: PyZ3Step, options: PythonModuleOptions) *std.Build.Step.TranslateC {
         const b = self.owner;
         const translate_c = b.addTranslateC(.{
-            .root_source_file = b.path("pyz3/src/ffi.h"),
+            .root_source_file = .{ .cwd_relative = self.ffi_header_file },
             .target = b.resolveTargetQuery(options.target),
             .optimize = options.optimize,
         });
