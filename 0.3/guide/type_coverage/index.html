@@ -1,0 +1,1913 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Python Type Coverage Guide - pyZ3</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#python-type-coverage-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="pyZ3" class="md-header__button md-logo" aria-label="pyZ3" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyZ3
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Python Type Coverage Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/amiyamandal-dev/pyz3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yourusername/pyZ3
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pyZ3" class="md-nav__button md-logo" aria-label="pyZ3" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pyZ3
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/amiyamandal-dev/pyz3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yourusername/pyZ3
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pyZ3 - Python Extensions in Zig
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../classes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gil/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GIL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_4_testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_5_memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_6_buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Buffer Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../numpy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NumPy Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#coverage-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fully-supported-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Fully Supported Types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="✅ Fully Supported Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-types-88-100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Types (8/8) - 100% ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-types-66-100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container Types (6/6) - 100% ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#special-protocol-types-68" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Special Protocol Types (6/8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-types-68-75" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Types (6/8) - 75% ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standard-library-types-913-69" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Library Types (9/13) - 69% ✅
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remaining-missing-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ Remaining Missing Types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❌ Remaining Missing Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lower-priority-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lower Priority Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workarounds-for-missing-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔧 Workarounds for Missing Types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔧 Workarounds for Missing Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-pyobject-generic-wrapper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using PyObject (Generic Wrapper)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-working-with-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Working with Sets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-working-with-datetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Working with datetime
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-working-with-complex-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Working with complex numbers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-working-with-path-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Working with Path objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-support-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Type Support Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Type Support Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#can-you-use-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Can You Use It?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-use-dedicated-wrappers-when-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Use Dedicated Wrappers When Available
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-import-and-cache-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Import and Cache Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-create-helper-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Create Helper Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-document-type-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Document Type Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-additions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Future Additions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Future Additions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-essential-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Essential Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-common-library-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Common Library Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-specialized-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Specialized Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📖 Complete Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="python-type-coverage-guide">Python Type Coverage Guide</h1>
+<p>Complete guide to Python native data type support in Ziggy pyZ3.</p>
+<hr />
+<h2 id="coverage-summary">Coverage Summary</h2>
+<p><strong>Overall Coverage</strong>: 31/43 types (72.1%) - NEW!</p>
+<p>The framework now provides <strong>excellent coverage across all categories</strong>! Recent additions include sets, complex numbers, datetime types, and more.</p>
+<hr />
+<h2 id="fully-supported-types">✅ Fully Supported Types</h2>
+<h3 id="core-types-88-100">Core Types (8/8) - 100% ✅</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Zig Wrapper</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int</code></td>
+<td><code>PyLong</code></td>
+<td><code>py.PyLong.from(42)</code></td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td><code>PyFloat</code></td>
+<td><code>py.PyFloat.from(3.14)</code></td>
+</tr>
+<tr>
+<td><code>complex</code></td>
+<td><code>PyComplex</code></td>
+<td><code>py.PyComplex.create(3.0, 4.0)</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td><code>PyBool</code></td>
+<td><code>py.PyBool.from(true)</code></td>
+</tr>
+<tr>
+<td><code>str</code></td>
+<td><code>PyString</code></td>
+<td><code>py.PyString.create("hello")</code></td>
+</tr>
+<tr>
+<td><code>bytes</code></td>
+<td><code>PyBytes</code></td>
+<td><code>py.PyBytes.from(&amp;[_]u8{1, 2, 3})</code></td>
+</tr>
+<tr>
+<td><code>bytearray</code></td>
+<td><code>PyByteArray</code></td>
+<td><code>py.PyByteArray.from("hello")</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>None</code></td>
+<td>Builtin</td>
+<td><code>py.None</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="container-types-66-100">Container Types (6/6) - 100% ✅</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Zig Wrapper</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>list</code></td>
+<td><code>PyList(root)</code></td>
+<td><code>py.PyList(root).new()</code></td>
+</tr>
+<tr>
+<td><code>tuple</code></td>
+<td><code>PyTuple(root)</code></td>
+<td><code>py.tuple(root, .{1, 2, 3})</code></td>
+</tr>
+<tr>
+<td><code>dict</code></td>
+<td><code>PyDict(root)</code></td>
+<td><code>py.dict(root)</code></td>
+</tr>
+<tr>
+<td><code>set</code></td>
+<td><code>PySet(root)</code></td>
+<td><code>py.PySet(root).new()</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>frozenset</code></td>
+<td><code>PyFrozenSet(root)</code></td>
+<td><code>py.PyFrozenSet(root).new(iterable)</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>range</code></td>
+<td><code>PyRange</code></td>
+<td><code>py.PyRange.new(10)</code> ✨ NEW</td>
+</tr>
+</tbody>
+</table>
+<h3 id="special-protocol-types-68">Special Protocol Types (6/8)</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Zig Wrapper</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>iterator</code></td>
+<td><code>PyIter</code></td>
+<td><code>list.iter()</code></td>
+</tr>
+<tr>
+<td><code>slice</code></td>
+<td><code>PySlice</code></td>
+<td><code>PySlice.new(start, stop, step)</code></td>
+</tr>
+<tr>
+<td><code>memoryview</code></td>
+<td><code>PyMemoryView</code></td>
+<td><code>PyMemoryView.from(buffer)</code></td>
+</tr>
+<tr>
+<td><code>buffer</code></td>
+<td><code>PyBuffer</code></td>
+<td>Protocol implementation</td>
+</tr>
+<tr>
+<td><code>code</code></td>
+<td><code>PyCode</code></td>
+<td>Code object wrapper</td>
+</tr>
+<tr>
+<td><code>frame</code></td>
+<td><code>PyFrame</code></td>
+<td>Frame inspection</td>
+</tr>
+</tbody>
+</table>
+<h3 id="advanced-types-68-75">Advanced Types (6/8) - 75% ✅</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Zig Wrapper</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>function</code></td>
+<td>⚠️ PARTIAL</td>
+<td>Can call/create but no dedicated wrapper</td>
+</tr>
+<tr>
+<td><code>method</code></td>
+<td>⚠️ PARTIAL</td>
+<td>Through function support</td>
+</tr>
+<tr>
+<td><code>generator</code></td>
+<td><code>PyGenerator</code></td>
+<td><code>PyGenerator.check(obj)</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>coroutine</code></td>
+<td><code>PyCoroutine</code></td>
+<td><code>PyCoroutine.check(obj)</code></td>
+</tr>
+<tr>
+<td><code>async gen</code></td>
+<td>❌ NO</td>
+<td>MISSING - Async generator protocol</td>
+</tr>
+<tr>
+<td><code>class</code></td>
+<td><code>py.class()</code></td>
+<td>Define pyZ3 classes</td>
+</tr>
+<tr>
+<td><code>module</code></td>
+<td><code>PyModule</code></td>
+<td>Module objects</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>PyType</code></td>
+<td>Type objects</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="standard-library-types-913-69">Standard Library Types (9/13) - 69% ✅</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Zig Wrapper</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>datetime</code></td>
+<td><code>PyDateTime</code></td>
+<td><code>py.PyDateTime.now()</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td><code>PyDate</code></td>
+<td><code>py.PyDate.today()</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>time</code></td>
+<td><code>PyTime</code></td>
+<td><code>py.PyTime.create(10, 30, 0, 0)</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>timedelta</code></td>
+<td><code>PyTimeDelta</code></td>
+<td><code>py.PyTimeDelta.create(1, 0, 0)</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>Decimal</code></td>
+<td><code>PyDecimal</code></td>
+<td><code>py.PyDecimal.fromString("0.1")</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>Path</code></td>
+<td><code>PyPath</code></td>
+<td><code>py.PyPath.create("/path/to/file")</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>UUID</code></td>
+<td><code>PyUUID</code></td>
+<td><code>py.PyUUID.uuid4()</code> ✨ NEW</td>
+</tr>
+<tr>
+<td><code>Fraction</code></td>
+<td>❌ NO</td>
+<td>MISSING - Rational numbers</td>
+</tr>
+<tr>
+<td><code>Enum</code></td>
+<td>❌ NO</td>
+<td>MISSING - Enumeration types</td>
+</tr>
+<tr>
+<td><code>OrderedDict</code></td>
+<td>⚠️ PARTIAL</td>
+<td>Dict is ordered in Python 3.7+</td>
+</tr>
+<tr>
+<td><code>defaultdict</code></td>
+<td>❌ NO</td>
+<td>MISSING - Dict with default values</td>
+</tr>
+<tr>
+<td><code>Counter</code></td>
+<td>❌ NO</td>
+<td>MISSING - Counting dict</td>
+</tr>
+<tr>
+<td><code>deque</code></td>
+<td>❌ NO</td>
+<td>MISSING - Double-ended queue</td>
+</tr>
+</tbody>
+</table>
+<h2 id="remaining-missing-types">❌ Remaining Missing Types</h2>
+<h3 id="lower-priority-types">Lower Priority Types</h3>
+<p><strong>These are less commonly used in extension modules:</strong></p>
+<ol>
+<li><strong><code>Fraction</code></strong> - Rational number arithmetic</li>
+<li><strong><code>Enum</code></strong> - Enumeration types</li>
+<li><strong><code>defaultdict</code></strong> / <strong><code>Counter</code></strong> / <strong><code>deque</code></strong> - Specialized collections</li>
+</ol>
+<hr />
+<h2 id="workarounds-for-missing-types">🔧 Workarounds for Missing Types</h2>
+<h3 id="using-pyobject-generic-wrapper">Using PyObject (Generic Wrapper)</h3>
+<p><strong>PyObject can handle ANY Python type</strong>, even if there's no dedicated wrapper:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#__codelineno-0-12">12</a></span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span>
+<span class="normal"><a href="#__codelineno-0-14">14</a></span>
+<span class="normal"><a href="#__codelineno-0-15">15</a></span>
+<span class="normal"><a href="#__codelineno-0-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">py</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;pyz3&quot;</span><span class="p">);</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">work_with_set</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">data</span><span class="o">:</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">    </span><span class="c1">// &#39;data&#39; can be a set, even though there&#39;s no PySet type</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">    </span><span class="c1">// Call methods on it</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">add_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;add&quot;</span><span class="p">);</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">add_method</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="nb">@as</span><span class="p">(</span><span class="kt">i64</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">));</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="w">    </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">add_method</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">value</span><span class="p">});</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">data</span><span class="p">;</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="example-working-with-sets">Example: Working with Sets</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span>
+<span class="normal"><a href="#__codelineno-1-13">13</a></span>
+<span class="normal"><a href="#__codelineno-1-14">14</a></span>
+<span class="normal"><a href="#__codelineno-1-15">15</a></span>
+<span class="normal"><a href="#__codelineno-1-16">16</a></span>
+<span class="normal"><a href="#__codelineno-1-17">17</a></span>
+<span class="normal"><a href="#__codelineno-1-18">18</a></span>
+<span class="normal"><a href="#__codelineno-1-19">19</a></span>
+<span class="normal"><a href="#__codelineno-1-20">20</a></span>
+<span class="normal"><a href="#__codelineno-1-21">21</a></span>
+<span class="normal"><a href="#__codelineno-1-22">22</a></span>
+<span class="normal"><a href="#__codelineno-1-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">create_and_use_set</span><span class="p">()</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">    </span><span class="c1">// Create a set from Python</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">builtins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import</span><span class="p">(</span><span class="s">&quot;builtins&quot;</span><span class="p">);</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">builtins</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">set_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">builtins</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">);</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">set_type</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">    </span><span class="c1">// Create empty set</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">my_set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call0</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">set_type</span><span class="p">);</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11"></a>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="w">    </span><span class="c1">// Add items</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">my_set</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;add&quot;</span><span class="p">);</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">add</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15"></a>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">..</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="n">i</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="w">        </span><span class="kr">const</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="nb">@as</span><span class="p">(</span><span class="kt">i64</span><span class="p">,</span><span class="w"> </span><span class="nb">@intCast</span><span class="p">(</span><span class="n">i</span><span class="p">)));</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18"></a><span class="w">        </span><span class="k">defer</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19"></a><span class="w">        </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">add</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">value</span><span class="p">});</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21"></a>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">my_set</span><span class="p">;</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="example-working-with-datetime">Example: Working with datetime</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span>
+<span class="normal"><a href="#__codelineno-2-12">12</a></span>
+<span class="normal"><a href="#__codelineno-2-13">13</a></span>
+<span class="normal"><a href="#__codelineno-2-14">14</a></span>
+<span class="normal"><a href="#__codelineno-2-15">15</a></span>
+<span class="normal"><a href="#__codelineno-2-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">get_current_time</span><span class="p">()</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">    </span><span class="c1">// Import datetime module</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">datetime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import</span><span class="p">(</span><span class="s">&quot;datetime&quot;</span><span class="p">);</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">datetime</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">datetime_class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">datetime</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;datetime&quot;</span><span class="p">);</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">datetime_class</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8"></a>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">now_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">datetime_class</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;now&quot;</span><span class="p">);</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">now_method</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11"></a>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="w">    </span><span class="c1">// Call datetime.now()</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">current_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call0</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">now_method</span><span class="p">);</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14"></a>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">current_time</span><span class="p">;</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="example-working-with-complex-numbers">Example: Working with complex numbers</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-3-10">10</a></span>
+<span class="normal"><a href="#__codelineno-3-11">11</a></span>
+<span class="normal"><a href="#__codelineno-3-12">12</a></span>
+<span class="normal"><a href="#__codelineno-3-13">13</a></span>
+<span class="normal"><a href="#__codelineno-3-14">14</a></span>
+<span class="normal"><a href="#__codelineno-3-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">create_complex</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">real</span><span class="o">:</span><span class="w"> </span><span class="kt">f64</span><span class="p">,</span><span class="w"> </span><span class="n">imag</span><span class="o">:</span><span class="w"> </span><span class="kt">f64</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">builtins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import</span><span class="p">(</span><span class="s">&quot;builtins&quot;</span><span class="p">);</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">builtins</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">complex_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">builtins</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;complex&quot;</span><span class="p">);</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">complex_type</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">real</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">real</span><span class="p">);</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">real</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10"></a>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">imag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">imag</span><span class="p">);</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">imag</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13"></a>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">complex_type</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="w"> </span><span class="n">real</span><span class="p">,</span><span class="w"> </span><span class="n">imag</span><span class="w"> </span><span class="p">});</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="example-working-with-path-objects">Example: Working with Path objects</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span>
+<span class="normal"><a href="#__codelineno-4-14">14</a></span>
+<span class="normal"><a href="#__codelineno-4-15">15</a></span>
+<span class="normal"><a href="#__codelineno-4-16">16</a></span>
+<span class="normal"><a href="#__codelineno-4-17">17</a></span>
+<span class="normal"><a href="#__codelineno-4-18">18</a></span>
+<span class="normal"><a href="#__codelineno-4-19">19</a></span>
+<span class="normal"><a href="#__codelineno-4-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">work_with_path</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">path_str</span><span class="o">:</span><span class="w"> </span><span class="p">[]</span><span class="kr">const</span><span class="w"> </span><span class="kt">u8</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">pathlib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import</span><span class="p">(</span><span class="s">&quot;pathlib&quot;</span><span class="p">);</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">pathlib</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4"></a>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">Path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">pathlib</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;Path&quot;</span><span class="p">);</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">Path</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">path_pystr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyString</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">path_str</span><span class="p">);</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">path_pystr</span><span class="p">.</span><span class="n">obj</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10"></a>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">Path</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">path_pystr</span><span class="p">.</span><span class="n">obj</span><span class="p">});</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12"></a>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">    </span><span class="c1">// Use path methods</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">exists</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">path</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;exists&quot;</span><span class="p">);</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">exists</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16"></a>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call0</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">exists</span><span class="p">);</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18"></a>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="type-support-matrix">📊 Type Support Matrix</h2>
+<h3 id="can-you-use-it">Can You Use It?</h3>
+<table>
+<thead>
+<tr>
+<th>Your Use Case</th>
+<th>Can You Do It?</th>
+<th>How?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pass a set to Python</td>
+<td>✅ YES</td>
+<td>Use <code>PyObject</code></td>
+</tr>
+<tr>
+<td>Receive a set from Python</td>
+<td>✅ YES</td>
+<td>Use <code>PyObject</code></td>
+</tr>
+<tr>
+<td>Create a set in Zig</td>
+<td>✅ YES</td>
+<td>Import <code>builtins.set</code></td>
+</tr>
+<tr>
+<td>Manipulate set items</td>
+<td>✅ YES</td>
+<td>Call methods via <code>PyObject</code></td>
+</tr>
+<tr>
+<td>Type-safe set operations</td>
+<td>❌ NO</td>
+<td>No dedicated wrapper</td>
+</tr>
+<tr>
+<td>Pass complex number</td>
+<td>✅ YES</td>
+<td>Use <code>PyObject</code> or create via <code>complex()</code></td>
+</tr>
+<tr>
+<td>Use datetime</td>
+<td>✅ YES</td>
+<td>Import <code>datetime</code> module</td>
+</tr>
+<tr>
+<td>Use Decimal</td>
+<td>✅ YES</td>
+<td>Import <code>decimal</code> module</td>
+</tr>
+<tr>
+<td>Use UUID</td>
+<td>✅ YES</td>
+<td>Import <code>uuid</code> module</td>
+</tr>
+<tr>
+<td>Use Path</td>
+<td>✅ YES</td>
+<td>Import <code>pathlib</code> module</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key Point</strong>: You can work with ANY Python type using <code>PyObject</code> - you just won't have type-specific convenience methods.</p>
+<hr />
+<h2 id="best-practices">🎯 Best Practices</h2>
+<h3 id="1-use-dedicated-wrappers-when-available">1. Use Dedicated Wrappers When Available</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
+<span class="normal"><a href="#__codelineno-5-2">2</a></span>
+<span class="normal"><a href="#__codelineno-5-3">3</a></span>
+<span class="normal"><a href="#__codelineno-5-4">4</a></span>
+<span class="normal"><a href="#__codelineno-5-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="c1">// ✅ Good - uses PyString</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kr">const</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyString</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;Alice&quot;</span><span class="p">);</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="c1">// ❌ Less ideal - uses generic PyObject</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="kr">const</span><span class="w"> </span><span class="n">name_obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Returns PyObject</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="2-import-and-cache-types">2. Import and Cache Types</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-6-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-6-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-6-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-6-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-6-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-6-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-6-10">10</a></span>
+<span class="normal"><a href="#__codelineno-6-11">11</a></span>
+<span class="normal"><a href="#__codelineno-6-12">12</a></span>
+<span class="normal"><a href="#__codelineno-6-13">13</a></span>
+<span class="normal"><a href="#__codelineno-6-14">14</a></span>
+<span class="normal"><a href="#__codelineno-6-15">15</a></span>
+<span class="normal"><a href="#__codelineno-6-16">16</a></span>
+<span class="normal"><a href="#__codelineno-6-17">17</a></span>
+<span class="normal"><a href="#__codelineno-6-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="c1">// Cache commonly used types</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="kr">var</span><span class="w"> </span><span class="n">cached_set_type</span><span class="o">:</span><span class="w"> </span><span class="o">?</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">get_set_type</span><span class="p">()</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cached_set_type</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="n">t</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">        </span><span class="n">t</span><span class="p">.</span><span class="n">incref</span><span class="p">();</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9"></a>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">builtins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import</span><span class="p">(</span><span class="s">&quot;builtins&quot;</span><span class="p">);</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">builtins</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12"></a>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">set_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">builtins</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">);</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14"></a><span class="w">    </span><span class="n">set_type</span><span class="p">.</span><span class="n">incref</span><span class="p">();</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15"></a><span class="w">    </span><span class="n">cached_set_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">set_type</span><span class="p">;</span>
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16"></a>
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">set_type</span><span class="p">;</span>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="3-create-helper-functions">3. Create Helper Functions</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-7-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-7-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-7-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-7-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-7-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-7-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-7-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-7-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-7-10">10</a></span>
+<span class="normal"><a href="#__codelineno-7-11">11</a></span>
+<span class="normal"><a href="#__codelineno-7-12">12</a></span>
+<span class="normal"><a href="#__codelineno-7-13">13</a></span>
+<span class="normal"><a href="#__codelineno-7-14">14</a></span>
+<span class="normal"><a href="#__codelineno-7-15">15</a></span>
+<span class="normal"><a href="#__codelineno-7-16">16</a></span>
+<span class="normal"><a href="#__codelineno-7-17">17</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="c1">// Helper for creating sets</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">createSet</span><span class="p">(</span><span class="n">items</span><span class="o">:</span><span class="w"> </span><span class="p">[]</span><span class="kr">const</span><span class="w"> </span><span class="kt">i64</span><span class="p">)</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">set_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">get_set_type</span><span class="p">();</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">set_type</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call0</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">set_type</span><span class="p">);</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;add&quot;</span><span class="p">);</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">add</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9"></a>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">items</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="n">item</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11"></a><span class="w">        </span><span class="kr">const</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">item</span><span class="p">);</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12"></a><span class="w">        </span><span class="k">defer</span><span class="w"> </span><span class="n">val</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13"></a><span class="w">        </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">add</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">val</span><span class="p">});</span>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15"></a>
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="4-document-type-requirements">4. Document Type Requirements</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-8-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-8-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-8-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-8-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-8-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-8-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-8-10">10</a></span>
+<span class="normal"><a href="#__codelineno-8-11">11</a></span>
+<span class="normal"><a href="#__codelineno-8-12">12</a></span>
+<span class="normal"><a href="#__codelineno-8-13">13</a></span>
+<span class="normal"><a href="#__codelineno-8-14">14</a></span>
+<span class="normal"><a href="#__codelineno-8-15">15</a></span>
+<span class="normal"><a href="#__codelineno-8-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="c1">/// Process a collection that must be a set</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="c1">/// @param collection Must be a Python set object</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">process_set</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">collection</span><span class="o">:</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="w">    </span><span class="c1">// Verify it&#39;s actually a set</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">builtins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import</span><span class="p">(</span><span class="s">&quot;builtins&quot;</span><span class="p">);</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">builtins</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7"></a>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">set_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">builtins</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">);</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">set_type</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10"></a>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">isinstance</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">collection</span><span class="p">,</span><span class="w"> </span><span class="n">set_type</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">TypeError</span><span class="p">(</span><span class="n">root</span><span class="p">).</span><span class="n">raise</span><span class="p">(</span><span class="s">&quot;Expected a set&quot;</span><span class="p">);</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14"></a>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15"></a><span class="w">    </span><span class="c1">// Work with the set...</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="future-additions">🚀 Future Additions</h2>
+<p>Based on usage frequency, these types should be added next:</p>
+<h3 id="phase-1-essential-types">Phase 1: Essential Types</h3>
+<ul>
+<li>[ ] <code>PySet</code> / <code>PyFrozenSet</code></li>
+<li>[ ] <code>PyComplex</code></li>
+<li>[ ] <code>PyByteArray</code></li>
+<li>[ ] <code>PyRange</code></li>
+<li>[ ] <code>PyGenerator</code></li>
+</ul>
+<h3 id="phase-2-common-library-types">Phase 2: Common Library Types</h3>
+<ul>
+<li>[ ] <code>PyDateTime</code> / <code>PyDate</code> / <code>PyTime</code></li>
+<li>[ ] <code>PyTimeDelta</code></li>
+<li>[ ] <code>PyDecimal</code></li>
+<li>[ ] <code>PyPath</code></li>
+</ul>
+<h3 id="phase-3-specialized-types">Phase 3: Specialized Types</h3>
+<ul>
+<li>[ ] <code>PyUUID</code></li>
+<li>[ ] <code>PyEnum</code></li>
+<li>[ ] <code>PyDefaultDict</code></li>
+<li>[ ] <code>PyCounter</code></li>
+<li>[ ] <code>PyDeque</code></li>
+</ul>
+<hr />
+<h2 id="complete-example">📖 Complete Example</h2>
+<p>Here's a complete example showing how to work with missing types:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-9-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-9-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-9-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-9-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-9-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-9-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-9-10">10</a></span>
+<span class="normal"><a href="#__codelineno-9-11">11</a></span>
+<span class="normal"><a href="#__codelineno-9-12">12</a></span>
+<span class="normal"><a href="#__codelineno-9-13">13</a></span>
+<span class="normal"><a href="#__codelineno-9-14">14</a></span>
+<span class="normal"><a href="#__codelineno-9-15">15</a></span>
+<span class="normal"><a href="#__codelineno-9-16">16</a></span>
+<span class="normal"><a href="#__codelineno-9-17">17</a></span>
+<span class="normal"><a href="#__codelineno-9-18">18</a></span>
+<span class="normal"><a href="#__codelineno-9-19">19</a></span>
+<span class="normal"><a href="#__codelineno-9-20">20</a></span>
+<span class="normal"><a href="#__codelineno-9-21">21</a></span>
+<span class="normal"><a href="#__codelineno-9-22">22</a></span>
+<span class="normal"><a href="#__codelineno-9-23">23</a></span>
+<span class="normal"><a href="#__codelineno-9-24">24</a></span>
+<span class="normal"><a href="#__codelineno-9-25">25</a></span>
+<span class="normal"><a href="#__codelineno-9-26">26</a></span>
+<span class="normal"><a href="#__codelineno-9-27">27</a></span>
+<span class="normal"><a href="#__codelineno-9-28">28</a></span>
+<span class="normal"><a href="#__codelineno-9-29">29</a></span>
+<span class="normal"><a href="#__codelineno-9-30">30</a></span>
+<span class="normal"><a href="#__codelineno-9-31">31</a></span>
+<span class="normal"><a href="#__codelineno-9-32">32</a></span>
+<span class="normal"><a href="#__codelineno-9-33">33</a></span>
+<span class="normal"><a href="#__codelineno-9-34">34</a></span>
+<span class="normal"><a href="#__codelineno-9-35">35</a></span>
+<span class="normal"><a href="#__codelineno-9-36">36</a></span>
+<span class="normal"><a href="#__codelineno-9-37">37</a></span>
+<span class="normal"><a href="#__codelineno-9-38">38</a></span>
+<span class="normal"><a href="#__codelineno-9-39">39</a></span>
+<span class="normal"><a href="#__codelineno-9-40">40</a></span>
+<span class="normal"><a href="#__codelineno-9-41">41</a></span>
+<span class="normal"><a href="#__codelineno-9-42">42</a></span>
+<span class="normal"><a href="#__codelineno-9-43">43</a></span>
+<span class="normal"><a href="#__codelineno-9-44">44</a></span>
+<span class="normal"><a href="#__codelineno-9-45">45</a></span>
+<span class="normal"><a href="#__codelineno-9-46">46</a></span>
+<span class="normal"><a href="#__codelineno-9-47">47</a></span>
+<span class="normal"><a href="#__codelineno-9-48">48</a></span>
+<span class="normal"><a href="#__codelineno-9-49">49</a></span>
+<span class="normal"><a href="#__codelineno-9-50">50</a></span>
+<span class="normal"><a href="#__codelineno-9-51">51</a></span>
+<span class="normal"><a href="#__codelineno-9-52">52</a></span>
+<span class="normal"><a href="#__codelineno-9-53">53</a></span>
+<span class="normal"><a href="#__codelineno-9-54">54</a></span>
+<span class="normal"><a href="#__codelineno-9-55">55</a></span>
+<span class="normal"><a href="#__codelineno-9-56">56</a></span>
+<span class="normal"><a href="#__codelineno-9-57">57</a></span>
+<span class="normal"><a href="#__codelineno-9-58">58</a></span>
+<span class="normal"><a href="#__codelineno-9-59">59</a></span>
+<span class="normal"><a href="#__codelineno-9-60">60</a></span>
+<span class="normal"><a href="#__codelineno-9-61">61</a></span>
+<span class="normal"><a href="#__codelineno-9-62">62</a></span>
+<span class="normal"><a href="#__codelineno-9-63">63</a></span>
+<span class="normal"><a href="#__codelineno-9-64">64</a></span>
+<span class="normal"><a href="#__codelineno-9-65">65</a></span>
+<span class="normal"><a href="#__codelineno-9-66">66</a></span>
+<span class="normal"><a href="#__codelineno-9-67">67</a></span>
+<span class="normal"><a href="#__codelineno-9-68">68</a></span>
+<span class="normal"><a href="#__codelineno-9-69">69</a></span>
+<span class="normal"><a href="#__codelineno-9-70">70</a></span>
+<span class="normal"><a href="#__codelineno-9-71">71</a></span>
+<span class="normal"><a href="#__codelineno-9-72">72</a></span>
+<span class="normal"><a href="#__codelineno-9-73">73</a></span>
+<span class="normal"><a href="#__codelineno-9-74">74</a></span>
+<span class="normal"><a href="#__codelineno-9-75">75</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">py</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;pyz3&quot;</span><span class="p">);</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="kr">const</span><span class="w"> </span><span class="n">std</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;std&quot;</span><span class="p">);</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="kr">const</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@This</span><span class="p">();</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5"></a>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="c1">/// Example: Working with sets (no dedicated wrapper)</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">set_operations</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8"></a><span class="w">    </span><span class="n">set_a</span><span class="o">:</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="p">,</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="w">    </span><span class="n">set_b</span><span class="o">:</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="p">,</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10"></a><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11"></a><span class="w">    </span><span class="c1">// Union</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">union_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">set_a</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;union&quot;</span><span class="p">);</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">union_method</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14"></a>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">union_method</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">args</span><span class="p">.</span><span class="n">set_b</span><span class="p">});</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16"></a>
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18"></a><span class="p">}</span>
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19"></a>
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20"></a><span class="c1">/// Example: Working with datetime</span>
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">time_diff</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-22"><a id="__codelineno-9-22" name="__codelineno-9-22"></a><span class="w">    </span><span class="n">start</span><span class="o">:</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="p">,</span>
+</span><span id="__span-9-23"><a id="__codelineno-9-23" name="__codelineno-9-23"></a><span class="w">    </span><span class="n">end</span><span class="o">:</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="p">,</span>
+</span><span id="__span-9-24"><a id="__codelineno-9-24" name="__codelineno-9-24"></a><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-25"><a id="__codelineno-9-25" name="__codelineno-9-25"></a><span class="w">    </span><span class="c1">// Subtract datetimes to get timedelta</span>
+</span><span id="__span-9-26"><a id="__codelineno-9-26" name="__codelineno-9-26"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">sub_op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">end</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;__sub__&quot;</span><span class="p">);</span>
+</span><span id="__span-9-27"><a id="__codelineno-9-27" name="__codelineno-9-27"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">sub_op</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-9-28"><a id="__codelineno-9-28" name="__codelineno-9-28"></a>
+</span><span id="__span-9-29"><a id="__codelineno-9-29" name="__codelineno-9-29"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">sub_op</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">args</span><span class="p">.</span><span class="n">start</span><span class="p">});</span>
+</span><span id="__span-9-30"><a id="__codelineno-9-30" name="__codelineno-9-30"></a>
+</span><span id="__span-9-31"><a id="__codelineno-9-31" name="__codelineno-9-31"></a><span class="w">    </span><span class="c1">// Get total seconds</span>
+</span><span id="__span-9-32"><a id="__codelineno-9-32" name="__codelineno-9-32"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">total_seconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">diff</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;total_seconds&quot;</span><span class="p">);</span>
+</span><span id="__span-9-33"><a id="__codelineno-9-33" name="__codelineno-9-33"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">total_seconds</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-9-34"><a id="__codelineno-9-34" name="__codelineno-9-34"></a>
+</span><span id="__span-9-35"><a id="__codelineno-9-35" name="__codelineno-9-35"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call0</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">total_seconds</span><span class="p">);</span>
+</span><span id="__span-9-36"><a id="__codelineno-9-36" name="__codelineno-9-36"></a><span class="p">}</span>
+</span><span id="__span-9-37"><a id="__codelineno-9-37" name="__codelineno-9-37"></a>
+</span><span id="__span-9-38"><a id="__codelineno-9-38" name="__codelineno-9-38"></a><span class="c1">/// Example: Creating complex numbers</span>
+</span><span id="__span-9-39"><a id="__codelineno-9-39" name="__codelineno-9-39"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">complex_math</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-40"><a id="__codelineno-9-40" name="__codelineno-9-40"></a><span class="w">    </span><span class="n">real</span><span class="o">:</span><span class="w"> </span><span class="kt">f64</span><span class="p">,</span>
+</span><span id="__span-9-41"><a id="__codelineno-9-41" name="__codelineno-9-41"></a><span class="w">    </span><span class="n">imag</span><span class="o">:</span><span class="w"> </span><span class="kt">f64</span><span class="p">,</span>
+</span><span id="__span-9-42"><a id="__codelineno-9-42" name="__codelineno-9-42"></a><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-43"><a id="__codelineno-9-43" name="__codelineno-9-43"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">cmath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import</span><span class="p">(</span><span class="s">&quot;cmath&quot;</span><span class="p">);</span>
+</span><span id="__span-9-44"><a id="__codelineno-9-44" name="__codelineno-9-44"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">cmath</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-9-45"><a id="__codelineno-9-45" name="__codelineno-9-45"></a>
+</span><span id="__span-9-46"><a id="__codelineno-9-46" name="__codelineno-9-46"></a><span class="w">    </span><span class="c1">// Create complex number</span>
+</span><span id="__span-9-47"><a id="__codelineno-9-47" name="__codelineno-9-47"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">create_complex</span><span class="p">(.{</span><span class="w"> </span><span class="p">.</span><span class="n">real</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">real</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">imag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">imag</span><span class="w"> </span><span class="p">});</span>
+</span><span id="__span-9-48"><a id="__codelineno-9-48" name="__codelineno-9-48"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-9-49"><a id="__codelineno-9-49" name="__codelineno-9-49"></a>
+</span><span id="__span-9-50"><a id="__codelineno-9-50" name="__codelineno-9-50"></a><span class="w">    </span><span class="c1">// Calculate absolute value</span>
+</span><span id="__span-9-51"><a id="__codelineno-9-51" name="__codelineno-9-51"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">abs_fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">cmath</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;sqrt&quot;</span><span class="p">);</span>
+</span><span id="__span-9-52"><a id="__codelineno-9-52" name="__codelineno-9-52"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">abs_fn</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-9-53"><a id="__codelineno-9-53" name="__codelineno-9-53"></a>
+</span><span id="__span-9-54"><a id="__codelineno-9-54" name="__codelineno-9-54"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">abs_fn</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">c</span><span class="p">});</span>
+</span><span id="__span-9-55"><a id="__codelineno-9-55" name="__codelineno-9-55"></a><span class="p">}</span>
+</span><span id="__span-9-56"><a id="__codelineno-9-56" name="__codelineno-9-56"></a>
+</span><span id="__span-9-57"><a id="__codelineno-9-57" name="__codelineno-9-57"></a><span class="k">fn</span><span class="w"> </span><span class="n">create_complex</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">real</span><span class="o">:</span><span class="w"> </span><span class="kt">f64</span><span class="p">,</span><span class="w"> </span><span class="n">imag</span><span class="o">:</span><span class="w"> </span><span class="kt">f64</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-58"><a id="__codelineno-9-58" name="__codelineno-9-58"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">builtins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import</span><span class="p">(</span><span class="s">&quot;builtins&quot;</span><span class="p">);</span>
+</span><span id="__span-9-59"><a id="__codelineno-9-59" name="__codelineno-9-59"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">builtins</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-9-60"><a id="__codelineno-9-60" name="__codelineno-9-60"></a>
+</span><span id="__span-9-61"><a id="__codelineno-9-61" name="__codelineno-9-61"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">complex_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">builtins</span><span class="p">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s">&quot;complex&quot;</span><span class="p">);</span>
+</span><span id="__span-9-62"><a id="__codelineno-9-62" name="__codelineno-9-62"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">complex_type</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-9-63"><a id="__codelineno-9-63" name="__codelineno-9-63"></a>
+</span><span id="__span-9-64"><a id="__codelineno-9-64" name="__codelineno-9-64"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">real</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">real</span><span class="p">);</span>
+</span><span id="__span-9-65"><a id="__codelineno-9-65" name="__codelineno-9-65"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">real</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-9-66"><a id="__codelineno-9-66" name="__codelineno-9-66"></a>
+</span><span id="__span-9-67"><a id="__codelineno-9-67" name="__codelineno-9-67"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">imag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">imag</span><span class="p">);</span>
+</span><span id="__span-9-68"><a id="__codelineno-9-68" name="__codelineno-9-68"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">imag</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-9-69"><a id="__codelineno-9-69" name="__codelineno-9-69"></a>
+</span><span id="__span-9-70"><a id="__codelineno-9-70" name="__codelineno-9-70"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">complex_type</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="w"> </span><span class="n">real</span><span class="p">,</span><span class="w"> </span><span class="n">imag</span><span class="w"> </span><span class="p">});</span>
+</span><span id="__span-9-71"><a id="__codelineno-9-71" name="__codelineno-9-71"></a><span class="p">}</span>
+</span><span id="__span-9-72"><a id="__codelineno-9-72" name="__codelineno-9-72"></a>
+</span><span id="__span-9-73"><a id="__codelineno-9-73" name="__codelineno-9-73"></a><span class="kr">comptime</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-74"><a id="__codelineno-9-74" name="__codelineno-9-74"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">rootmodule</span><span class="p">(</span><span class="n">root</span><span class="p">);</span>
+</span><span id="__span-9-75"><a id="__codelineno-9-75" name="__codelineno-9-75"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="summary">Summary</h2>
+<p><strong>Current State</strong>: ✅ <strong>EXCELLENT COVERAGE</strong> (72.1%)
+- ✅ <strong>100% coverage</strong> of <strong>core types</strong> (8/8)
+- ✅ <strong>100% coverage</strong> of <strong>container types</strong> (6/6)
+- ✅ <strong>75% coverage</strong> of <strong>protocol types</strong> (6/8)
+- ✅ <strong>75% coverage</strong> of <strong>advanced types</strong> (6/8)
+- ✅ <strong>69% coverage</strong> of <strong>standard library types</strong> (9/13)</p>
+<p><strong>Recent Additions</strong> (13 new type wrappers):
+- ✨ <strong>Containers</strong>: PySet, PyFrozenSet, PyRange
+- ✨ <strong>Numeric</strong>: PyComplex, PyByteArray
+- ✨ <strong>Advanced</strong>: PyGenerator
+- ✨ <strong>DateTime</strong>: PyDateTime, PyDate, PyTime, PyTimeDelta
+- ✨ <strong>Stdlib</strong>: PyDecimal, PyPath, PyUUID</p>
+<p><strong>The Good News</strong>:
+- Framework now covers <strong>all commonly used Python types</strong>
+- Missing types (Fraction, specialized collections) are rarely needed in extension modules
+- You can still use <code>PyObject</code> for any remaining edge cases
+- Framework is <strong>production-ready</strong> for virtually all use cases</p>
+<p><strong>Recommendation</strong>:
+- ✅ <strong>Production ready</strong>: 72.1% coverage is <strong>excellent</strong> for extension development
+- Most missing types (defaultdict, Counter, deque) are easily accessible via PyObject
+- The framework now handles <strong>all essential types</strong> natively!</p>
+<p>See also:
+- <a href="../functions/#type-conversion">Type Conversion</a>
+- <a href="../classes/">Classes and Objects</a>
+- <a href="../../pyz3/src/builtins.zig">Built-in Functions</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/amiyamandal-dev/pyz3" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/pyZ3/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.expand", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>
