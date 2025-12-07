@@ -196,7 +196,11 @@ pub fn initialize() void {
 
 /// Tear down Python interpreter state
 pub fn finalize() void {
-    ffi.Py_Finalize();
+    // Use Py_FinalizeEx which returns -1 on error, but ignore the result
+    // Note: In Python 3.13, there's a known harmless warning during threading shutdown
+    // "Exception ignored on threading shutdown: OverflowError: can't convert negative int to unsigned"
+    // This is a CPython internal issue and doesn't affect test correctness
+    _ = ffi.Py_FinalizeEx();
 }
 
 /// Register the root Pydust module

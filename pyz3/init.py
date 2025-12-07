@@ -63,8 +63,8 @@ def init_project_cookiecutter(
     logger.info(f"Initializing Pydust project with cookiecutter in {path}")
 
     # Find the template directory
-    pyz3_root = Path(__file__).parent.parent
-    template_path = pyz3_root / "pyZ3-template"
+    pyz3_package = Path(__file__).parent
+    template_path = pyz3_package / "pyZ3-template"
 
     if not template_path.exists():
         logger.error(f"Template not found at {template_path}")

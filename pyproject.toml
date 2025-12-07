@@ -37,6 +37,7 @@ ziglang = "^0.15.1"
 pydantic = "^2.3.0"
 setuptools = "^80.0.0"
 black = "^25.0.0"
+cookiecutter = "^2.6.0"
 
 # Distribution dependencies
 build = { version = "^1.0.0", optional = true }

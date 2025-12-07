@@ -72,7 +72,11 @@ pub fn build(b: *std.Build) void {
     main_tests.linkLibC();
     main_tests.addLibraryPath(.{ .cwd_relative = pythonLib });
     main_tests.linkSystemLibrary(pythonLibName);
-    main_tests.addRPath(.{ .cwd_relative = pythonLib });
+    // Note: addLibraryPath automatically adds RPATH on macOS in Zig 0.15+
+    // Explicitly adding it again causes duplicate LC_RPATH warnings
+    if (builtin.os.tag != .macos) {
+        main_tests.addRPath(.{ .cwd_relative = pythonLib });
+    }
     const main_tests_mod = b.createModule(.{ .root_source_file = b.path("./pyconf.dummy.zig") });
     main_tests_mod.addIncludePath(.{ .cwd_relative = pythonInc });
     main_tests.root_module.addImport("ffi", translate_c.createModule());

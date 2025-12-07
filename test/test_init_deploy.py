@@ -185,8 +185,8 @@ class TestTemplateIntegration:
     def test_template_exists(self):
         from pyz3 import init
 
-        pyz3_root = Path(init.__file__).parent.parent
-        template_path = pyz3_root / "pyZ3-template"
+        pyz3_package = Path(init.__file__).parent
+        template_path = pyz3_package / "pyZ3-template"
 
         assert template_path.exists(), f"Template directory not found at {template_path}"
         assert (template_path / "cookiecutter.json").exists()

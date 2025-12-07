@@ -184,8 +184,11 @@ pub const PyZ3Step = struct {
             testdebug.linkLibC();
             testdebug.linkSystemLibrary(libpython);
             testdebug.addLibraryPath(b.path(self.python_library_dir));
-            // Needed to support miniconda statically linking libpython on macos
-            testdebug.addRPath(b.path(self.python_library_dir));
+            // Note: addLibraryPath automatically adds RPATH on macOS in Zig 0.15+
+            // Only add explicit RPATH for non-macOS (needed for miniconda on other platforms)
+            if (builtin.os.tag != .macos) {
+                testdebug.addRPath(b.path(self.python_library_dir));
+            }
 
             const debugBin = b.addInstallBinFile(testdebug.getEmittedBin(), "debug.bin");
             b.getInstallStep().dependOn(&debugBin.step);
@@ -281,8 +284,11 @@ pub const PyZ3Step = struct {
         libtest.linkLibC();
         libtest.linkSystemLibrary(self.libpython);
         libtest.addLibraryPath(b.path(self.python_library_dir));
-        // Needed to support miniconda statically linking libpython on macos
-        libtest.addRPath(b.path(self.python_library_dir));
+        // Note: addLibraryPath automatically adds RPATH on macOS in Zig 0.15+
+        // Only add explicit RPATH for non-macOS (needed for miniconda on other platforms)
+        if (builtin.os.tag != .macos) {
+            libtest.addRPath(b.path(self.python_library_dir));
+        }
 
         // Install the test binary
         const install_libtest = b.addInstallBinFile(

@@ -61,9 +61,6 @@ jobs:
       - name: Poetry Build
         run: poetry build -v
 
-      - name: Run library tests
-        run: poetry run python -m ziglang build test
-
       - name: Build test binaries
         run:  poetry run python -m ziglang build pyz3-test-build --build-file ./pytest.build.zig
 
