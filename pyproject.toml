@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyz3"
-version = "0.6.0"
+version = "0.7.0"
 description = "Build high-performance Python extensions in Zig with automatic memory management. Inspired by ziggy-pydust."
 authors = ["amiya mandal <amiya19mandal@pm.me>"]
 license = "Apache 2.0"
