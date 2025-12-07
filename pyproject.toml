@@ -5,9 +5,9 @@ description = "Build high-performance Python extensions in Zig with automatic me
 authors = ["Your Name <your.email@example.com>"]
 license = "Apache 2.0"
 readme = "README.md"
-homepage = "https://github.com/yourusername/pyZ3"
-repository = "https://github.com/yourusername/pyZ3"
-documentation = "https://github.com/yourusername/pyZ3"
+homepage = "https://github.com/amiyamandal-dev/pyz3"
+repository = "https://github.com/amiyamandal-dev/pyz3"
+documentation = "https://github.com/amiyamandal-dev/pyz3"
 keywords = ["zig", "python", "extensions", "performance", "c-api", "bindings", "numpy", "pyz3"]
 classifiers = [
     "Development Status :: 4 - Beta",

@@ -94,7 +94,7 @@ Fixes:
 git push origin main
 
 # 3. Check GitHub Actions
-# Go to: https://github.com/yourusername/pyZ3/actions
+# Go to: https://github.com/amiyamandal-dev/pyz3/actions
 # All builds should show green checkmarks
 ```
 

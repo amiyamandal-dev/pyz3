@@ -144,7 +144,7 @@ After this fix:
 
 ```bash
 # Clone and test
-git clone https://github.com/yourusername/pyZ3.git
+git clone https://github.com/amiyamandal-dev/pyz3.git
 cd pyZ3
 
 # Trigger workflow

@@ -116,7 +116,7 @@ docs/
 
 ## 🔗 External Links
 
-- **GitHub Repository**: https://github.com/yourusername/pyZ3
+- **GitHub Repository**: https://github.com/amiyamandal-dev/pyz3
 - **PyPI Package**: https://pypi.org/project/pyZ3/
 - **Original Project**: https://github.com/fulcrum-so/ziggy-pydust
 - **Zig Language**: https://ziglang.org

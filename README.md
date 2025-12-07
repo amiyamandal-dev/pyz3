@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-<a href="https://github.com/yourusername/pyZ3/actions" target="_blank">
+<a href="https://github.com/amiyamandal-dev/pyz3/actions" target="_blank">
     <img src="https://img.shields.io/github/actions/workflow/status/yourusername/pyZ3/ci.yml?branch=main&logo=github" alt="Actions">
 </a>
 <a href="https://pypi.org/project/pyZ3" target="_blank">
@@ -17,16 +17,16 @@
 <a href="https://docs.python.org/3/whatsnew/3.11.html" target="_blank">
     <img src="https://img.shields.io/pypi/pyversions/pyZ3" alt="Python version">
 </a>
-<a href="https://github.com/yourusername/pyZ3/blob/main/LICENSE" target="_blank">
+<a href="https://github.com/amiyamandal-dev/pyz3/blob/main/LICENSE" target="_blank">
     <img src="https://img.shields.io/github/license/yourusername/pyZ3" alt="License">
 </a>
 </p>
 
 ---
 
-**Documentation**: <a href="https://github.com/yourusername/pyZ3" target="_blank">https://github.com/yourusername/pyZ3</a>
+**Documentation**: <a href="https://github.com/amiyamandal-dev/pyz3" target="_blank">https://github.com/amiyamandal-dev/pyz3</a>
 
-**Source Code**: <a href="https://github.com/yourusername/pyZ3" target="_blank">https://github.com/yourusername/pyZ3</a>
+**Source Code**: <a href="https://github.com/amiyamandal-dev/pyz3" target="_blank">https://github.com/amiyamandal-dev/pyz3</a>
 
 ---
 

@@ -64,7 +64,7 @@ Contributions to pyZ3 are welcome! Please note that:
 ## Links
 
 - **Original Project**: [ziggy-pydust](https://github.com/fulcrum-so/ziggy-pydust)
-- **This Fork (pyZ3)**: https://github.com/yourusername/pyZ3
+- **This Fork (pyZ3)**: https://github.com/amiyamandal-dev/pyz3
 - **PyPI Package**: https://pypi.org/project/pyZ3/
 
 ---

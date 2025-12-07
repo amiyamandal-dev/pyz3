@@ -124,9 +124,9 @@ Projects created from this template will:
 ### Attribution
 Generated projects include:
 ```markdown
-This project was generated from the [pyZ3 Template](https://github.com/yourusername/pyZ3-template).
+This project was generated from the [pyZ3 Template](https://github.com/amiyamandal-dev/pyz3-template).
 
-For more information, visit the [pyZ3 documentation](https://github.com/yourusername/pyZ3).
+For more information, visit the [pyZ3 documentation](https://github.com/amiyamandal-dev/pyz3).
 ```
 
 ## Breaking Changes

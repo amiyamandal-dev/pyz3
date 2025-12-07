@@ -285,7 +285,7 @@ poetry install  # This runs the build
 
 ## Learning Resources
 
-- [pyZ3 Documentation](https://github.com/yourusername/pyZ3/)
+- [pyZ3 Documentation](https://github.com/amiyamandal-dev/pyz3/)
 - [Zig Learn](https://ziglearn.org/)
 - [Python C API](https://docs.python.org/3/c-api/)
 - [Poetry Docs](https://python-poetry.org/docs/)
@@ -294,5 +294,5 @@ poetry install  # This runs the build
 
 For issues with:
 - **This template**: Open an issue in the template repository
-- **pyZ3 framework**: Visit [pyZ3 GitHub](https://github.com/yourusername/pyZ3)
+- **pyZ3 framework**: Visit [pyZ3 GitHub](https://github.com/amiyamandal-dev/pyz3)
 - **Zig language**: Check [Zig forums](https://github.com/ziglang/zig)

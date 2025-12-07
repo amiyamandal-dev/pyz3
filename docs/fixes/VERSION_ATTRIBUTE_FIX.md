@@ -34,7 +34,7 @@ with automatic memory management, hot-reload, and NumPy integration.
 __version__ = "0.1.0"
 __author__ = "Your Name"
 __email__ = "your.email@example.com"
-__url__ = "https://github.com/yourusername/pyZ3"
+__url__ = "https://github.com/amiyamandal-dev/pyz3"
 __description__ = "Build high-performance Python extensions in Zig..."
 ```
 

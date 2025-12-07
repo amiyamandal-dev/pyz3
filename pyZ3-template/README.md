@@ -1,6 +1,6 @@
 # pyZ3 Cookiecutter Template
 
-A [Cookiecutter](https://github.com/cookiecutter/cookiecutter) template for creating Python extension modules in Zig using [pyZ3](https://github.com/yourusername/pyZ3).
+A [Cookiecutter](https://github.com/cookiecutter/cookiecutter) template for creating Python extension modules in Zig using [pyZ3](https://github.com/amiyamandal-dev/pyz3).
 
 ## Features
 
@@ -181,7 +181,7 @@ After generating your project, you can:
 
 ## Learning Resources
 
-- [pyZ3 Documentation](https://github.com/yourusername/pyZ3)
+- [pyZ3 Documentation](https://github.com/amiyamandal-dev/pyz3)
 - [Zig Language Reference](https://ziglang.org/documentation/master/)
 - [Poetry Documentation](https://python-poetry.org/docs/)
 

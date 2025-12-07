@@ -169,7 +169,7 @@ To complete the fork setup, you need to:
 
 2. **Update remote URL**
    ```bash
-   git remote set-url origin https://github.com/yourusername/pyZ3.git
+   git remote set-url origin https://github.com/amiyamandal-dev/pyz3.git
    ```
 
 3. **Update pyproject.toml with your information**

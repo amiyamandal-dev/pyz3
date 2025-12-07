@@ -22,8 +22,8 @@ Edit `pyproject.toml`:
 [tool.poetry]
 name = "pyZ3"
 authors = ["Your Name <your.email@example.com>"]  # ← Update this
-homepage = "https://github.com/yourusername/pyZ3"  # ← Update this
-repository = "https://github.com/yourusername/pyZ3"  # ← Update this
+homepage = "https://github.com/amiyamandal-dev/pyz3"  # ← Update this
+repository = "https://github.com/amiyamandal-dev/pyz3"  # ← Update this
 ```
 
 ### 2. Update README.md URLs

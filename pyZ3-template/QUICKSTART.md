@@ -244,7 +244,7 @@ python -m ziglang build generate-stubs
 
 ## Resources
 
-- [pyZ3 Documentation](https://github.com/yourusername/pyZ3)
+- [pyZ3 Documentation](https://github.com/amiyamandal-dev/pyz3)
 - [Zig Language](https://ziglang.org/documentation/master/)
 - [Example Zig file]({{cookiecutter.project_slug}}/src/{{cookiecutter.zig_file_name}}.zig)
 - [Full USAGE guide](USAGE.md)
@@ -252,7 +252,7 @@ python -m ziglang build generate-stubs
 ## Getting Help
 
 - Template issues: Open an issue in the template repo
-- pyZ3 questions: [pyZ3 GitHub](https://github.com/yourusername/pyZ3)
+- pyZ3 questions: [pyZ3 GitHub](https://github.com/amiyamandal-dev/pyz3)
 - Zig questions: [Zig Forums](https://github.com/ziglang/zig/discussions)
 
 Happy coding!

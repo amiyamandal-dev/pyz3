@@ -1,7 +1,7 @@
 site_name: pyZ3
 
 repo_name: yourusername/pyZ3
-repo_url: https://github.com/yourusername/pyZ3
+repo_url: https://github.com/amiyamandal-dev/pyz3
 
 theme:
   name: material
@@ -32,7 +32,7 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/yourusername/pyZ3
+      link: https://github.com/amiyamandal-dev/pyz3
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/pyZ3/
   version:
