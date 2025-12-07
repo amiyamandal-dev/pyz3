@@ -27,6 +27,14 @@ class ExtModule(BaseModel):
     root: Path
     limited_api: bool = True
 
+    # C/C++ integration support
+    c_sources: list[str] = Field(default_factory=list, description="C/C++ source files to compile")
+    c_include_dirs: list[str] = Field(default_factory=list, description="Include directories for C headers")
+    c_libraries: list[str] = Field(default_factory=list, description="System libraries to link (-l)")
+    c_flags: list[str] = Field(default_factory=list, description="C/C++ compiler flags")
+    ld_flags: list[str] = Field(default_factory=list, description="Linker flags")
+    link_all_deps: bool = Field(default=False, description="Auto-link all pyz3_deps.json dependencies")
+
     @property
     def libname(self) -> str:
         return self.name.rsplit(".", maxsplit=1)[-1]

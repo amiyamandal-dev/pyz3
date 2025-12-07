@@ -2,6 +2,13 @@ const std = @import("std");
 const py = @import("pyz3");
 
 const root = @This();
+{% if cookiecutter.include_c_example == "yes" %}
+
+// Import C helper functions
+const c = @cImport({
+    @cInclude("{{ cookiecutter.c_helper_name }}.h");
+});
+{% endif %}
 
 // A simple fibonacci implementation.
 pub fn nth_fibonacci_iterative(args: struct { n: u64 }) u64 {
@@ -84,6 +91,20 @@ pub const FibonacciIterator = py.class(struct {
         return result;
     }
 });
+{% if cookiecutter.include_c_example == "yes" %}
+
+// C Integration Examples
+
+/// Add two integers using C implementation
+pub fn c_add(args: struct { a: i32, b: i32 }) i32 {
+    return c.{{ cookiecutter.c_helper_name }}_add(@intCast(args.a), @intCast(args.b));
+}
+
+/// Multiply two integers using C implementation
+pub fn c_multiply(args: struct { a: i32, b: i32 }) i32 {
+    return c.{{ cookiecutter.c_helper_name }}_multiply(@intCast(args.a), @intCast(args.b));
+}
+{% endif %}
 
 comptime {
     py.rootmodule(root);

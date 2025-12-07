@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyz3"
-version = "0.5.0"
+version = "0.6.0"
 description = "Build high-performance Python extensions in Zig with automatic memory management. Inspired by ziggy-pydust."
 authors = ["amiya mandal <amiya19mandal@pm.me>"]
 license = "Apache 2.0"
@@ -145,3 +145,10 @@ root = "example/code.zig"
 [[tool.pyz3.ext_module]]
 name = "example.new_container_types"
 root = "example/new_container_types.zig"
+
+[[tool.pyz3.ext_module]]
+name = "example.c_integration"
+root = "example/c_integration.zig"
+c_sources = ["example/c_math_helper.c"]
+c_include_dirs = ["example/"]
+c_flags = ["-O2"]

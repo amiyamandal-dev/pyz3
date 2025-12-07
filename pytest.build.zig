@@ -17,6 +17,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -25,6 +30,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -33,6 +43,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -41,6 +56,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -49,6 +69,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -57,6 +82,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -65,6 +95,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -73,6 +108,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -81,6 +121,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -89,6 +134,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -97,6 +147,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -105,6 +160,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -113,6 +173,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -121,6 +186,11 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
     });
 
     _ = pyz3.addPythonModule(.{
@@ -129,6 +199,24 @@ pub fn build(b: *std.Build) void {
         .limited_api = true,
         .target = target,
         .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
+    });
+
+    _ = pyz3.addPythonModule(.{
+        .name = "example.c_integration",
+        .root_source_file = b.path("example/c_integration.zig"),
+        .limited_api = true,
+        .target = target,
+        .optimize = optimize,
+        .c_sources = &.{ "example/c_math_helper.c" },
+        .c_include_dirs = &.{ "example/" },
+        .c_libraries = &.{},
+        .c_flags = &.{ "-O2" },
+        .ld_flags = &.{},
     });
 
 

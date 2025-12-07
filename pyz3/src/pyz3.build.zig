@@ -28,6 +28,13 @@ pub const PythonModuleOptions = struct {
     optimize: std.builtin.OptimizeMode,
     main_pkg_path: ?std.Build.LazyPath = null,
 
+    // C/C++ integration options
+    c_sources: []const []const u8 = &.{},
+    c_include_dirs: []const []const u8 = &.{},
+    c_libraries: []const []const u8 = &.{},
+    c_flags: []const []const u8 = &.{},
+    ld_flags: []const []const u8 = &.{},
+
     pub fn short_name(self: *const PythonModuleOptions) [:0]const u8 {
         if (std.mem.lastIndexOfScalar(u8, self.name, '.')) |short_name_idx| {
             return self.name[short_name_idx + 1 .. :0];
@@ -246,11 +253,39 @@ pub const PyZ3Step = struct {
         lib.linkLibC();
         lib.linker_allow_shlib_undefined = true;
 
-        // Install the shared library within the source tree
+        // Apply C/C++ integration configuration
+        for (options.c_include_dirs) |include_dir| {
+            lib.addIncludePath(b.path(include_dir));
+            lib_module.addIncludePath(b.path(include_dir));
+        }
+
+        for (options.c_sources) |c_source| {
+            lib.addCSourceFile(.{
+                .file = b.path(c_source),
+                .flags = options.c_flags,
+            });
+        }
+
+        for (options.c_libraries) |c_lib| {
+            lib.linkSystemLibrary(c_lib);
+        }
+
+        // Apply linker flags
+        for (options.ld_flags) |ld_flag| {
+            lib.root_module.addRPathSpecial(ld_flag);
+        }
+
+        // Install the shared library within the source tree (not zig-out/).
+        // Python's import mechanism expects extension modules to be co-located with
+        // Python source files (e.g., package/module.abi3.so), not in a separate build directory.
+        //
+        // We use .{ .custom = ".." } to install relative to the project root instead of zig-out/.
+        // This resolves: zig-out/../package/module.so → package/module.so
+        //
+        // This is intentional and aligns with Python build system conventions.
         const install = b.addInstallFileWithDir(
             lib.getEmittedBin(),
-            // TODO(ngates): find this somehow?
-            .{ .custom = ".." }, // Relative to project root: zig-out/../
+            .{ .custom = ".." }, // Escape zig-out/ to install in project root
             libraryDestRelPath(self.allocator, options) catch |err| {
                 std.debug.print("\n❌ Out of memory computing library destination path\n", .{});
                 std.debug.print("   Error: {}\n", .{err});

@@ -66,6 +66,14 @@ def zig_build(argv: list[str], conf: config.ToolPydust | None = None):
     subprocess.run(cmds, check=True)
 
 
+def _format_zig_array(items: list[str]) -> str:
+    """Format a Python list as a Zig array literal."""
+    if not items:
+        return "&.{}"
+    formatted_items = ", ".join(f'"{item}"' for item in items)
+    return f"&.{{ {formatted_items} }}"
+
+
 def generate_build_zig(fileobj: TextIO, conf=None):
     """Generate the build.zig file for the current pyproject.toml.
 
@@ -105,17 +113,29 @@ def generate_build_zig(fileobj: TextIO, conf=None):
             # Convert Windows backslashes to forward slashes for Zig compatibility
             root_path = str(ext_module.root).replace("\\", "/")
 
-            b.write(
-                f"""
+            # Format C/C++ configuration
+            c_sources = _format_zig_array(ext_module.c_sources)
+            c_include_dirs = _format_zig_array(ext_module.c_include_dirs)
+            c_libraries = _format_zig_array(ext_module.c_libraries)
+            c_flags = _format_zig_array(ext_module.c_flags)
+            ld_flags = _format_zig_array(ext_module.ld_flags)
+
+            module_config = f"""
                 _ = pyz3.addPythonModule(.{{
                     .name = "{ext_module.name}",
                     .root_source_file = b.path("{root_path}"),
                     .limited_api = {str(ext_module.limited_api).lower()},
                     .target = target,
                     .optimize = optimize,
+                    .c_sources = {c_sources},
+                    .c_include_dirs = {c_include_dirs},
+                    .c_libraries = {c_libraries},
+                    .c_flags = {c_flags},
+                    .ld_flags = {ld_flags},
                 }});
                 """
-            )
+
+            b.write(module_config)
 
 
 class Writer:
