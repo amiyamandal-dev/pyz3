@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L
 #include "native_dict.h"
 #include "uthash.h"
 #include <stdlib.h>
