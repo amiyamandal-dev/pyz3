@@ -13,7 +13,6 @@ pyZ3 was created to:
 ## Major Differences from Original
 
 ### New Features
-- ✅ **NumPy Integration** - Built-in `PyArray` type with zero-copy access
 - ✅ **DType System** - Type-safe dtype mapping at compile time
 - ✅ **Enhanced Cross-Compilation** - Improved multi-platform wheel building
 - ✅ **Updated CLI** - Renamed commands from `pydust` to `pyz3`

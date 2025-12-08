@@ -181,6 +181,15 @@ pub const ffi = @import("ffi");
 pub const PyError = @import("errors.zig").PyError;
 pub const allocator: std.mem.Allocator = mem.PyMemAllocator.allocator();
 
+// SIMD support
+pub const simd = @import("simd.zig");
+
+// Enhanced error handling with stack traces
+pub const errors_enhanced = @import("errors_enhanced.zig");
+
+// Native high-performance collections using uthash/utarray
+pub const native_collections = @import("native_collections.zig");
+
 // Testing utilities
 pub const testing = @import("testing.zig");
 

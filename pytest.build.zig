@@ -219,6 +219,58 @@ pub fn build(b: *std.Build) void {
         .ld_flags = &.{},
     });
 
+    _ = pyz3.addPythonModule(.{
+        .name = "example.fastpath_bench",
+        .root_source_file = b.path("example/fastpath_bench.zig"),
+        .limited_api = true,
+        .target = target,
+        .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
+    });
+
+    _ = pyz3.addPythonModule(.{
+        .name = "example.gil_bench",
+        .root_source_file = b.path("example/gil_bench.zig"),
+        .limited_api = true,
+        .target = target,
+        .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
+    });
+
+    _ = pyz3.addPythonModule(.{
+        .name = "example.simd_example",
+        .root_source_file = b.path("example/simd_example.zig"),
+        .limited_api = true,
+        .target = target,
+        .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
+    });
+
+    _ = pyz3.addPythonModule(.{
+        .name = "example.native_collections_example",
+        .root_source_file = b.path("example/native_collections_example.zig"),
+        .limited_api = true,
+        .target = target,
+        .optimize = optimize,
+        .c_sources = &.{ "pyz3/src/native/native_dict.c", "pyz3/src/native/native_array.c" },
+        .c_include_dirs = &.{ "pyz3/src/native/" },
+        .c_libraries = &.{},
+        .c_flags = &.{ "-std=c99" },
+        .ld_flags = &.{},
+    });
+
 
 }
 

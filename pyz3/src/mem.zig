@@ -16,6 +16,36 @@ const Allocator = std.mem.Allocator;
 const ffi = @import("ffi");
 const py = @import("./pyz3.zig");
 
+/// Thread-local GIL state tracking for performance optimization
+/// This prevents redundant GIL acquire/release calls when already held
+threadlocal var gil_depth: u32 = 0;
+threadlocal var gil_state: ffi.PyGILState_STATE = undefined;
+
+/// RAII helper to manage GIL acquisition with depth tracking
+const ScopedGIL = struct {
+    acquired: bool,
+
+    fn acquire() ScopedGIL {
+        if (gil_depth == 0) {
+            gil_state = ffi.PyGILState_Ensure();
+            gil_depth = 1;
+            return .{ .acquired = true };
+        } else {
+            gil_depth += 1;
+            return .{ .acquired = false };
+        }
+    }
+
+    fn release(self: ScopedGIL) void {
+        if (gil_depth > 0) {
+            gil_depth -= 1;
+            if (self.acquired and gil_depth == 0) {
+                ffi.PyGILState_Release(gil_state);
+            }
+        }
+    }
+};
+
 pub const PyMemAllocator = struct {
     const Self = @This();
 
@@ -38,9 +68,9 @@ pub const PyMemAllocator = struct {
         _ = ctx;
 
         // PyMem functions require the GIL
-        // TODO(perf): Check if GIL already held to avoid overhead in re-entrant calls
-        const gil = py.gil();
-        defer gil.release();
+        // Optimized: Check if GIL already held to avoid overhead in re-entrant calls
+        const scoped_gil = ScopedGIL.acquire();
+        defer scoped_gil.release();
 
         const alignment_bytes = ptr_align.toByteUnits();
 
@@ -97,9 +127,9 @@ pub const PyMemAllocator = struct {
         _ = ctx;
 
         // PyMem functions require the GIL
-        // TODO(perf): Check if GIL already held to avoid overhead in re-entrant calls
-        const gil = py.gil();
-        defer gil.release();
+        // Optimized: Check if GIL already held to avoid overhead in re-entrant calls
+        const scoped_gil = ScopedGIL.acquire();
+        defer scoped_gil.release();
 
         const alignment_bytes = ptr_align.toByteUnits();
 
@@ -154,9 +184,9 @@ pub const PyMemAllocator = struct {
         _ = ctx;
 
         // PyMem functions require the GIL
-        // TODO(perf): Check if GIL already held to avoid overhead in re-entrant calls
-        const gil = py.gil();
-        defer gil.release();
+        // Optimized: Check if GIL already held to avoid overhead in re-entrant calls
+        const scoped_gil = ScopedGIL.acquire();
+        defer scoped_gil.release();
 
         const alignment_bytes = buf_align.toByteUnits();
 
@@ -202,9 +232,9 @@ pub const PyMemAllocator = struct {
         _ = ret_addr;
 
         // PyMem functions require the GIL
-        // TODO(perf): Check if GIL already held to avoid overhead in re-entrant calls
-        const gil = py.gil();
-        defer gil.release();
+        // Optimized: Check if GIL already held to avoid overhead in re-entrant calls
+        const scoped_gil = ScopedGIL.acquire();
+        defer scoped_gil.release();
 
         // Fetch the alignment shift. We could check it matches the buf_align, but it's a bit annoying.
         const aligned_ptr: usize = @intFromPtr(buf.ptr);

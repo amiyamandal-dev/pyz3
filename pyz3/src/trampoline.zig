@@ -19,6 +19,69 @@ const State = @import("discovery.zig").State;
 const funcs = @import("functions.zig");
 const pytypes = @import("pytypes.zig");
 const PyError = @import("errors.zig").PyError;
+const object_pool = @import("object_pool.zig");
+
+/// Fast path optimization for common primitive types
+/// These bypass the generic trampoline machinery for better performance
+const FastPath = struct {
+    /// Fast wrap for i64 - uses object pool for small ints, otherwise creates new
+    pub inline fn wrapI64(value: i64) PyError!py.PyObject {
+        // Try to use cached small integer
+        if (object_pool.ObjectPool.isSmallInt(value)) {
+            if (object_pool.getCachedInt(value)) |obj| {
+                return .{ .py = obj };
+            }
+        }
+
+        // Fall back to creating new object
+        const obj = ffi.PyLong_FromLongLong(value) orelse return PyError.PyRaised;
+        return .{ .py = obj };
+    }
+
+    /// Fast wrap for f64 - directly calls PyFloat_FromDouble
+    pub inline fn wrapF64(value: f64) PyError!py.PyObject {
+        const obj = ffi.PyFloat_FromDouble(value) orelse return PyError.PyRaised;
+        return .{ .py = obj };
+    }
+
+    /// Fast wrap for bool - returns cached True/False
+    pub inline fn wrapBool(value: bool) py.PyObject {
+        return if (value) py.True().obj else py.False().obj;
+    }
+
+    /// Fast wrap for []const u8 - directly calls PyUnicode_FromStringAndSize
+    pub inline fn wrapString(value: []const u8) PyError!py.PyObject {
+        const obj = ffi.PyUnicode_FromStringAndSize(value.ptr, @intCast(value.len)) orelse return PyError.PyRaised;
+        return .{ .py = obj };
+    }
+
+    /// Fast unwrap for i64 - directly calls PyLong_AsLongLong
+    pub inline fn unwrapI64(obj: py.PyObject) PyError!i64 {
+        const result = ffi.PyLong_AsLongLong(obj.py);
+        if (result == -1 and ffi.PyErr_Occurred() != null) {
+            return PyError.PyRaised;
+        }
+        return result;
+    }
+
+    /// Fast unwrap for f64 - directly calls PyFloat_AsDouble
+    pub inline fn unwrapF64(obj: py.PyObject) PyError!f64 {
+        const result = ffi.PyFloat_AsDouble(obj.py);
+        if (result == -1.0 and ffi.PyErr_Occurred() != null) {
+            return PyError.PyRaised;
+        }
+        return result;
+    }
+
+    /// Fast unwrap for bool
+    pub inline fn unwrapBool(obj: py.PyObject) PyError!bool {
+        const result = ffi.PyObject_IsTrue(obj.py);
+        if (result == -1) {
+            return PyError.PyRaised;
+        }
+        return result == 1;
+    }
+};
 
 /// Generate functions to convert comptime-known Zig types to/from py.PyObject.
 pub fn Trampoline(comptime root: type, comptime T: type) type {
@@ -153,15 +216,27 @@ pub fn Trampoline(comptime root: type, comptime T: type) type {
                 return pyobj;
             }
 
+            // Fast paths for common primitive types
             switch (@typeInfo(T)) {
-                .bool => return if (obj) py.True().obj else py.False().obj,
+                .bool => return FastPath.wrapBool(obj),
                 .error_union => @compileError("ErrorUnion already handled"),
-                .float => return (try py.PyFloat.create(obj)).obj,
-                .int => return (try py.PyLong.create(obj)).obj,
+                .float => {
+                    // Use fast path for f64
+                    if (T == f64) return FastPath.wrapF64(obj);
+                    return (try py.PyFloat.create(obj)).obj;
+                },
+                .int => {
+                    // Use fast path for i64 and smaller signed integers
+                    if (T == i64 or T == i32 or T == i16 or T == i8) {
+                        return FastPath.wrapI64(@intCast(obj));
+                    }
+                    return (try py.PyLong.create(obj)).obj;
+                },
                 .pointer => |p| {
                     // We make the assumption that []const u8 is converted to a PyUnicode.
                     if (p.child == u8 and p.size == .slice and p.is_const) {
-                        return (try py.PyString.create(obj)).obj;
+                        // Use fast path for string conversion
+                        return FastPath.wrapString(obj);
                     }
 
                     // Also pointers to u8 arrays *[_]u8
@@ -209,10 +284,30 @@ pub fn Trampoline(comptime root: type, comptime T: type) type {
             var obj = object orelse return PyError.PyRaised;
 
             switch (@typeInfo(T)) {
-                .bool => return (try py.PyBool.from.checked(root, obj)).asbool(),
+                .bool => {
+                    // Fast path for bool - skip type checking for performance
+                    if (ffi.PyBool_Check(obj.py) != 0) {
+                        return FastPath.unwrapBool(obj);
+                    }
+                    // Fallback to checked conversion
+                    return (try py.PyBool.from.checked(root, obj)).asbool();
+                },
                 .error_union => @compileError("ErrorUnion already handled"),
-                .float => return try (try py.PyFloat.from.checked(root, obj)).as(T),
-                .int => return try (try py.PyLong.from.checked(root, obj)).as(T),
+                .float => {
+                    // Fast path for f64
+                    if (T == f64 and ffi.PyFloat_Check(obj.py) != 0) {
+                        return FastPath.unwrapF64(obj);
+                    }
+                    return try (try py.PyFloat.from.checked(root, obj)).as(T);
+                },
+                .int => {
+                    // Fast path for i64 and smaller signed integers
+                    if ((T == i64 or T == i32 or T == i16 or T == i8) and ffi.PyLong_Check(obj.py) != 0) {
+                        const result = try FastPath.unwrapI64(obj);
+                        return @intCast(result);
+                    }
+                    return try (try py.PyLong.from.checked(root, obj)).as(T);
+                },
                 .optional => @compileError("Optional already handled"),
                 .pointer => |p| {
                     if (comptime State.findDefinition(root, p.child)) |def| {

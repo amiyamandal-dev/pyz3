@@ -1,5 +1,5 @@
 [build-system]
-requires = ["poetry-core", "pyz3==0.7.0"]
+requires = ["poetry-core", "pyz3==0.8.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
@@ -22,7 +22,7 @@ script = "build.py"
 python = "^{{ cookiecutter.python_version }}"
 
 [tool.poetry.group.dev.dependencies]
-pyz3 = "0.7.0"
+pyz3 = "0.8.0"
 pytest = "^8.0.0"
 ruff = "^0.14.0"
 

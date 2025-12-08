@@ -72,6 +72,16 @@ pub fn build(b: *std.Build) void {
     main_tests.linkLibC();
     main_tests.addLibraryPath(.{ .cwd_relative = pythonLib });
     main_tests.linkSystemLibrary(pythonLibName);
+    // Add native collection C sources
+    main_tests.addCSourceFile(.{
+        .file = b.path("pyz3/src/native/native_dict.c"),
+        .flags = &[_][]const u8{"-std=c99"},
+    });
+    main_tests.addCSourceFile(.{
+        .file = b.path("pyz3/src/native/native_array.c"),
+        .flags = &[_][]const u8{"-std=c99"},
+    });
+    main_tests.addIncludePath(b.path("pyz3/src/native"));
     // Note: addLibraryPath automatically adds RPATH on macOS in Zig 0.15+
     // Explicitly adding it again causes duplicate LC_RPATH warnings
     if (builtin.os.tag != .macos) {
@@ -100,6 +110,16 @@ pub fn build(b: *std.Build) void {
     example_lib.addLibraryPath(.{ .cwd_relative = pythonLib });
     example_lib.linkSystemLibrary(pythonLibName);
     example_lib.addRPath(.{ .cwd_relative = pythonLib });
+    // Add native collection C sources
+    example_lib.addCSourceFile(.{
+        .file = b.path("pyz3/src/native/native_dict.c"),
+        .flags = &[_][]const u8{"-std=c99"},
+    });
+    example_lib.addCSourceFile(.{
+        .file = b.path("pyz3/src/native/native_array.c"),
+        .flags = &[_][]const u8{"-std=c99"},
+    });
+    example_lib.addIncludePath(b.path("pyz3/src/native"));
     const example_lib_mod = b.createModule(.{ .root_source_file = b.path("pyz3/src/pyz3.zig") });
     example_lib_mod.addIncludePath(.{ .cwd_relative = pythonInc });
     example_lib.root_module.addImport("ffi", translate_c.createModule());
