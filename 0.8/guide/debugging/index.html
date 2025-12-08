@@ -1,0 +1,2320 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Debugging Guide - pyZ3</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#debugging-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="pyZ3" class="md-header__button md-logo" aria-label="pyZ3" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyZ3
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Debugging Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/amiyamandal-dev/pyz3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yourusername/pyZ3
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pyZ3" class="md-nav__button md-logo" aria-label="pyZ3" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pyZ3
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/amiyamandal-dev/pyz3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yourusername/pyZ3
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pyz3 - Python Extensions in Zig
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../classes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gil/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GIL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_4_testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_5_memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_6_buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Buffer Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../numpy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NumPy Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enable-debug-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable Debug Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debug-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debug Logging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debug Logging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#log-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log Levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stack-traces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stack Traces
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stack Traces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#print-mixed-stack-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Print Mixed Stack Trace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-exception-traceback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Exception Traceback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Timing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Timing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Timing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-timers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple Timers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memory Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inspect-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspect Memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-count-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference Count Inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debug-assertions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debug Assertions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debug Assertions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#safe-assertions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safe Assertions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debug-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debug Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interactive Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breakpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breakpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-breakpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Breakpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugger-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugger Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugger Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lldb-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LLDB Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LLDB Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-start-python-with-lldb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Start Python with LLDB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-set-breakpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Set Breakpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-inspect-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Inspect Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gdb-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GDB Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GDB Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-start-python-with-gdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Start Python with GDB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-set-breakpoints_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Set Breakpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-inspect-variables_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Inspect Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attach-to-running-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attach to Running Process
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vscode-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VSCode Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VSCode Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debug-python-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debug Python Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debug Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug-native-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debug Native Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#python-debugging-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Debugging Helpers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Python Debugging Helpers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inspect-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspect Extension
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enable-core-dumps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable Core Dumps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-debug-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create Debug Session
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging Common Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Common Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#memory-leaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Leaks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-count-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference Count Issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crashes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crashes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slow-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slow Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-use-appropriate-log-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Use Appropriate Log Levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-disable-debug-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Disable Debug in Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-use-timers-for-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Use Timers for Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-check-reference-counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Check Reference Counts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-use-debug-context-for-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Use Debug Context for State
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Files
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lldbinit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .lldbinit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gdbinit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .gdbinit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vscodelaunchjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .vscode/launch.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debug-symbols-missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debug Symbols Missing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#breakpoints-not-hit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breakpoints Not Hit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-debug-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No Debug Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="debugging-guide">Debugging Guide</h1>
+<p>Complete guide to debugging Ziggy pyZ3 extensions with comprehensive tooling support.</p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>pyZ3 provides extensive debugging support including:</p>
+<ul>
+<li>✅ <strong>Debug logging</strong> with configurable levels</li>
+<li>✅ <strong>Mixed Python/Zig stack traces</strong></li>
+<li>✅ <strong>Breakpoint support</strong> for interactive debugging</li>
+<li>✅ <strong>Performance timing</strong> and profiling</li>
+<li>✅ <strong>Memory inspection</strong> utilities</li>
+<li>✅ <strong>Reference count tracking</strong></li>
+<li>✅ <strong>LLDB/GDB integration</strong></li>
+<li>✅ <strong>VSCode debugging</strong> configurations</li>
+<li>✅ <strong>Core dump support</strong></li>
+</ul>
+<hr />
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="enable-debug-logging">Enable Debug Logging</h3>
+<p><strong>From Zig:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">py</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;pyz3&quot;</span><span class="p">);</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">my_function</span><span class="p">()</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">    </span><span class="c1">// Enable debug mode</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">enableDebug</span><span class="p">();</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">setLogLevel</span><span class="p">(.</span><span class="n">debug</span><span class="p">);</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Function called&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{});</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Detailed debug info&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{});</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div></p>
+<p><strong>From Python:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">my_extension</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="c1"># Enable debug logging</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="n">my_extension</span><span class="o">.</span><span class="n">enable_debugging</span><span class="p">(</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="c1"># Your code here</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="n">my_extension</span><span class="o">.</span><span class="n">my_function</span><span class="p">()</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="c1"># Disable when done</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="n">my_extension</span><span class="o">.</span><span class="n">disable_debugging</span><span class="p">()</span>
+</span></code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="debug-logging">Debug Logging</h2>
+<h3 id="log-levels">Log Levels</h3>
+<p>pyZ3 supports 5 log levels (from most to least verbose):</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Usage</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>trace</code></td>
+<td>Very detailed tracing</td>
+<td>Loop iterations, state changes</td>
+</tr>
+<tr>
+<td><code>debug</code></td>
+<td>Debug information</td>
+<td>Function entry/exit, variable values</td>
+</tr>
+<tr>
+<td><code>info</code></td>
+<td>General information</td>
+<td>Operation start/complete</td>
+</tr>
+<tr>
+<td><code>warn</code></td>
+<td>Warnings</td>
+<td>Deprecated features, recoverable errors</td>
+</tr>
+<tr>
+<td><code>err</code></td>
+<td>Errors</td>
+<td>Exceptions, failures</td>
+</tr>
+</tbody>
+</table>
+<h3 id="usage">Usage</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span>
+<span class="normal"><a href="#__codelineno-2-12">12</a></span>
+<span class="normal"><a href="#__codelineno-2-13">13</a></span>
+<span class="normal"><a href="#__codelineno-2-14">14</a></span>
+<span class="normal"><a href="#__codelineno-2-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">py</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;pyz3&quot;</span><span class="p">);</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">calculate</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="o">:</span><span class="w"> </span><span class="kt">i64</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">:</span><span class="w"> </span><span class="kt">i64</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="kt">i64</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;calculate called with x={d}, y={d}&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="p">});</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">        </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">err</span><span class="p">(</span><span class="s">&quot;Division by zero attempted!&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{});</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">error</span><span class="p">.</span><span class="n">DivisionByZero</span><span class="p">;</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Result: {d}&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">result</span><span class="p">});</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13"></a>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p><strong>Output:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>[pyZ3 INFO] calculate called with x=10, y=2
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a>[pyZ3 DEBUG] Result: 5
+</span></code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="stack-traces">Stack Traces</h2>
+<h3 id="print-mixed-stack-trace">Print Mixed Stack Trace</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">printStackTrace</span><span class="p">();</span>
+</span></code></pre></div></td></tr></table></div>
+<p><strong>Output:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-5-10">10</a></span>
+<span class="normal"><a href="#__codelineno-5-11">11</a></span>
+<span class="normal"><a href="#__codelineno-5-12">12</a></span>
+<span class="normal"><a href="#__codelineno-5-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a>=== Stack Trace ===
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3"></a>--- Zig Stack ---
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4"></a>#0: 0x0000000100001234
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5"></a>#1: 0x0000000100001456
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6"></a>...
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7"></a>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8"></a>--- Python Stack ---
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9"></a>  File &quot;test.py&quot;, line 42, in main
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10"></a>    result = my_extension.calculate(10, 0)
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11"></a>  ...
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12"></a>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13"></a>===================
+</span></code></pre></div></td></tr></table></div></p>
+<h3 id="python-exception-traceback">Python Exception Traceback</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span>
+<span class="normal"><a href="#__codelineno-6-2">2</a></span>
+<span class="normal"><a href="#__codelineno-6-3">3</a></span>
+<span class="normal"><a href="#__codelineno-6-4">4</a></span>
+<span class="normal"><a href="#__codelineno-6-5">5</a></span>
+<span class="normal"><a href="#__codelineno-6-6">6</a></span>
+<span class="normal"><a href="#__codelineno-6-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">might_fail</span><span class="p">()</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyString</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">some_error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="w">        </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">printException</span><span class="p">();</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">error</span><span class="p">.</span><span class="n">Failed</span><span class="p">;</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyString</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;Success&quot;</span><span class="p">);</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="performance-timing">Performance Timing</h2>
+<h3 id="basic-timing">Basic Timing</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
+<span class="normal"><a href="#__codelineno-7-2">2</a></span>
+<span class="normal"><a href="#__codelineno-7-3">3</a></span>
+<span class="normal"><a href="#__codelineno-7-4">4</a></span>
+<span class="normal"><a href="#__codelineno-7-5">5</a></span>
+<span class="normal"><a href="#__codelineno-7-6">6</a></span>
+<span class="normal"><a href="#__codelineno-7-7">7</a></span>
+<span class="normal"><a href="#__codelineno-7-8">8</a></span>
+<span class="normal"><a href="#__codelineno-7-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">expensive_operation</span><span class="p">()</span><span class="w"> </span><span class="o">!</span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">timer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">Timer</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="s">&quot;expensive_operation&quot;</span><span class="p">);</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">timer</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4"></a>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="w">    </span><span class="c1">// Your code here</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">..</span><span class="mi">1000000</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="n">i</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="w">        </span><span class="c1">// Work...</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p><strong>Output:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a>[pyZ3 INFO] expensive_operation took 234ms
+</span></code></pre></div></td></tr></table></div></p>
+<h3 id="multiple-timers">Multiple Timers</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-9-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-9-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-9-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-9-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-9-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-9-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-9-10">10</a></span>
+<span class="normal"><a href="#__codelineno-9-11">11</a></span>
+<span class="normal"><a href="#__codelineno-9-12">12</a></span>
+<span class="normal"><a href="#__codelineno-9-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">multi_step_process</span><span class="p">()</span><span class="w"> </span><span class="o">!</span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="w">        </span><span class="kr">const</span><span class="w"> </span><span class="n">timer1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">Timer</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="s">&quot;step 1&quot;</span><span class="p">);</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="w">        </span><span class="k">defer</span><span class="w"> </span><span class="n">timer1</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="w">        </span><span class="c1">// Step 1 work</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7"></a>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="w">        </span><span class="kr">const</span><span class="w"> </span><span class="n">timer2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">Timer</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="s">&quot;step 2&quot;</span><span class="p">);</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10"></a><span class="w">        </span><span class="k">defer</span><span class="w"> </span><span class="n">timer2</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11"></a><span class="w">        </span><span class="c1">// Step 2 work</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="memory-debugging">Memory Debugging</h2>
+<h3 id="inspect-memory">Inspect Memory</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1">1</a></span>
+<span class="normal"><a href="#__codelineno-10-2">2</a></span>
+<span class="normal"><a href="#__codelineno-10-3">3</a></span>
+<span class="normal"><a href="#__codelineno-10-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">debug_buffer</span><span class="p">()</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="kt">u8</span><span class="p">{</span><span class="w"> </span><span class="mh">0x48</span><span class="p">,</span><span class="w"> </span><span class="mh">0x65</span><span class="p">,</span><span class="w"> </span><span class="mh">0x6c</span><span class="p">,</span><span class="w"> </span><span class="mh">0x6c</span><span class="p">,</span><span class="w"> </span><span class="mh">0x6f</span><span class="w"> </span><span class="p">};</span><span class="w">  </span><span class="c1">// &quot;Hello&quot;</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">inspectMemory</span><span class="p">(</span><span class="o">&amp;</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="n">len</span><span class="p">);</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p><strong>Output:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1">1</a></span>
+<span class="normal"><a href="#__codelineno-11-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1"></a>Memory at 0x7fff5fbff800:
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2"></a>  00000000: 48 65 6c 6c 6f                   | Hello
+</span></code></pre></div></td></tr></table></div></p>
+<h3 id="reference-count-inspection">Reference Count Inspection</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">1</a></span>
+<span class="normal"><a href="#__codelineno-12-2">2</a></span>
+<span class="normal"><a href="#__codelineno-12-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">check_refcount</span><span class="p">(</span><span class="n">obj</span><span class="o">:</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="p">)</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">inspectRefCount</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p><strong>Output:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1"></a>PyObject refcount: 3
+</span></code></pre></div></td></tr></table></div></p>
+<p>Or with warnings:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1">1</a></span>
+<span class="normal"><a href="#__codelineno-14-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1"></a>PyObject refcount: 0
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2"></a>⚠️  WARNING: Reference count is 0! Object may be freed.
+</span></code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="debug-assertions">Debug Assertions</h2>
+<h3 id="safe-assertions">Safe Assertions</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-15-1">1</a></span>
+<span class="normal"><a href="#__codelineno-15-2">2</a></span>
+<span class="normal"><a href="#__codelineno-15-3">3</a></span>
+<span class="normal"><a href="#__codelineno-15-4">4</a></span>
+<span class="normal"><a href="#__codelineno-15-5">5</a></span>
+<span class="normal"><a href="#__codelineno-15-6">6</a></span>
+<span class="normal"><a href="#__codelineno-15-7">7</a></span>
+<span class="normal"><a href="#__codelineno-15-8">8</a></span>
+<span class="normal"><a href="#__codelineno-15-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">divide</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">a</span><span class="o">:</span><span class="w"> </span><span class="kt">i64</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="o">:</span><span class="w"> </span><span class="kt">i64</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="kt">f64</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">assertDebug</span><span class="p">(</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3"></a><span class="w">        </span><span class="n">args</span><span class="p">.</span><span class="n">b</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4"></a><span class="w">        </span><span class="s">&quot;Denominator cannot be zero! numerator={d}&quot;</span><span class="p">,</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5"></a><span class="w">        </span><span class="p">.{</span><span class="n">args</span><span class="p">.</span><span class="n">a</span><span class="p">}</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6"></a><span class="w">    </span><span class="p">);</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7"></a>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">@as</span><span class="p">(</span><span class="kt">f64</span><span class="p">,</span><span class="w"> </span><span class="nb">@floatFromInt</span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">a</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">@as</span><span class="p">(</span><span class="kt">f64</span><span class="p">,</span><span class="w"> </span><span class="nb">@floatFromInt</span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">b</span><span class="p">));</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p>If assertion fails:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-16-1">1</a></span>
+<span class="normal"><a href="#__codelineno-16-2">2</a></span>
+<span class="normal"><a href="#__codelineno-16-3">3</a></span>
+<span class="normal"><a href="#__codelineno-16-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1"></a>❌ Assertion failed: Denominator cannot be zero! numerator=42
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2"></a>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3"></a>=== Stack Trace ===
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4"></a>...
+</span></code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="debug-context">Debug Context</h2>
+<p>Track state across complex operations:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-17-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-17-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-17-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-17-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-17-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-17-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-17-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-17-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-17-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-17-10">10</a></span>
+<span class="normal"><a href="#__codelineno-17-11">11</a></span>
+<span class="normal"><a href="#__codelineno-17-12">12</a></span>
+<span class="normal"><a href="#__codelineno-17-13">13</a></span>
+<span class="normal"><a href="#__codelineno-17-14">14</a></span>
+<span class="normal"><a href="#__codelineno-17-15">15</a></span>
+<span class="normal"><a href="#__codelineno-17-16">16</a></span>
+<span class="normal"><a href="#__codelineno-17-17">17</a></span>
+<span class="normal"><a href="#__codelineno-17-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">complex_task</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">mode</span><span class="o">:</span><span class="w"> </span><span class="p">[]</span><span class="kr">const</span><span class="w"> </span><span class="kt">u8</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2"></a><span class="w">    </span><span class="kr">var</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">DebugContext</span><span class="p">.</span><span class="n">init</span><span class="p">(</span><span class="n">py</span><span class="p">.</span><span class="n">allocator</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;complex_task&quot;</span><span class="p">);</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">deinit</span><span class="p">();</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4"></a>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;mode&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">mode</span><span class="p">);</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;step&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;initialization&quot;</span><span class="p">);</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7"></a><span class="w">    </span><span class="n">ctx</span><span class="p">.</span><span class="n">dump</span><span class="p">();</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8"></a>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9"></a><span class="w">    </span><span class="c1">// Do work...</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10"></a>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;step&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;processing&quot;</span><span class="p">);</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12"></a><span class="w">    </span><span class="n">ctx</span><span class="p">.</span><span class="n">dump</span><span class="p">();</span>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13"></a>
+</span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14"></a><span class="w">    </span><span class="c1">// More work...</span>
+</span><span id="__span-17-15"><a id="__codelineno-17-15" name="__codelineno-17-15"></a>
+</span><span id="__span-17-16"><a id="__codelineno-17-16" name="__codelineno-17-16"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;step&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;complete&quot;</span><span class="p">);</span>
+</span><span id="__span-17-17"><a id="__codelineno-17-17" name="__codelineno-17-17"></a><span class="w">    </span><span class="n">ctx</span><span class="p">.</span><span class="n">dump</span><span class="p">();</span>
+</span><span id="__span-17-18"><a id="__codelineno-17-18" name="__codelineno-17-18"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p><strong>Output:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-18-1">1</a></span>
+<span class="normal"><a href="#__codelineno-18-2">2</a></span>
+<span class="normal"><a href="#__codelineno-18-3">3</a></span>
+<span class="normal"><a href="#__codelineno-18-4">4</a></span>
+<span class="normal"><a href="#__codelineno-18-5">5</a></span>
+<span class="normal"><a href="#__codelineno-18-6">6</a></span>
+<span class="normal"><a href="#__codelineno-18-7">7</a></span>
+<span class="normal"><a href="#__codelineno-18-8">8</a></span>
+<span class="normal"><a href="#__codelineno-18-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1"></a>=== Debug Context: complex_task ===
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2"></a>  mode = fast
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3"></a>  step = initialization
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4"></a>===========================
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5"></a>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6"></a>=== Debug Context: complex_task ===
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7"></a>  mode = fast
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8"></a>  step = processing
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9"></a>===========================
+</span></code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="interactive-debugging">Interactive Debugging</h2>
+<h3 id="breakpoints">Breakpoints</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-19-1">1</a></span>
+<span class="normal"><a href="#__codelineno-19-2">2</a></span>
+<span class="normal"><a href="#__codelineno-19-3">3</a></span>
+<span class="normal"><a href="#__codelineno-19-4">4</a></span>
+<span class="normal"><a href="#__codelineno-19-5">5</a></span>
+<span class="normal"><a href="#__codelineno-19-6">6</a></span>
+<span class="normal"><a href="#__codelineno-19-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">problematic_function</span><span class="p">()</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2"></a><span class="w">    </span><span class="c1">// ... some code ...</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3"></a>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">breakpoint</span><span class="p">();</span><span class="w">  </span><span class="c1">// Pauses here in debug builds</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5"></a>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6"></a><span class="w">    </span><span class="c1">// ... more code ...</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="python-breakpoints">Python Breakpoints</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-20-1">1</a></span>
+<span class="normal"><a href="#__codelineno-20-2">2</a></span>
+<span class="normal"><a href="#__codelineno-20-3">3</a></span>
+<span class="normal"><a href="#__codelineno-20-4">4</a></span>
+<span class="normal"><a href="#__codelineno-20-5">5</a></span>
+<span class="normal"><a href="#__codelineno-20-6">6</a></span>
+<span class="normal"><a href="#__codelineno-20-7">7</a></span>
+<span class="normal"><a href="#__codelineno-20-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyz3.debug</span><span class="w"> </span><span class="kn">import</span> <span class="n">breakpoint_here</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2"></a>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">my_test</span><span class="p">():</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4"></a>    <span class="c1"># ... code ...</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5"></a>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6"></a>    <span class="n">breakpoint_here</span><span class="p">(</span><span class="s2">&quot;About to call Zig function&quot;</span><span class="p">)</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7"></a>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">my_extension</span><span class="o">.</span><span class="n">problematic_function</span><span class="p">()</span>
+</span></code></pre></div></td></tr></table></div>
+<p><strong>Output:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-21-1">1</a></span>
+<span class="normal"><a href="#__codelineno-21-2">2</a></span>
+<span class="normal"><a href="#__codelineno-21-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1"></a>🔴 About to call Zig function
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2"></a>   PID: 12345
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3"></a>   Attach debugger or press Enter to continue...
+</span></code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="debugger-integration">Debugger Integration</h2>
+<h3 id="lldb-debugging">LLDB Debugging</h3>
+<h4 id="1-start-python-with-lldb">1. Start Python with LLDB</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-22-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1"></a>lldb<span class="w"> </span>--<span class="w"> </span>python<span class="w"> </span>my_script.py
+</span></code></pre></div></td></tr></table></div>
+<h4 id="2-set-breakpoints">2. Set Breakpoints</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-23-1">1</a></span>
+<span class="normal"><a href="#__codelineno-23-2">2</a></span>
+<span class="normal"><a href="#__codelineno-23-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1"></a>(lldb) breakpoint set --name my_zig_function
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2"></a>(lldb) breakpoint set --file my_module.zig --line 42
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3"></a>(lldb) run
+</span></code></pre></div></td></tr></table></div>
+<h4 id="3-inspect-variables">3. Inspect Variables</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-24-1">1</a></span>
+<span class="normal"><a href="#__codelineno-24-2">2</a></span>
+<span class="normal"><a href="#__codelineno-24-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1"></a>(lldb) frame variable
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2"></a>(lldb) print my_variable
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3"></a>(lldb) bt  # Backtrace
+</span></code></pre></div></td></tr></table></div>
+<h3 id="gdb-debugging">GDB Debugging</h3>
+<h4 id="1-start-python-with-gdb">1. Start Python with GDB</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-25-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1"></a>gdb<span class="w"> </span>--args<span class="w"> </span>python<span class="w"> </span>my_script.py
+</span></code></pre></div></td></tr></table></div>
+<h4 id="2-set-breakpoints_1">2. Set Breakpoints</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-26-1">1</a></span>
+<span class="normal"><a href="#__codelineno-26-2">2</a></span>
+<span class="normal"><a href="#__codelineno-26-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1"></a>(gdb) break my_zig_function
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2"></a>(gdb) break my_module.zig:42
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3"></a>(gdb) run
+</span></code></pre></div></td></tr></table></div>
+<h4 id="3-inspect-variables_1">3. Inspect Variables</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-27-1">1</a></span>
+<span class="normal"><a href="#__codelineno-27-2">2</a></span>
+<span class="normal"><a href="#__codelineno-27-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1"></a>(gdb) info locals
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2"></a>(gdb) print my_variable
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3"></a>(gdb) bt  # Backtrace
+</span></code></pre></div></td></tr></table></div>
+<h3 id="attach-to-running-process">Attach to Running Process</h3>
+<p><strong>LLDB:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-28-1">1</a></span>
+<span class="normal"><a href="#__codelineno-28-2">2</a></span>
+<span class="normal"><a href="#__codelineno-28-3">3</a></span>
+<span class="normal"><a href="#__codelineno-28-4">4</a></span>
+<span class="normal"><a href="#__codelineno-28-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1"></a><span class="c1"># Get PID from Python</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import os; print(os.getpid()); input(&#39;Press Enter...&#39;)&quot;</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3"></a>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4"></a><span class="c1"># In another terminal</span>
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5"></a>lldb<span class="w"> </span>-p<span class="w"> </span>&lt;PID&gt;
+</span></code></pre></div></td></tr></table></div></p>
+<p><strong>GDB:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-29-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1"></a>gdb<span class="w"> </span>-p<span class="w"> </span>&lt;PID&gt;
+</span></code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="vscode-debugging">VSCode Debugging</h2>
+<h3 id="setup">Setup</h3>
+<ol>
+<li><strong>Install Extensions:</strong></li>
+<li>Python</li>
+<li>
+<p>CodeLLDB (for native debugging)</p>
+</li>
+<li>
+<p><strong>Configuration</strong> (already included in <code>.vscode/launch.json</code>):</p>
+</li>
+</ol>
+<h4 id="debug-python-code">Debug Python Code</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-30-1">1</a></span>
+<span class="normal"><a href="#__codelineno-30-2">2</a></span>
+<span class="normal"><a href="#__codelineno-30-3">3</a></span>
+<span class="normal"><a href="#__codelineno-30-4">4</a></span>
+<span class="normal"><a href="#__codelineno-30-5">5</a></span>
+<span class="normal"><a href="#__codelineno-30-6">6</a></span>
+<span class="normal"><a href="#__codelineno-30-7">7</a></span>
+<span class="normal"><a href="#__codelineno-30-8">8</a></span>
+<span class="normal"><a href="#__codelineno-30-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1"></a><span class="p">{</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python: Debug Extension&quot;</span><span class="p">,</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3"></a><span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4"></a><span class="w">    </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5"></a><span class="w">    </span><span class="nt">&quot;program&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${file}&quot;</span><span class="p">,</span>
+</span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6"></a><span class="w">    </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-30-7"><a id="__codelineno-30-7" name="__codelineno-30-7"></a><span class="w">        </span><span class="nt">&quot;pyz3_DEBUG&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span>
+</span><span id="__span-30-8"><a id="__codelineno-30-8" name="__codelineno-30-8"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-30-9"><a id="__codelineno-30-9" name="__codelineno-30-9"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h4 id="debug-tests">Debug Tests</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-31-1">1</a></span>
+<span class="normal"><a href="#__codelineno-31-2">2</a></span>
+<span class="normal"><a href="#__codelineno-31-3">3</a></span>
+<span class="normal"><a href="#__codelineno-31-4">4</a></span>
+<span class="normal"><a href="#__codelineno-31-5">5</a></span>
+<span class="normal"><a href="#__codelineno-31-6">6</a></span>
+<span class="normal"><a href="#__codelineno-31-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1"></a><span class="p">{</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python: Debug Tests&quot;</span><span class="p">,</span>
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3"></a><span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4"></a><span class="w">    </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
+</span><span id="__span-31-5"><a id="__codelineno-31-5" name="__codelineno-31-5"></a><span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pytest&quot;</span><span class="p">,</span>
+</span><span id="__span-31-6"><a id="__codelineno-31-6" name="__codelineno-31-6"></a><span class="w">    </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;-s&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;${file}&quot;</span><span class="p">]</span>
+</span><span id="__span-31-7"><a id="__codelineno-31-7" name="__codelineno-31-7"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h4 id="debug-native-code">Debug Native Code</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-32-1">1</a></span>
+<span class="normal"><a href="#__codelineno-32-2">2</a></span>
+<span class="normal"><a href="#__codelineno-32-3">3</a></span>
+<span class="normal"><a href="#__codelineno-32-4">4</a></span>
+<span class="normal"><a href="#__codelineno-32-5">5</a></span>
+<span class="normal"><a href="#__codelineno-32-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1"></a><span class="p">{</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LLDB: Attach to Python&quot;</span><span class="p">,</span>
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3"></a><span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lldb&quot;</span><span class="p">,</span>
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4"></a><span class="w">    </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;attach&quot;</span><span class="p">,</span>
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5"></a><span class="w">    </span><span class="nt">&quot;pid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${command:pickProcess}&quot;</span>
+</span><span id="__span-32-6"><a id="__codelineno-32-6" name="__codelineno-32-6"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="usage_1">Usage</h3>
+<ol>
+<li>Set breakpoints in Python or Zig code</li>
+<li>Press F5 or select "Debug: Start Debugging"</li>
+<li>Select configuration from dropdown</li>
+<li>Code will pause at breakpoints</li>
+</ol>
+<hr />
+<h2 id="python-debugging-helpers">Python Debugging Helpers</h2>
+<h3 id="inspect-extension">Inspect Extension</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-33-1">1</a></span>
+<span class="normal"><a href="#__codelineno-33-2">2</a></span>
+<span class="normal"><a href="#__codelineno-33-3">3</a></span>
+<span class="normal"><a href="#__codelineno-33-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyz3.debug</span><span class="w"> </span><span class="kn">import</span> <span class="n">inspect_extension</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2"></a>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3"></a><span class="c1"># Get detailed info about an extension</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4"></a><span class="n">inspect_extension</span><span class="p">(</span><span class="s1">&#39;my_extension&#39;</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+<p><strong>Output:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-34-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-34-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-34-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-34-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-34-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-34-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-34-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-34-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-34-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-34-10">10</a></span>
+<span class="normal"><a href="#__codelineno-34-11">11</a></span>
+<span class="normal"><a href="#__codelineno-34-12">12</a></span>
+<span class="normal"><a href="#__codelineno-34-13">13</a></span>
+<span class="normal"><a href="#__codelineno-34-14">14</a></span>
+<span class="normal"><a href="#__codelineno-34-15">15</a></span>
+<span class="normal"><a href="#__codelineno-34-16">16</a></span>
+<span class="normal"><a href="#__codelineno-34-17">17</a></span>
+<span class="normal"><a href="#__codelineno-34-18">18</a></span>
+<span class="normal"><a href="#__codelineno-34-19">19</a></span>
+<span class="normal"><a href="#__codelineno-34-20">20</a></span>
+<span class="normal"><a href="#__codelineno-34-21">21</a></span>
+<span class="normal"><a href="#__codelineno-34-22">22</a></span>
+<span class="normal"><a href="#__codelineno-34-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1"></a>======================================================================
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2"></a>Extension Module: my_extension
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3"></a>======================================================================
+</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4"></a>
+</span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5"></a>📁 Path: /path/to/my_extension.abi3.so
+</span><span id="__span-34-6"><a id="__codelineno-34-6" name="__codelineno-34-6"></a>   Size: 234,567 bytes
+</span><span id="__span-34-7"><a id="__codelineno-34-7" name="__codelineno-34-7"></a>
+</span><span id="__span-34-8"><a id="__codelineno-34-8" name="__codelineno-34-8"></a>🔍 Debug Symbols:
+</span><span id="__span-34-9"><a id="__codelineno-34-9" name="__codelineno-34-9"></a>   ✅ Debug symbols present
+</span><span id="__span-34-10"><a id="__codelineno-34-10" name="__codelineno-34-10"></a>
+</span><span id="__span-34-11"><a id="__codelineno-34-11" name="__codelineno-34-11"></a>📄 File Info:
+</span><span id="__span-34-12"><a id="__codelineno-34-12" name="__codelineno-34-12"></a>   Mach-O 64-bit dynamically linked shared library x86_64
+</span><span id="__span-34-13"><a id="__codelineno-34-13" name="__codelineno-34-13"></a>
+</span><span id="__span-34-14"><a id="__codelineno-34-14" name="__codelineno-34-14"></a>🐛 Debugger Commands:
+</span><span id="__span-34-15"><a id="__codelineno-34-15" name="__codelineno-34-15"></a>   LLDB:
+</span><span id="__span-34-16"><a id="__codelineno-34-16" name="__codelineno-34-16"></a>   $ lldb -p 12345
+</span><span id="__span-34-17"><a id="__codelineno-34-17" name="__codelineno-34-17"></a>   (lldb) image add /path/to/my_extension.abi3.so
+</span><span id="__span-34-18"><a id="__codelineno-34-18" name="__codelineno-34-18"></a>
+</span><span id="__span-34-19"><a id="__codelineno-34-19" name="__codelineno-34-19"></a>   GDB:
+</span><span id="__span-34-20"><a id="__codelineno-34-20" name="__codelineno-34-20"></a>   $ gdb -p 12345
+</span><span id="__span-34-21"><a id="__codelineno-34-21" name="__codelineno-34-21"></a>   (gdb) add-symbol-file /path/to/my_extension.abi3.so
+</span><span id="__span-34-22"><a id="__codelineno-34-22" name="__codelineno-34-22"></a>
+</span><span id="__span-34-23"><a id="__codelineno-34-23" name="__codelineno-34-23"></a>======================================================================
+</span></code></pre></div></td></tr></table></div></p>
+<h3 id="enable-core-dumps">Enable Core Dumps</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-35-1">1</a></span>
+<span class="normal"><a href="#__codelineno-35-2">2</a></span>
+<span class="normal"><a href="#__codelineno-35-3">3</a></span>
+<span class="normal"><a href="#__codelineno-35-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyz3.debug</span><span class="w"> </span><span class="kn">import</span> <span class="n">DebugHelper</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2"></a>
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3"></a><span class="c1"># Enable core dumps for crash analysis</span>
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4"></a><span class="n">DebugHelper</span><span class="o">.</span><span class="n">enable_core_dumps</span><span class="p">()</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="create-debug-session">Create Debug Session</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-36-1">1</a></span>
+<span class="normal"><a href="#__codelineno-36-2">2</a></span>
+<span class="normal"><a href="#__codelineno-36-3">3</a></span>
+<span class="normal"><a href="#__codelineno-36-4">4</a></span>
+<span class="normal"><a href="#__codelineno-36-5">5</a></span>
+<span class="normal"><a href="#__codelineno-36-6">6</a></span>
+<span class="normal"><a href="#__codelineno-36-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyz3.debug</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_debug_session_script</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2"></a>
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3"></a><span class="c1"># Generate a debug script</span>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4"></a><span class="n">script</span> <span class="o">=</span> <span class="n">create_debug_session_script</span><span class="p">(</span><span class="s1">&#39;my_extension&#39;</span><span class="p">,</span> <span class="s1">&#39;debug_session.py&#39;</span><span class="p">)</span>
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5"></a>
+</span><span id="__span-36-6"><a id="__codelineno-36-6" name="__codelineno-36-6"></a><span class="c1"># Run it</span>
+</span><span id="__span-36-7"><a id="__codelineno-36-7" name="__codelineno-36-7"></a><span class="c1"># $ python debug_session.py</span>
+</span></code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="debugging-common-issues">Debugging Common Issues</h2>
+<h3 id="memory-leaks">Memory Leaks</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-37-1">1</a></span>
+<span class="normal"><a href="#__codelineno-37-2">2</a></span>
+<span class="normal"><a href="#__codelineno-37-3">3</a></span>
+<span class="normal"><a href="#__codelineno-37-4">4</a></span>
+<span class="normal"><a href="#__codelineno-37-5">5</a></span>
+<span class="normal"><a href="#__codelineno-37-6">6</a></span>
+<span class="normal"><a href="#__codelineno-37-7">7</a></span>
+<span class="normal"><a href="#__codelineno-37-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1"></a><span class="k">test</span><span class="w"> </span><span class="s">&quot;detect memory leaks&quot;</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2"></a><span class="w">    </span><span class="kr">var</span><span class="w"> </span><span class="n">fixture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">testing</span><span class="p">.</span><span class="n">TestFixture</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">fixture</span><span class="p">.</span><span class="n">deinit</span><span class="p">();</span><span class="w">  </span><span class="c1">// Auto-detects leaks!</span>
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4"></a>
+</span><span id="__span-37-5"><a id="__codelineno-37-5" name="__codelineno-37-5"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">enableDebug</span><span class="p">();</span>
+</span><span id="__span-37-6"><a id="__codelineno-37-6" name="__codelineno-37-6"></a>
+</span><span id="__span-37-7"><a id="__codelineno-37-7" name="__codelineno-37-7"></a><span class="w">    </span><span class="c1">// Your test code</span>
+</span><span id="__span-37-8"><a id="__codelineno-37-8" name="__codelineno-37-8"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p>See <a href="../new_features/#memory-leak-detection">Memory Leak Detection</a> for more.</p>
+<h3 id="reference-count-issues">Reference Count Issues</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-38-1">1</a></span>
+<span class="normal"><a href="#__codelineno-38-2">2</a></span>
+<span class="normal"><a href="#__codelineno-38-3">3</a></span>
+<span class="normal"><a href="#__codelineno-38-4">4</a></span>
+<span class="normal"><a href="#__codelineno-38-5">5</a></span>
+<span class="normal"><a href="#__codelineno-38-6">6</a></span>
+<span class="normal"><a href="#__codelineno-38-7">7</a></span>
+<span class="normal"><a href="#__codelineno-38-8">8</a></span>
+<span class="normal"><a href="#__codelineno-38-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">track_refcounts</span><span class="p">(</span><span class="n">obj</span><span class="o">:</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="p">)</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">inspectRefCount</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span><span class="w">  </span><span class="c1">// Initial: 1</span>
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3"></a>
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4"></a><span class="w">    </span><span class="n">obj</span><span class="p">.</span><span class="n">incref</span><span class="p">();</span>
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">inspectRefCount</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span><span class="w">  </span><span class="c1">// Now: 2</span>
+</span><span id="__span-38-6"><a id="__codelineno-38-6" name="__codelineno-38-6"></a>
+</span><span id="__span-38-7"><a id="__codelineno-38-7" name="__codelineno-38-7"></a><span class="w">    </span><span class="n">obj</span><span class="p">.</span><span class="n">decref</span><span class="p">();</span>
+</span><span id="__span-38-8"><a id="__codelineno-38-8" name="__codelineno-38-8"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">inspectRefCount</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span><span class="w">  </span><span class="c1">// Back to: 1</span>
+</span><span id="__span-38-9"><a id="__codelineno-38-9" name="__codelineno-38-9"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="crashes">Crashes</h3>
+<ol>
+<li>
+<p><strong>Enable Core Dumps:</strong>
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-39-1">1</a></span>
+<span class="normal"><a href="#__codelineno-39-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyz3.debug</span><span class="w"> </span><span class="kn">import</span> <span class="n">DebugHelper</span>
+</span><span id="__span-39-2"><a id="__codelineno-39-2" name="__codelineno-39-2"></a><span class="n">DebugHelper</span><span class="o">.</span><span class="n">enable_core_dumps</span><span class="p">()</span>
+</span></code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p><strong>Run Program:</strong>
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-40-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1"></a>python<span class="w"> </span>my_script.py<span class="w">  </span><span class="c1"># Crashes and creates core file</span>
+</span></code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p><strong>Analyze Core:</strong>
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-41-1">1</a></span>
+<span class="normal"><a href="#__codelineno-41-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1"></a>lldb<span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span>core
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2"></a><span class="o">(</span>lldb<span class="o">)</span><span class="w"> </span>bt<span class="w">  </span><span class="c1"># See crash backtrace</span>
+</span></code></pre></div></td></tr></table></div></p>
+</li>
+</ol>
+<h3 id="slow-performance">Slow Performance</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-42-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-42-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-42-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-42-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-42-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-42-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-42-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-42-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-42-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-42-10">10</a></span>
+<span class="normal"><a href="#__codelineno-42-11">11</a></span>
+<span class="normal"><a href="#__codelineno-42-12">12</a></span>
+<span class="normal"><a href="#__codelineno-42-13">13</a></span>
+<span class="normal"><a href="#__codelineno-42-14">14</a></span>
+<span class="normal"><a href="#__codelineno-42-15">15</a></span>
+<span class="normal"><a href="#__codelineno-42-16">16</a></span>
+<span class="normal"><a href="#__codelineno-42-17">17</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">slow_function</span><span class="p">()</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">timer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">Timer</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="s">&quot;slow_function&quot;</span><span class="p">);</span>
+</span><span id="__span-42-3"><a id="__codelineno-42-3" name="__codelineno-42-3"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">timer</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
+</span><span id="__span-42-4"><a id="__codelineno-42-4" name="__codelineno-42-4"></a>
+</span><span id="__span-42-5"><a id="__codelineno-42-5" name="__codelineno-42-5"></a><span class="w">    </span><span class="c1">// Identify slow sections</span>
+</span><span id="__span-42-6"><a id="__codelineno-42-6" name="__codelineno-42-6"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-42-7"><a id="__codelineno-42-7" name="__codelineno-42-7"></a><span class="w">        </span><span class="kr">const</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">Timer</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="s">&quot;section 1&quot;</span><span class="p">);</span>
+</span><span id="__span-42-8"><a id="__codelineno-42-8" name="__codelineno-42-8"></a><span class="w">        </span><span class="k">defer</span><span class="w"> </span><span class="n">t1</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
+</span><span id="__span-42-9"><a id="__codelineno-42-9" name="__codelineno-42-9"></a><span class="w">        </span><span class="c1">// Code...</span>
+</span><span id="__span-42-10"><a id="__codelineno-42-10" name="__codelineno-42-10"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-42-11"><a id="__codelineno-42-11" name="__codelineno-42-11"></a>
+</span><span id="__span-42-12"><a id="__codelineno-42-12" name="__codelineno-42-12"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-42-13"><a id="__codelineno-42-13" name="__codelineno-42-13"></a><span class="w">        </span><span class="kr">const</span><span class="w"> </span><span class="n">t2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">Timer</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="s">&quot;section 2&quot;</span><span class="p">);</span>
+</span><span id="__span-42-14"><a id="__codelineno-42-14" name="__codelineno-42-14"></a><span class="w">        </span><span class="k">defer</span><span class="w"> </span><span class="n">t2</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
+</span><span id="__span-42-15"><a id="__codelineno-42-15" name="__codelineno-42-15"></a><span class="w">        </span><span class="c1">// Code...</span>
+</span><span id="__span-42-16"><a id="__codelineno-42-16" name="__codelineno-42-16"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-42-17"><a id="__codelineno-42-17" name="__codelineno-42-17"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-use-appropriate-log-levels">1. Use Appropriate Log Levels</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-43-1">1</a></span>
+<span class="normal"><a href="#__codelineno-43-2">2</a></span>
+<span class="normal"><a href="#__codelineno-43-3">3</a></span>
+<span class="normal"><a href="#__codelineno-43-4">4</a></span>
+<span class="normal"><a href="#__codelineno-43-5">5</a></span>
+<span class="normal"><a href="#__codelineno-43-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1"></a><span class="c1">// ✅ Good</span>
+</span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2"></a><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">trace</span><span class="p">(</span><span class="s">&quot;Loop iteration {d}&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">i</span><span class="p">});</span><span class="w">  </span><span class="c1">// Very detailed</span>
+</span><span id="__span-43-3"><a id="__codelineno-43-3" name="__codelineno-43-3"></a><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Operation complete&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{});</span><span class="w">    </span><span class="c1">// General info</span>
+</span><span id="__span-43-4"><a id="__codelineno-43-4" name="__codelineno-43-4"></a>
+</span><span id="__span-43-5"><a id="__codelineno-43-5" name="__codelineno-43-5"></a><span class="c1">// ❌ Bad</span>
+</span><span id="__span-43-6"><a id="__codelineno-43-6" name="__codelineno-43-6"></a><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Loop iteration {d}&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">i</span><span class="p">});</span><span class="w">   </span><span class="c1">// Too verbose</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="2-disable-debug-in-production">2. Disable Debug in Production</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-44-1">1</a></span>
+<span class="normal"><a href="#__codelineno-44-2">2</a></span>
+<span class="normal"><a href="#__codelineno-44-3">3</a></span>
+<span class="normal"><a href="#__codelineno-44-4">4</a></span>
+<span class="normal"><a href="#__codelineno-44-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">init</span><span class="p">()</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">builtin</span><span class="p">.</span><span class="n">mode</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">.</span><span class="n">Debug</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-44-3"><a id="__codelineno-44-3" name="__codelineno-44-3"></a><span class="w">        </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">enableDebug</span><span class="p">();</span>
+</span><span id="__span-44-4"><a id="__codelineno-44-4" name="__codelineno-44-4"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-44-5"><a id="__codelineno-44-5" name="__codelineno-44-5"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="3-use-timers-for-performance">3. Use Timers for Performance</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-45-1">1</a></span>
+<span class="normal"><a href="#__codelineno-45-2">2</a></span>
+<span class="normal"><a href="#__codelineno-45-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1"></a><span class="c1">// Always wrap expensive operations</span>
+</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2"></a><span class="kr">const</span><span class="w"> </span><span class="n">timer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">Timer</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="s">&quot;operation_name&quot;</span><span class="p">);</span>
+</span><span id="__span-45-3"><a id="__codelineno-45-3" name="__codelineno-45-3"></a><span class="k">defer</span><span class="w"> </span><span class="n">timer</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="4-check-reference-counts">4. Check Reference Counts</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-46-1">1</a></span>
+<span class="normal"><a href="#__codelineno-46-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1"></a><span class="c1">// When debugging lifetime issues</span>
+</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2"></a><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">inspectRefCount</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="5-use-debug-context-for-state">5. Use Debug Context for State</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-47-1">1</a></span>
+<span class="normal"><a href="#__codelineno-47-2">2</a></span>
+<span class="normal"><a href="#__codelineno-47-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1"></a><span class="c1">// Track state in complex operations</span>
+</span><span id="__span-47-2"><a id="__codelineno-47-2" name="__codelineno-47-2"></a><span class="kr">var</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">DebugContext</span><span class="p">.</span><span class="n">init</span><span class="p">(</span><span class="n">py</span><span class="p">.</span><span class="n">allocator</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;operation&quot;</span><span class="p">);</span>
+</span><span id="__span-47-3"><a id="__codelineno-47-3" name="__codelineno-47-3"></a><span class="k">defer</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">deinit</span><span class="p">();</span>
+</span></code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="configuration-files">Configuration Files</h2>
+<h3 id="lldbinit">.lldbinit</h3>
+<p>Place in project root or <code>~/.lldbinit</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-48-1">1</a></span>
+<span class="normal"><a href="#__codelineno-48-2">2</a></span>
+<span class="normal"><a href="#__codelineno-48-3">3</a></span>
+<span class="normal"><a href="#__codelineno-48-4">4</a></span>
+<span class="normal"><a href="#__codelineno-48-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1"></a># pyZ3-specific helpers
+</span><span id="__span-48-2"><a id="__codelineno-48-2" name="__codelineno-48-2"></a>command regex pyz3-break &#39;s/(.+)/breakpoint set --name %1/&#39;
+</span><span id="__span-48-3"><a id="__codelineno-48-3" name="__codelineno-48-3"></a>
+</span><span id="__span-48-4"><a id="__codelineno-48-4" name="__codelineno-48-4"></a># Use it:
+</span><span id="__span-48-5"><a id="__codelineno-48-5" name="__codelineno-48-5"></a># (lldb) pyz3-break my_function
+</span></code></pre></div></td></tr></table></div>
+<h3 id="gdbinit">.gdbinit</h3>
+<p>Place in project root or <code>~/.gdbinit</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-49-1">1</a></span>
+<span class="normal"><a href="#__codelineno-49-2">2</a></span>
+<span class="normal"><a href="#__codelineno-49-3">3</a></span>
+<span class="normal"><a href="#__codelineno-49-4">4</a></span>
+<span class="normal"><a href="#__codelineno-49-5">5</a></span>
+<span class="normal"><a href="#__codelineno-49-6">6</a></span>
+<span class="normal"><a href="#__codelineno-49-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1"></a># pyZ3-specific helpers
+</span><span id="__span-49-2"><a id="__codelineno-49-2" name="__codelineno-49-2"></a>define pyz3-break
+</span><span id="__span-49-3"><a id="__codelineno-49-3" name="__codelineno-49-3"></a>    break $arg0
+</span><span id="__span-49-4"><a id="__codelineno-49-4" name="__codelineno-49-4"></a>end
+</span><span id="__span-49-5"><a id="__codelineno-49-5" name="__codelineno-49-5"></a>
+</span><span id="__span-49-6"><a id="__codelineno-49-6" name="__codelineno-49-6"></a># Use it:
+</span><span id="__span-49-7"><a id="__codelineno-49-7" name="__codelineno-49-7"></a># (gdb) pyz3-break my_function
+</span></code></pre></div></td></tr></table></div>
+<h3 id="vscodelaunchjson">.vscode/launch.json</h3>
+<p>Pre-configured debugging profiles (see <a href="#vscode-debugging">VSCode Debugging</a> section).</p>
+<hr />
+<h2 id="examples">Examples</h2>
+<p>Complete examples available in <code>example/debugging.zig</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-50-1">1</a></span>
+<span class="normal"><a href="#__codelineno-50-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1"></a><span class="c1"># Run examples</span>
+</span><span id="__span-50-2"><a id="__codelineno-50-2" name="__codelineno-50-2"></a>poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>example/debugging.zig<span class="w"> </span>-v
+</span></code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="debug-symbols-missing">Debug Symbols Missing</h3>
+<p><strong>Problem</strong>: Debugger can't find symbols.</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-51-1">1</a></span>
+<span class="normal"><a href="#__codelineno-51-2">2</a></span>
+<span class="normal"><a href="#__codelineno-51-3">3</a></span>
+<span class="normal"><a href="#__codelineno-51-4">4</a></span>
+<span class="normal"><a href="#__codelineno-51-5">5</a></span>
+<span class="normal"><a href="#__codelineno-51-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1"></a><span class="c1"># Build with debug symbols</span>
+</span><span id="__span-51-2"><a id="__codelineno-51-2" name="__codelineno-51-2"></a>zig<span class="w"> </span>build<span class="w"> </span>-Doptimize<span class="o">=</span>Debug
+</span><span id="__span-51-3"><a id="__codelineno-51-3" name="__codelineno-51-3"></a>
+</span><span id="__span-51-4"><a id="__codelineno-51-4" name="__codelineno-51-4"></a><span class="c1"># Verify symbols exist</span>
+</span><span id="__span-51-5"><a id="__codelineno-51-5" name="__codelineno-51-5"></a>file<span class="w"> </span>my_extension.so
+</span><span id="__span-51-6"><a id="__codelineno-51-6" name="__codelineno-51-6"></a><span class="c1"># Should show: &quot;not stripped&quot; or &quot;with debug_info&quot;</span>
+</span></code></pre></div></td></tr></table></div></p>
+<h3 id="breakpoints-not-hit">Breakpoints Not Hit</h3>
+<p><strong>Problem</strong>: Breakpoints don't trigger.</p>
+<p><strong>Solution</strong>:
+1. Ensure debug build: <code>zig build -Doptimize=Debug</code>
+2. Load symbols in debugger:
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-52-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1"></a>(lldb) image add /path/to/extension.so
+</span></code></pre></div></td></tr></table></div></p>
+<h3 id="no-debug-output">No Debug Output</h3>
+<p><strong>Problem</strong>: Debug logging not appearing.</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-53-1">1</a></span>
+<span class="normal"><a href="#__codelineno-53-2">2</a></span>
+<span class="normal"><a href="#__codelineno-53-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1"></a><span class="c1">// Make sure debug is enabled</span>
+</span><span id="__span-53-2"><a id="__codelineno-53-2" name="__codelineno-53-2"></a><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">enableDebug</span><span class="p">();</span>
+</span><span id="__span-53-3"><a id="__codelineno-53-3" name="__codelineno-53-3"></a><span class="n">py</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">setLogLevel</span><span class="p">(.</span><span class="n">trace</span><span class="p">);</span><span class="w">  </span><span class="c1">// Set verbose level</span>
+</span></code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Ziggy pyZ3 provides comprehensive debugging support:</p>
+<p>✅ Multi-level debug logging
+✅ Performance timing
+✅ Memory inspection
+✅ Reference count tracking
+✅ Stack traces (Python + Zig)
+✅ LLDB/GDB integration
+✅ VSCode debugging
+✅ Core dump support
+✅ Interactive breakpoints</p>
+<p>See also:
+- <a href="../new_features/#memory-leak-detection">Memory Leak Detection</a>
+- <a href="../_4_testing/">Testing Guide</a>
+- <a href="../../example/debugging.zig">Examples</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/amiyamandal-dev/pyz3" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/pyZ3/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.expand", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

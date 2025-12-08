@@ -1,0 +1,1625 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Testing Guide for New Type Wrappers - pyZ3</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#testing-guide-for-new-type-wrappers" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="pyZ3" class="md-header__button md-logo" aria-label="pyZ3" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyZ3
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Testing Guide for New Type Wrappers
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/amiyamandal-dev/pyz3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yourusername/pyZ3
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pyZ3" class="md-nav__button md-logo" aria-label="pyZ3" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pyZ3
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/amiyamandal-dev/pyz3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yourusername/pyZ3
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pyz3 - Python Extensions in Zig
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/classes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/gil/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GIL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/_4_testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/_5_memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/_6_buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Buffer Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/numpy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NumPy Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run-all-tests-automated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run All Tests (Automated)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interactive-menu-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive Menu (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Available Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#show-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Show Help
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clean-and-rebuild" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clean and Rebuild
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-zig-tests-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run Zig Tests Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-python-tests-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run Python Tests Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-integration-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run Integration Test
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-verification-fastest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Verification (Fastest)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-build-the-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Build the Project
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-run-python-interactive-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Run Python Interactive Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-test-individual-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Test Individual Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-gets-tested" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gets Tested
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Gets Tested">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-zig-unit-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Zig Unit Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-python-type-compatibility-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Python Type Compatibility Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Integration Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zig-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zig Not Found
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Not Found
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build Fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pytest-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pytest Not Found
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#import-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Import Errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Output
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Output">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#successful-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Successful Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cicd-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI/CD Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CI/CD Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GitHub Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-pre-commit-hook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local Pre-commit Hook
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files-created-by-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Created by Script
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-usage-in-your-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example Usage in Your Code
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Support
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="testing-guide-for-new-type-wrappers">Testing Guide for New Type Wrappers</h1>
+<p>This guide explains how to test the 13 new Python type wrappers implemented in pyZ3.</p>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="run-all-tests-automated">Run All Tests (Automated)</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>./test_new_types.sh<span class="w"> </span>--all
+</span></code></pre></div></td></tr></table></div>
+<p>This will:
+1. ✅ Check prerequisites (Zig, Python, pytest)
+2. ✅ Build the project
+3. ✅ Run Zig unit tests
+4. ✅ Run Python type compatibility tests
+5. ✅ Run integration tests
+6. ✅ Run pytest suite
+7. ✅ Show summary</p>
+<h3 id="interactive-menu-recommended">Interactive Menu (Recommended)</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>./test_new_types.sh
+</span></code></pre></div></td></tr></table></div>
+<p>You'll see an interactive menu:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span>
+<span class="normal"><a href="#__codelineno-2-12">12</a></span>
+<span class="normal"><a href="#__codelineno-2-13">13</a></span>
+<span class="normal"><a href="#__codelineno-2-14">14</a></span>
+<span class="normal"><a href="#__codelineno-2-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>========================================
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>Ziggy pyZ3 - New Types Test Menu
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a>========================================
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a>1. Run all tests
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a>2. Clean and rebuild
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a>3. Run Zig tests only
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8"></a>4. Run Python type tests only
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a>5. Run integration test
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a>6. Run pytest
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11"></a>7. Show implementation summary
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12"></a>8. Quick verification
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13"></a>9. Exit
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14"></a>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15"></a>Choose an option (1-9):
+</span></code></pre></div></td></tr></table></div></p>
+<h2 id="available-commands">Available Commands</h2>
+<h3 id="show-help">Show Help</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>./test_new_types.sh<span class="w"> </span>--help
+</span></code></pre></div></td></tr></table></div>
+<h3 id="build-only">Build Only</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a>./test_new_types.sh<span class="w"> </span>--build
+</span></code></pre></div></td></tr></table></div>
+<h3 id="clean-and-rebuild">Clean and Rebuild</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a>./test_new_types.sh<span class="w"> </span>--clean
+</span></code></pre></div></td></tr></table></div>
+<h3 id="run-zig-tests-only">Run Zig Tests Only</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a>./test_new_types.sh<span class="w"> </span>--zig
+</span></code></pre></div></td></tr></table></div>
+<h3 id="run-python-tests-only">Run Python Tests Only</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a>./test_new_types.sh<span class="w"> </span>--python
+</span></code></pre></div></td></tr></table></div>
+<h3 id="run-integration-test">Run Integration Test</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a>./test_new_types.sh<span class="w"> </span>--integration
+</span></code></pre></div></td></tr></table></div>
+<h3 id="quick-verification-fastest">Quick Verification (Fastest)</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a>./test_new_types.sh<span class="w"> </span>--quick
+</span></code></pre></div></td></tr></table></div>
+<p>Output:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-10-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-10-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-10-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-10-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-10-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-10-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-10-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-10-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-10-10">10</a></span>
+<span class="normal"><a href="#__codelineno-10-11">11</a></span>
+<span class="normal"><a href="#__codelineno-10-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1"></a>Testing all new types...
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3"></a>✅ Complex: 5.0 == 5.0
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4"></a>✅ Decimal: 0.3 == 0.3
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5"></a>✅ DateTime: 2025 &gt;= 2025
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6"></a>✅ Path: True == True
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7"></a>✅ UUID: 36 == 36
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8"></a>✅ Set: True == True
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9"></a>✅ Range: 10 == 10
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10"></a>✅ ByteArray: b&#39;test&#39; == b&#39;test&#39;
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11"></a>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12"></a>🎉 All types verified!
+</span></code></pre></div></td></tr></table></div></p>
+<h2 id="manual-testing">Manual Testing</h2>
+<h3 id="1-build-the-project">1. Build the Project</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1">1</a></span>
+<span class="normal"><a href="#__codelineno-11-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="nb">cd</span><span class="w"> </span>/Volumes/ssd/pyZ3
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2"></a>zig<span class="w"> </span>build
+</span></code></pre></div></td></tr></table></div>
+<h3 id="2-run-python-interactive-tests">2. Run Python Interactive Tests</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-12-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-12-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-12-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-12-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-12-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-12-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-12-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-12-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-12-10">10</a></span>
+<span class="normal"><a href="#__codelineno-12-11">11</a></span>
+<span class="normal"><a href="#__codelineno-12-12">12</a></span>
+<span class="normal"><a href="#__codelineno-12-13">13</a></span>
+<span class="normal"><a href="#__codelineno-12-14">14</a></span>
+<span class="normal"><a href="#__codelineno-12-15">15</a></span>
+<span class="normal"><a href="#__codelineno-12-16">16</a></span>
+<span class="normal"><a href="#__codelineno-12-17">17</a></span>
+<span class="normal"><a href="#__codelineno-12-18">18</a></span>
+<span class="normal"><a href="#__codelineno-12-19">19</a></span>
+<span class="normal"><a href="#__codelineno-12-20">20</a></span>
+<span class="normal"><a href="#__codelineno-12-21">21</a></span>
+<span class="normal"><a href="#__codelineno-12-22">22</a></span>
+<span class="normal"><a href="#__codelineno-12-23">23</a></span>
+<span class="normal"><a href="#__codelineno-12-24">24</a></span>
+<span class="normal"><a href="#__codelineno-12-25">25</a></span>
+<span class="normal"><a href="#__codelineno-12-26">26</a></span>
+<span class="normal"><a href="#__codelineno-12-27">27</a></span>
+<span class="normal"><a href="#__codelineno-12-28">28</a></span>
+<span class="normal"><a href="#__codelineno-12-29">29</a></span>
+<span class="normal"><a href="#__codelineno-12-30">30</a></span>
+<span class="normal"><a href="#__codelineno-12-31">31</a></span>
+<span class="normal"><a href="#__codelineno-12-32">32</a></span>
+<span class="normal"><a href="#__codelineno-12-33">33</a></span>
+<span class="normal"><a href="#__codelineno-12-34">34</a></span>
+<span class="normal"><a href="#__codelineno-12-35">35</a></span>
+<span class="normal"><a href="#__codelineno-12-36">36</a></span>
+<span class="normal"><a href="#__codelineno-12-37">37</a></span>
+<span class="normal"><a href="#__codelineno-12-38">38</a></span>
+<span class="normal"><a href="#__codelineno-12-39">39</a></span>
+<span class="normal"><a href="#__codelineno-12-40">40</a></span>
+<span class="normal"><a href="#__codelineno-12-41">41</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1"></a>python3<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2"></a><span class="s">from datetime import datetime</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3"></a><span class="s">from decimal import Decimal</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="s">from pathlib import Path</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5"></a><span class="s">import uuid</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6"></a>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7"></a><span class="s"># Test PyComplex</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8"></a><span class="s">c = complex(3, 4)</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9"></a><span class="s">print(f&quot;Complex: {c}, abs={abs(c)}&quot;)</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10"></a>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11"></a><span class="s"># Test PyDecimal</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12"></a><span class="s">d = Decimal(&#39;0.1&#39;) + Decimal(&#39;0.2&#39;)</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13"></a><span class="s">print(f&quot;Decimal: 0.1 + 0.2 = {d}&quot;)</span>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14"></a>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15"></a><span class="s"># Test PyDateTime</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16"></a><span class="s">now = datetime.now()</span>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17"></a><span class="s">print(f&quot;DateTime: {now.isoformat()}&quot;)</span>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18"></a>
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19"></a><span class="s"># Test PyPath</span>
+</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20"></a><span class="s">p = Path.cwd()</span>
+</span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21"></a><span class="s">print(f&quot;Path: {p} exists={p.exists()}&quot;)</span>
+</span><span id="__span-12-22"><a id="__codelineno-12-22" name="__codelineno-12-22"></a>
+</span><span id="__span-12-23"><a id="__codelineno-12-23" name="__codelineno-12-23"></a><span class="s"># Test PyUUID</span>
+</span><span id="__span-12-24"><a id="__codelineno-12-24" name="__codelineno-12-24"></a><span class="s">u = uuid.uuid4()</span>
+</span><span id="__span-12-25"><a id="__codelineno-12-25" name="__codelineno-12-25"></a><span class="s">print(f&quot;UUID: {u}&quot;)</span>
+</span><span id="__span-12-26"><a id="__codelineno-12-26" name="__codelineno-12-26"></a>
+</span><span id="__span-12-27"><a id="__codelineno-12-27" name="__codelineno-12-27"></a><span class="s"># Test PySet</span>
+</span><span id="__span-12-28"><a id="__codelineno-12-28" name="__codelineno-12-28"></a><span class="s">s = {1, 2, 3} | {3, 4, 5}</span>
+</span><span id="__span-12-29"><a id="__codelineno-12-29" name="__codelineno-12-29"></a><span class="s">print(f&quot;Set union: {s}&quot;)</span>
+</span><span id="__span-12-30"><a id="__codelineno-12-30" name="__codelineno-12-30"></a>
+</span><span id="__span-12-31"><a id="__codelineno-12-31" name="__codelineno-12-31"></a><span class="s"># Test PyRange</span>
+</span><span id="__span-12-32"><a id="__codelineno-12-32" name="__codelineno-12-32"></a><span class="s">r = list(range(5))</span>
+</span><span id="__span-12-33"><a id="__codelineno-12-33" name="__codelineno-12-33"></a><span class="s">print(f&quot;Range: {r}&quot;)</span>
+</span><span id="__span-12-34"><a id="__codelineno-12-34" name="__codelineno-12-34"></a>
+</span><span id="__span-12-35"><a id="__codelineno-12-35" name="__codelineno-12-35"></a><span class="s"># Test PyByteArray</span>
+</span><span id="__span-12-36"><a id="__codelineno-12-36" name="__codelineno-12-36"></a><span class="s">ba = bytearray(b&quot;Hello&quot;)</span>
+</span><span id="__span-12-37"><a id="__codelineno-12-37" name="__codelineno-12-37"></a><span class="s">ba.extend(b&quot; World&quot;)</span>
+</span><span id="__span-12-38"><a id="__codelineno-12-38" name="__codelineno-12-38"></a><span class="s">print(f&quot;ByteArray: {bytes(ba)}&quot;)</span>
+</span><span id="__span-12-39"><a id="__codelineno-12-39" name="__codelineno-12-39"></a>
+</span><span id="__span-12-40"><a id="__codelineno-12-40" name="__codelineno-12-40"></a><span class="s">print(&quot;\n✅ All types working!&quot;)</span>
+</span><span id="__span-12-41"><a id="__codelineno-12-41" name="__codelineno-12-41"></a><span class="s">EOF</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="3-test-individual-type">3. Test Individual Type</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-13-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-13-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-13-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-13-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-13-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-13-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-13-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-13-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-13-10">10</a></span>
+<span class="normal"><a href="#__codelineno-13-11">11</a></span>
+<span class="normal"><a href="#__codelineno-13-12">12</a></span>
+<span class="normal"><a href="#__codelineno-13-13">13</a></span>
+<span class="normal"><a href="#__codelineno-13-14">14</a></span>
+<span class="normal"><a href="#__codelineno-13-15">15</a></span>
+<span class="normal"><a href="#__codelineno-13-16">16</a></span>
+<span class="normal"><a href="#__codelineno-13-17">17</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="c1"># Test PySet</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2"></a>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;s = {1,2,3}; s.add(4); print(&#39;Set:&#39;, s)&quot;</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3"></a>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4"></a><span class="c1"># Test PyComplex</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5"></a>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;print(&#39;Complex abs:&#39;, abs(complex(3, 4)))&quot;</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6"></a>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7"></a><span class="c1"># Test PyDecimal</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8"></a>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from decimal import Decimal; print(&#39;Decimal:&#39;, Decimal(&#39;0.1&#39;) + Decimal(&#39;0.2&#39;))&quot;</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9"></a>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10"></a><span class="c1"># Test PyDateTime</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11"></a>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from datetime import datetime; print(&#39;Now:&#39;, datetime.now())&quot;</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12"></a>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13"></a><span class="c1"># Test PyPath</span>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14"></a>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from pathlib import Path; print(&#39;CWD:&#39;, Path.cwd())&quot;</span>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15"></a>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16"></a><span class="c1"># Test PyUUID</span>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17"></a>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import uuid; print(&#39;UUID4:&#39;, uuid.uuid4())&quot;</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="what-gets-tested">What Gets Tested</h2>
+<h3 id="1-zig-unit-tests">1. Zig Unit Tests</h3>
+<ul>
+<li>Type wrapper compilation</li>
+<li>FFI bindings</li>
+<li>Export correctness</li>
+</ul>
+<h3 id="2-python-type-compatibility-tests">2. Python Type Compatibility Tests</h3>
+<ul>
+<li>✅ <strong>PyComplex</strong>: Complex arithmetic, abs, conjugate</li>
+<li>✅ <strong>PyDecimal</strong>: Precise arithmetic (0.1 + 0.2 = 0.3)</li>
+<li>✅ <strong>PyDateTime</strong>: datetime, date, time, timedelta</li>
+<li>✅ <strong>PyPath</strong>: File I/O, exists, read/write</li>
+<li>✅ <strong>PyUUID</strong>: uuid4, uuid5, namespace</li>
+<li>✅ <strong>PySet/PyFrozenSet</strong>: Union, intersection, membership</li>
+<li>✅ <strong>PyRange</strong>: Length, membership, iteration</li>
+<li>✅ <strong>PyByteArray</strong>: Mutation, extend, reverse</li>
+<li>✅ <strong>PyGenerator</strong>: Iteration, protocol</li>
+</ul>
+<h3 id="3-integration-tests">3. Integration Tests</h3>
+<p>Tests multiple types working together:
+- Financial report with UUID, DateTime, Decimal
+- File operations with Path
+- Set operations with collections
+- Date calculations with timedelta</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="zig-not-found">Zig Not Found</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1">1</a></span>
+<span class="normal"><a href="#__codelineno-14-2">2</a></span>
+<span class="normal"><a href="#__codelineno-14-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="c1"># Install Zig 0.14.0 or later</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2"></a>brew<span class="w"> </span>install<span class="w"> </span>zig<span class="w">  </span><span class="c1"># macOS</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3"></a><span class="c1"># or download from https://ziglang.org/</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="python-not-found">Python Not Found</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-15-1">1</a></span>
+<span class="normal"><a href="#__codelineno-15-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1"></a><span class="c1"># Ensure Python 3.11+ is installed</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2"></a>python3<span class="w"> </span>--version
+</span></code></pre></div></td></tr></table></div>
+<h3 id="build-fails">Build Fails</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-16-1">1</a></span>
+<span class="normal"><a href="#__codelineno-16-2">2</a></span>
+<span class="normal"><a href="#__codelineno-16-3">3</a></span>
+<span class="normal"><a href="#__codelineno-16-4">4</a></span>
+<span class="normal"><a href="#__codelineno-16-5">5</a></span>
+<span class="normal"><a href="#__codelineno-16-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1"></a><span class="c1"># Clean and rebuild</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2"></a>./test_new_types.sh<span class="w"> </span>--clean
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3"></a>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4"></a><span class="c1"># Or manually</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5"></a>rm<span class="w"> </span>-rf<span class="w"> </span>zig-out<span class="w"> </span>zig-cache
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6"></a>zig<span class="w"> </span>build
+</span></code></pre></div></td></tr></table></div>
+<h3 id="pytest-not-found">pytest Not Found</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-17-1">1</a></span>
+<span class="normal"><a href="#__codelineno-17-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1"></a><span class="c1"># Install pytest</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2"></a>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pytest<span class="w"> </span>--user
+</span></code></pre></div></td></tr></table></div>
+<h3 id="import-errors">Import Errors</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-18-1">1</a></span>
+<span class="normal"><a href="#__codelineno-18-2">2</a></span>
+<span class="normal"><a href="#__codelineno-18-3">3</a></span>
+<span class="normal"><a href="#__codelineno-18-4">4</a></span>
+<span class="normal"><a href="#__codelineno-18-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1"></a><span class="c1"># Make sure the build succeeded</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2"></a>ls<span class="w"> </span>-la<span class="w"> </span>zig-out/lib/
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3"></a>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4"></a><span class="c1"># Check for .so or .dylib files</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5"></a>file<span class="w"> </span>zig-out/lib/*
+</span></code></pre></div></td></tr></table></div>
+<h2 id="test-output">Test Output</h2>
+<h3 id="successful-run">Successful Run</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-19-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-19-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-19-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-19-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-19-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-19-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-19-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-19-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-19-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-19-10">10</a></span>
+<span class="normal"><a href="#__codelineno-19-11">11</a></span>
+<span class="normal"><a href="#__codelineno-19-12">12</a></span>
+<span class="normal"><a href="#__codelineno-19-13">13</a></span>
+<span class="normal"><a href="#__codelineno-19-14">14</a></span>
+<span class="normal"><a href="#__codelineno-19-15">15</a></span>
+<span class="normal"><a href="#__codelineno-19-16">16</a></span>
+<span class="normal"><a href="#__codelineno-19-17">17</a></span>
+<span class="normal"><a href="#__codelineno-19-18">18</a></span>
+<span class="normal"><a href="#__codelineno-19-19">19</a></span>
+<span class="normal"><a href="#__codelineno-19-20">20</a></span>
+<span class="normal"><a href="#__codelineno-19-21">21</a></span>
+<span class="normal"><a href="#__codelineno-19-22">22</a></span>
+<span class="normal"><a href="#__codelineno-19-23">23</a></span>
+<span class="normal"><a href="#__codelineno-19-24">24</a></span>
+<span class="normal"><a href="#__codelineno-19-25">25</a></span>
+<span class="normal"><a href="#__codelineno-19-26">26</a></span>
+<span class="normal"><a href="#__codelineno-19-27">27</a></span>
+<span class="normal"><a href="#__codelineno-19-28">28</a></span>
+<span class="normal"><a href="#__codelineno-19-29">29</a></span>
+<span class="normal"><a href="#__codelineno-19-30">30</a></span>
+<span class="normal"><a href="#__codelineno-19-31">31</a></span>
+<span class="normal"><a href="#__codelineno-19-32">32</a></span>
+<span class="normal"><a href="#__codelineno-19-33">33</a></span>
+<span class="normal"><a href="#__codelineno-19-34">34</a></span>
+<span class="normal"><a href="#__codelineno-19-35">35</a></span>
+<span class="normal"><a href="#__codelineno-19-36">36</a></span>
+<span class="normal"><a href="#__codelineno-19-37">37</a></span>
+<span class="normal"><a href="#__codelineno-19-38">38</a></span>
+<span class="normal"><a href="#__codelineno-19-39">39</a></span>
+<span class="normal"><a href="#__codelineno-19-40">40</a></span>
+<span class="normal"><a href="#__codelineno-19-41">41</a></span>
+<span class="normal"><a href="#__codelineno-19-42">42</a></span>
+<span class="normal"><a href="#__codelineno-19-43">43</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1"></a>========================================
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2"></a>Checking Prerequisites
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3"></a>========================================
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4"></a>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5"></a>✅ Zig found: 0.14.0
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6"></a>✅ Python found: Python 3.11.5
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7"></a>✅ pytest found
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8"></a>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9"></a>========================================
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10"></a>Building Ziggy pyZ3
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11"></a>========================================
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12"></a>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13"></a>ℹ️  Running: zig build
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14"></a>✅ Main project built successfully
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15"></a>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16"></a>========================================
+</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17"></a>Running Python Type Compatibility
+</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18"></a>========================================
+</span><span id="__span-19-19"><a id="__codelineno-19-19" name="__codelineno-19-19"></a>
+</span><span id="__span-19-20"><a id="__codelineno-19-20" name="__codelineno-19-20"></a>✅ PyComplex: complex(3, 4) works correctly
+</span><span id="__span-19-21"><a id="__codelineno-19-21" name="__codelineno-19-21"></a>✅ PyDecimal: 0.1 + 0.2 = 0.3 (exact)
+</span><span id="__span-19-22"><a id="__codelineno-19-22" name="__codelineno-19-22"></a>✅ PyDateTime/PyDate/PyTime/PyTimeDelta: all working
+</span><span id="__span-19-23"><a id="__codelineno-19-23" name="__codelineno-19-23"></a>✅ PyPath: file operations working
+</span><span id="__span-19-24"><a id="__codelineno-19-24" name="__codelineno-19-24"></a>✅ PyUUID: uuid4 and uuid5 working
+</span><span id="__span-19-25"><a id="__codelineno-19-25" name="__codelineno-19-25"></a>✅ PySet/PyFrozenSet: set operations working
+</span><span id="__span-19-26"><a id="__codelineno-19-26" name="__codelineno-19-26"></a>✅ PyRange: range operations working
+</span><span id="__span-19-27"><a id="__codelineno-19-27" name="__codelineno-19-27"></a>✅ PyByteArray: mutable operations working
+</span><span id="__span-19-28"><a id="__codelineno-19-28" name="__codelineno-19-28"></a>✅ PyGenerator: generator protocol working
+</span><span id="__span-19-29"><a id="__codelineno-19-29" name="__codelineno-19-29"></a>
+</span><span id="__span-19-30"><a id="__codelineno-19-30" name="__codelineno-19-30"></a>Results: 9 passed, 0 failed
+</span><span id="__span-19-31"><a id="__codelineno-19-31" name="__codelineno-19-31"></a>
+</span><span id="__span-19-32"><a id="__codelineno-19-32" name="__codelineno-19-32"></a>✅ All Python type tests passed
+</span><span id="__span-19-33"><a id="__codelineno-19-33" name="__codelineno-19-33"></a>
+</span><span id="__span-19-34"><a id="__codelineno-19-34" name="__codelineno-19-34"></a>========================================
+</span><span id="__span-19-35"><a id="__codelineno-19-35" name="__codelineno-19-35"></a>Running Integration Test
+</span><span id="__span-19-36"><a id="__codelineno-19-36" name="__codelineno-19-36"></a>========================================
+</span><span id="__span-19-37"><a id="__codelineno-19-37" name="__codelineno-19-37"></a>
+</span><span id="__span-19-38"><a id="__codelineno-19-38" name="__codelineno-19-38"></a>✅ Integration test passed!
+</span><span id="__span-19-39"><a id="__codelineno-19-39" name="__codelineno-19-39"></a>
+</span><span id="__span-19-40"><a id="__codelineno-19-40" name="__codelineno-19-40"></a>Report ID: 12345678-1234-5678-1234-567812345678
+</span><span id="__span-19-41"><a id="__codelineno-19-41" name="__codelineno-19-41"></a>Timestamp: 2025-12-04T10:30:00.123456
+</span><span id="__span-19-42"><a id="__codelineno-19-42" name="__codelineno-19-42"></a>Total: $64.78
+</span><span id="__span-19-43"><a id="__codelineno-19-43" name="__codelineno-19-43"></a>Due Date: 2026-01-03T10:30:00.123456
+</span></code></pre></div></td></tr></table></div>
+<h2 id="cicd-integration">CI/CD Integration</h2>
+<h3 id="github-actions">GitHub Actions</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-20-1">1</a></span>
+<span class="normal"><a href="#__codelineno-20-2">2</a></span>
+<span class="normal"><a href="#__codelineno-20-3">3</a></span>
+<span class="normal"><a href="#__codelineno-20-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Test New Types</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2"></a><span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3"></a><span class="w">    </span><span class="no">chmod +x test_new_types.sh</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4"></a><span class="w">    </span><span class="no">./test_new_types.sh --all</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="local-pre-commit-hook">Local Pre-commit Hook</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-21-1">1</a></span>
+<span class="normal"><a href="#__codelineno-21-2">2</a></span>
+<span class="normal"><a href="#__codelineno-21-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1"></a><span class="c1"># .git/hooks/pre-commit</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2"></a><span class="c1">#!/bin/bash</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3"></a>./test_new_types.sh<span class="w"> </span>--quick<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="performance">Performance</h2>
+<ul>
+<li><strong>Quick verification</strong>: ~1 second</li>
+<li><strong>Python type tests</strong>: ~2-3 seconds</li>
+<li><strong>Full test suite</strong>: ~10-15 seconds (includes build)</li>
+<li><strong>Clean rebuild</strong>: ~30-60 seconds</li>
+</ul>
+<h2 id="files-created-by-script">Files Created by Script</h2>
+<p>Temporary test files:
+- <code>/tmp/test_types.py</code> - Python type compatibility tests
+- <code>/tmp/integration_test.py</code> - Integration test
+- <code>/tmp/zig_test.log</code> - Zig test output log</p>
+<p>These are automatically cleaned up on each run.</p>
+<h2 id="next-steps">Next Steps</h2>
+<p>After successful testing:</p>
+<ol>
+<li>✅ All types verified locally</li>
+<li>✅ Build succeeds</li>
+<li>✅ Tests pass</li>
+<li>→ Ready to use in your Python extensions!</li>
+</ol>
+<h2 id="example-usage-in-your-code">Example Usage in Your Code</h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-22-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-22-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-22-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-22-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-22-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-22-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-22-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-22-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-22-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-22-10">10</a></span>
+<span class="normal"><a href="#__codelineno-22-11">11</a></span>
+<span class="normal"><a href="#__codelineno-22-12">12</a></span>
+<span class="normal"><a href="#__codelineno-22-13">13</a></span>
+<span class="normal"><a href="#__codelineno-22-14">14</a></span>
+<span class="normal"><a href="#__codelineno-22-15">15</a></span>
+<span class="normal"><a href="#__codelineno-22-16">16</a></span>
+<span class="normal"><a href="#__codelineno-22-17">17</a></span>
+<span class="normal"><a href="#__codelineno-22-18">18</a></span>
+<span class="normal"><a href="#__codelineno-22-19">19</a></span>
+<span class="normal"><a href="#__codelineno-22-20">20</a></span>
+<span class="normal"><a href="#__codelineno-22-21">21</a></span>
+<span class="normal"><a href="#__codelineno-22-22">22</a></span>
+<span class="normal"><a href="#__codelineno-22-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">py</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;pyz3&quot;</span><span class="p">);</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2"></a>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">example</span><span class="p">()</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyObject</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4"></a><span class="w">    </span><span class="c1">// Use PySet</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">my_set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PySet</span><span class="p">(</span><span class="n">root</span><span class="p">).</span><span class="n">new</span><span class="p">();</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6"></a>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7"></a><span class="w">    </span><span class="c1">// Use PyComplex</span>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyComplex</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">);</span>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9"></a>
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10"></a><span class="w">    </span><span class="c1">// Use PyDecimal</span>
+</span><span id="__span-22-11"><a id="__codelineno-22-11" name="__codelineno-22-11"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyDecimal</span><span class="p">.</span><span class="n">fromString</span><span class="p">(</span><span class="s">&quot;99.99&quot;</span><span class="p">);</span>
+</span><span id="__span-22-12"><a id="__codelineno-22-12" name="__codelineno-22-12"></a>
+</span><span id="__span-22-13"><a id="__codelineno-22-13" name="__codelineno-22-13"></a><span class="w">    </span><span class="c1">// Use PyDateTime</span>
+</span><span id="__span-22-14"><a id="__codelineno-22-14" name="__codelineno-22-14"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyDateTime</span><span class="p">.</span><span class="n">now</span><span class="p">();</span>
+</span><span id="__span-22-15"><a id="__codelineno-22-15" name="__codelineno-22-15"></a>
+</span><span id="__span-22-16"><a id="__codelineno-22-16" name="__codelineno-22-16"></a><span class="w">    </span><span class="c1">// Use PyPath</span>
+</span><span id="__span-22-17"><a id="__codelineno-22-17" name="__codelineno-22-17"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyPath</span><span class="p">.</span><span class="n">cwd</span><span class="p">();</span>
+</span><span id="__span-22-18"><a id="__codelineno-22-18" name="__codelineno-22-18"></a>
+</span><span id="__span-22-19"><a id="__codelineno-22-19" name="__codelineno-22-19"></a><span class="w">    </span><span class="c1">// Use PyUUID</span>
+</span><span id="__span-22-20"><a id="__codelineno-22-20" name="__codelineno-22-20"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">uuid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyUUID</span><span class="p">.</span><span class="n">uuid4</span><span class="p">();</span>
+</span><span id="__span-22-21"><a id="__codelineno-22-21" name="__codelineno-22-21"></a>
+</span><span id="__span-22-22"><a id="__codelineno-22-22" name="__codelineno-22-22"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">my_set</span><span class="p">.</span><span class="n">obj</span><span class="p">;</span>
+</span><span id="__span-22-23"><a id="__codelineno-22-23" name="__codelineno-22-23"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="support">Support</h2>
+<p>If you encounter issues:</p>
+<ol>
+<li>Check the error output carefully</li>
+<li>Run <code>./test_new_types.sh --quick</code> first</li>
+<li>Try <code>./test_new_types.sh --clean</code> to rebuild</li>
+<li>Check Zig and Python versions</li>
+<li>Review build logs in <code>/tmp/zig_test.log</code></li>
+</ol>
+<h2 id="summary">Summary</h2>
+<p>The test script provides:
+- ✅ Automated testing of all 13 new types
+- ✅ Interactive menu for selective testing
+- ✅ Quick verification for CI/CD
+- ✅ Detailed error reporting
+- ✅ Integration testing
+- ✅ Clean build management</p>
+<p>Happy testing! 🎉</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/amiyamandal-dev/pyz3" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/pyZ3/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.expand", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

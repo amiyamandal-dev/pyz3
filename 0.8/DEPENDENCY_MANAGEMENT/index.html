@@ -1,0 +1,1847 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>C/C++ Dependency Management - pyZ3</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cc-dependency-management" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="pyZ3" class="md-header__button md-logo" aria-label="pyZ3" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyZ3
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              C/C++ Dependency Management
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/amiyamandal-dev/pyz3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yourusername/pyZ3
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pyZ3" class="md-nav__button md-logo" aria-label="pyZ3" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pyZ3
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/amiyamandal-dev/pyz3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yourusername/pyZ3
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pyz3 - Python Extensions in Zig
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/classes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/gil/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GIL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/_4_testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/_5_memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/_6_buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Buffer Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/numpy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NumPy Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyz3-add" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pyz3 add
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyz3-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pyz3 list
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyz3-remove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pyz3 remove
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-gets-created" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gets Created
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Gets Created">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-dependency-tracking-pyz3_depsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Dependency Tracking (pyz3_deps.json)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-cloned-source-depsname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Cloned Source (deps/&lt;name&gt;/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-zig-bindings-bindingsnamezig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Zig Bindings (bindings/&lt;name&gt;.zig)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-build-configuration-bindingsdepsziginc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Build Configuration (bindings/deps.zig.inc)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-python-wrapper-template-srcname_wrapperzig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Python Wrapper Template (src/&lt;name&gt;_wrapper.zig)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-add-a-dependency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Add a Dependency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-update-your-build-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Update Your Build System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-use-in-your-zig-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Use in Your Zig Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-build-and-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Build and Test
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#header-only-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Header-Only Libraries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libraries-with-source-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Libraries with Source Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#system-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Libraries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-headers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Headers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Real-World Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-csv-processing-with-rapidcsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: CSV Processing with RapidCSV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-json-processing-with-nlohmannjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: JSON Processing with nlohmann/json
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-image-processing-with-stb_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 3: Image Processing with stb_image
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-file-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency File Format
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#header-not-found-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "Header not found" Errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C++ Libraries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version Conflicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build Errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-document-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Document Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-pin-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Pin Versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-test-thoroughly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Test Thoroughly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-handle-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Handle Errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison-with-other-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with Other Tools
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feedback
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="cc-dependency-management">C/C++ Dependency Management</h1>
+<p>pyZ3 includes powerful C/C++ dependency management that automatically generates Zig bindings and integrates external libraries into your project.</p>
+<h2 id="overview">Overview</h2>
+<p>The <code>pyz3 add</code> command allows you to:
+1. <strong>Clone</strong> C/C++ libraries from GitHub or use local paths
+2. <strong>Auto-generate</strong> Zig bindings using <code>@cImport</code>
+3. <strong>Track versions</strong> and dependency metadata
+4. <strong>Integrate</strong> seamlessly into your build system
+5. <strong>Generate</strong> Python wrapper templates</p>
+<p>This makes it easy to leverage existing C/C++ libraries in your pyZ3 extensions!</p>
+<h2 id="quick-start">Quick Start</h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="c1"># Add a C/C++ library from GitHub</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>pyz3<span class="w"> </span>add<span class="w"> </span>https://github.com/d99kris/rapidcsv
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="c1"># Add a local library</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>pyz3<span class="w"> </span>add<span class="w"> </span>/path/to/mylibrary
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="c1"># List dependencies</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a>pyz3<span class="w"> </span>list
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="c1"># Remove a dependency</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a>pyz3<span class="w"> </span>remove<span class="w"> </span>rapidcsv
+</span></code></pre></div></td></tr></table></div>
+<h2 id="commands">Commands</h2>
+<h3 id="pyz3-add"><code>pyz3 add</code></h3>
+<p>Add a C/C++ library to your project.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>pyz3<span class="w"> </span>add<span class="w"> </span>&lt;source&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</span></code></pre></div></td></tr></table></div>
+<p><strong>Arguments:</strong>
+- <code>&lt;source&gt;</code> - GitHub URL, Git URL, or local filesystem path</p>
+<p><strong>Options:</strong>
+- <code>-n, --name &lt;NAME&gt;</code> - Override dependency name (defaults to repo/directory name)
+- <code>--headers &lt;HEADERS...&gt;</code> - Specify main headers (auto-detected if not provided)
+- <code>-v, --verbose</code> - Enable verbose output</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="c1"># Add from GitHub</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>pyz3<span class="w"> </span>add<span class="w"> </span>https://github.com/nlohmann/json
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="c1"># Add with custom name</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a>pyz3<span class="w"> </span>add<span class="w"> </span>https://github.com/nothings/stb<span class="w"> </span>--name<span class="w"> </span>stb_image
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="c1"># Add local library</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8"></a>pyz3<span class="w"> </span>add<span class="w"> </span>../mylib
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="c1"># Specify headers explicitly</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11"></a>pyz3<span class="w"> </span>add<span class="w"> </span>https://github.com/libuv/libuv<span class="w"> </span>--headers<span class="w"> </span>include/uv.h
+</span></code></pre></div></td></tr></table></div>
+<h3 id="pyz3-list"><code>pyz3 list</code></h3>
+<p>List all C/C++ dependencies in the project.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>pyz3<span class="w"> </span>list
+</span></code></pre></div></td></tr></table></div>
+<p><strong>Output:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a>Dependencies (2):
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3"></a>  • rapidcsv
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4"></a>    Version: v8.90
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5"></a>    Source: https://github.com/d99kris/rapidcsv
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6"></a>    Type: Header-only
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7"></a>    Headers: rapidcsv.h
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8"></a>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9"></a>  • json
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10"></a>    Version: v3.11.3
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11"></a>    Source: https://github.com/nlohmann/json
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12"></a>    Type: Header-only
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13"></a>    Headers: json.hpp
+</span></code></pre></div></td></tr></table></div></p>
+<h3 id="pyz3-remove"><code>pyz3 remove</code></h3>
+<p>Remove a C/C++ dependency from the project.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a>pyz3<span class="w"> </span>remove<span class="w"> </span>&lt;name&gt;
+</span></code></pre></div></td></tr></table></div>
+<p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a>pyz3<span class="w"> </span>remove<span class="w"> </span>rapidcsv
+</span></code></pre></div></td></tr></table></div></p>
+<h2 id="what-gets-created">What Gets Created</h2>
+<p>When you run <code>pyz3 add</code>, the following files are generated:</p>
+<h3 id="1-dependency-tracking-pyz3_depsjson">1. Dependency Tracking (<code>pyz3_deps.json</code>)</h3>
+<p>JSON file tracking all dependencies:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-7-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-7-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-7-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-7-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-7-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-7-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-7-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-7-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-7-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="p">{</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="w">  </span><span class="nt">&quot;rapidcsv&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rapidcsv&quot;</span><span class="p">,</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">    </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://github.com/d99kris/rapidcsv&quot;</span><span class="p">,</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v8.90&quot;</span><span class="p">,</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="w">    </span><span class="nt">&quot;include_dirs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;deps/rapidcsv/src&quot;</span><span class="p">],</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="w">    </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;deps/rapidcsv/src/rapidcsv.h&quot;</span><span class="p">],</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="w">    </span><span class="nt">&quot;is_header_only&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="2-cloned-source-depsname">2. Cloned Source (<code>deps/&lt;name&gt;/</code>)</h3>
+<p>The library source code:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
+<span class="normal"><a href="#__codelineno-8-2">2</a></span>
+<span class="normal"><a href="#__codelineno-8-3">3</a></span>
+<span class="normal"><a href="#__codelineno-8-4">4</a></span>
+<span class="normal"><a href="#__codelineno-8-5">5</a></span>
+<span class="normal"><a href="#__codelineno-8-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a>deps/
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2"></a>└── rapidcsv/
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3"></a>    ├── src/
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4"></a>    │   └── rapidcsv.h
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5"></a>    ├── README.md
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6"></a>    └── ...
+</span></code></pre></div></td></tr></table></div>
+<h3 id="3-zig-bindings-bindingsnamezig">3. Zig Bindings (<code>bindings/&lt;name&gt;.zig</code>)</h3>
+<p>Auto-generated Zig bindings:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-9-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-9-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-9-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-9-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-9-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-9-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-9-10">10</a></span>
+<span class="normal"><a href="#__codelineno-9-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="c1">// Auto-generated Zig bindings for rapidcsv</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="c1">// Source: https://github.com/d99kris/rapidcsv</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="c1">// Version: v8.90</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="c1">// Import the C library</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="kr">pub</span><span class="w"> </span><span class="kr">const</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@cImport</span><span class="p">({</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7"></a><span class="w">    </span><span class="nb">@cInclude</span><span class="p">(</span><span class="s">&quot;rapidcsv.h&quot;</span><span class="p">);</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8"></a><span class="p">});</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9"></a>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10"></a><span class="c1">// Re-export commonly used types and functions</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11"></a><span class="c1">// TODO: Add convenience wrappers for common operations</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="4-build-configuration-bindingsdepsziginc">4. Build Configuration (<code>bindings/deps.zig.inc</code>)</h3>
+<p>Build system integration:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1">1</a></span>
+<span class="normal"><a href="#__codelineno-10-2">2</a></span>
+<span class="normal"><a href="#__codelineno-10-3">3</a></span>
+<span class="normal"><a href="#__codelineno-10-4">4</a></span>
+<span class="normal"><a href="#__codelineno-10-5">5</a></span>
+<span class="normal"><a href="#__codelineno-10-6">6</a></span>
+<span class="normal"><a href="#__codelineno-10-7">7</a></span>
+<span class="normal"><a href="#__codelineno-10-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="c1">// Auto-generated dependency configuration</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="kr">const</span><span class="w"> </span><span class="n">std</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;std&quot;</span><span class="p">);</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">addDependencies</span><span class="p">(</span><span class="n">b</span><span class="o">:</span><span class="w"> </span><span class="o">*</span><span class="n">std</span><span class="p">.</span><span class="n">Build</span><span class="p">,</span><span class="w"> </span><span class="n">target</span><span class="o">:</span><span class="w"> </span><span class="n">std</span><span class="p">.</span><span class="n">Build</span><span class="p">.</span><span class="n">ResolvedTarget</span><span class="p">,</span><span class="w"> </span><span class="n">lib</span><span class="o">:</span><span class="w"> </span><span class="n">anytype</span><span class="p">)</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5"></a><span class="w">    </span><span class="c1">// Dependency: rapidcsv</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6"></a><span class="w">    </span><span class="n">lib</span><span class="p">.</span><span class="n">addIncludePath</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">path</span><span class="p">(</span><span class="s">&quot;deps/rapidcsv/src&quot;</span><span class="p">));</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7"></a><span class="w">    </span><span class="n">lib</span><span class="p">.</span><span class="n">linkLibC</span><span class="p">();</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="5-python-wrapper-template-srcname_wrapperzig">5. Python Wrapper Template (<code>src/&lt;name&gt;_wrapper.zig</code>)</h3>
+<p>Template for exposing the library to Python:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-11-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-11-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-11-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-11-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-11-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-11-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-11-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-11-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-11-10">10</a></span>
+<span class="normal"><a href="#__codelineno-11-11">11</a></span>
+<span class="normal"><a href="#__codelineno-11-12">12</a></span>
+<span class="normal"><a href="#__codelineno-11-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1">// Python wrapper for rapidcsv</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="kr">const</span><span class="w"> </span><span class="n">py</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;pyz3&quot;</span><span class="p">);</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3"></a><span class="kr">const</span><span class="w"> </span><span class="n">rapidcsv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;../bindings/rapidcsv.zig&quot;</span><span class="p">);</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4"></a>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5"></a><span class="c1">// Example: Expose a C function to Python</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">read_csv</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">filename</span><span class="o">:</span><span class="w"> </span><span class="p">[]</span><span class="kr">const</span><span class="w"> </span><span class="kt">u8</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyString</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7"></a><span class="w">    </span><span class="c1">// Use rapidcsv.c.* here</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyString</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;CSV data&quot;</span><span class="p">);</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9"></a><span class="p">}</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10"></a>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11"></a><span class="kr">comptime</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">rootmodule</span><span class="p">(</span><span class="nb">@This</span><span class="p">());</span>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="integration-guide">Integration Guide</h2>
+<h3 id="step-1-add-a-dependency">Step 1: Add a Dependency</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1"></a>pyz3<span class="w"> </span>add<span class="w"> </span>https://github.com/d99kris/rapidcsv
+</span></code></pre></div></td></tr></table></div>
+<h3 id="step-2-update-your-build-system">Step 2: Update Your Build System</h3>
+<p>Add to your <code>build.zig</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-13-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-13-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-13-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-13-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-13-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-13-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-13-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-13-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-13-10">10</a></span>
+<span class="normal"><a href="#__codelineno-13-11">11</a></span>
+<span class="normal"><a href="#__codelineno-13-12">12</a></span>
+<span class="normal"><a href="#__codelineno-13-13">13</a></span>
+<span class="normal"><a href="#__codelineno-13-14">14</a></span>
+<span class="normal"><a href="#__codelineno-13-15">15</a></span>
+<span class="normal"><a href="#__codelineno-13-16">16</a></span>
+<span class="normal"><a href="#__codelineno-13-17">17</a></span>
+<span class="normal"><a href="#__codelineno-13-18">18</a></span>
+<span class="normal"><a href="#__codelineno-13-19">19</a></span>
+<span class="normal"><a href="#__codelineno-13-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">std</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;std&quot;</span><span class="p">);</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2"></a><span class="kr">const</span><span class="w"> </span><span class="n">deps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;bindings/deps.zig.inc&quot;</span><span class="p">);</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3"></a>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">b</span><span class="o">:</span><span class="w"> </span><span class="o">*</span><span class="n">std</span><span class="p">.</span><span class="n">Build</span><span class="p">)</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">standardTargetOptions</span><span class="p">(.{});</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">optimize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">standardOptimizeOption</span><span class="p">(.{});</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7"></a>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8"></a><span class="w">    </span><span class="c1">// Create your library</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">lib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">addSharedLibrary</span><span class="p">(.{</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10"></a><span class="w">        </span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;mymodule&quot;</span><span class="p">,</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11"></a><span class="w">        </span><span class="p">.</span><span class="n">root_source_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">path</span><span class="p">(</span><span class="s">&quot;src/mymodule.zig&quot;</span><span class="p">),</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12"></a><span class="w">        </span><span class="p">.</span><span class="n">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target</span><span class="p">,</span>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13"></a><span class="w">        </span><span class="p">.</span><span class="n">optimize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">optimize</span><span class="p">,</span>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14"></a><span class="w">    </span><span class="p">});</span>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15"></a>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16"></a><span class="w">    </span><span class="c1">// Add C/C++ dependencies</span>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17"></a><span class="w">    </span><span class="n">deps</span><span class="p">.</span><span class="n">addDependencies</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="n">lib</span><span class="p">);</span>
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18"></a>
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19"></a><span class="w">    </span><span class="n">b</span><span class="p">.</span><span class="n">installArtifact</span><span class="p">(</span><span class="n">lib</span><span class="p">);</span>
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="step-3-use-in-your-zig-code">Step 3: Use in Your Zig Code</h3>
+<p>Import and use the bindings:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-14-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-14-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-14-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-14-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-14-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-14-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-14-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-14-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-14-10">10</a></span>
+<span class="normal"><a href="#__codelineno-14-11">11</a></span>
+<span class="normal"><a href="#__codelineno-14-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">py</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;pyz3&quot;</span><span class="p">);</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2"></a><span class="kr">const</span><span class="w"> </span><span class="n">rapidcsv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;../bindings/rapidcsv.zig&quot;</span><span class="p">);</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">read_csv_file</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">path</span><span class="o">:</span><span class="w"> </span><span class="p">[]</span><span class="kr">const</span><span class="w"> </span><span class="kt">u8</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5"></a><span class="w">    </span><span class="c1">// Use the C++ library through Zig bindings</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6"></a><span class="w">    </span><span class="c1">// Note: rapidcsv is C++, so you&#39;ll need to create C wrappers</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7"></a><span class="w">    </span><span class="c1">// or use Zig&#39;s C++ interop features</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8"></a><span class="p">}</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9"></a>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10"></a><span class="kr">comptime</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">rootmodule</span><span class="p">(</span><span class="nb">@This</span><span class="p">());</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="step-4-build-and-test">Step 4: Build and Test</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-15-1">1</a></span>
+<span class="normal"><a href="#__codelineno-15-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1"></a>pyz3<span class="w"> </span>develop
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2"></a>pytest
+</span></code></pre></div></td></tr></table></div>
+<h2 id="advanced-usage">Advanced Usage</h2>
+<h3 id="header-only-libraries">Header-Only Libraries</h3>
+<p>For header-only C++ libraries (like RapidCSV, nlohmann/json):</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-16-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1"></a>pyz3<span class="w"> </span>add<span class="w"> </span>https://github.com/nlohmann/json
+</span></code></pre></div></td></tr></table></div>
+<p>No compilation needed - just include the headers!</p>
+<h3 id="libraries-with-source-files">Libraries with Source Files</h3>
+<p>For libraries that need compilation:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-17-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1"></a>pyz3<span class="w"> </span>add<span class="w"> </span>https://github.com/libuv/libuv
+</span></code></pre></div></td></tr></table></div>
+<p>pyZ3 will:
+- Detect <code>.c</code> and <code>.cpp</code> files
+- Add them to the build configuration
+- Link the compiled library</p>
+<h3 id="system-libraries">System Libraries</h3>
+<p>You can also reference system libraries:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-18-1">1</a></span>
+<span class="normal"><a href="#__codelineno-18-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1"></a><span class="c1"># Just create bindings for system SQLite</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2"></a>pyz3<span class="w"> </span>add<span class="w"> </span>/usr/include/sqlite3.h<span class="w"> </span>--name<span class="w"> </span>sqlite3
+</span></code></pre></div></td></tr></table></div>
+<h3 id="custom-headers">Custom Headers</h3>
+<p>Specify which headers to expose:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-19-1">1</a></span>
+<span class="normal"><a href="#__codelineno-19-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1"></a>pyz3<span class="w"> </span>add<span class="w"> </span>https://github.com/stb/stb<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2"></a><span class="w">  </span>--headers<span class="w"> </span>stb_image.h<span class="w"> </span>stb_image_write.h
+</span></code></pre></div></td></tr></table></div>
+<h2 id="real-world-examples">Real-World Examples</h2>
+<h3 id="example-1-csv-processing-with-rapidcsv">Example 1: CSV Processing with RapidCSV</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-20-1">1</a></span>
+<span class="normal"><a href="#__codelineno-20-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1"></a><span class="c1"># Add the library</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2"></a>pyz3<span class="w"> </span>add<span class="w"> </span>https://github.com/d99kris/rapidcsv
+</span></code></pre></div></td></tr></table></div>
+<p>Create <code>src/csv_module.zig</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-21-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-21-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-21-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-21-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-21-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-21-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-21-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-21-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-21-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-21-10">10</a></span>
+<span class="normal"><a href="#__codelineno-21-11">11</a></span>
+<span class="normal"><a href="#__codelineno-21-12">12</a></span>
+<span class="normal"><a href="#__codelineno-21-13">13</a></span>
+<span class="normal"><a href="#__codelineno-21-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">py</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;pyz3&quot;</span><span class="p">);</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2"></a><span class="kr">const</span><span class="w"> </span><span class="n">rapidcsv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;../bindings/rapidcsv.zig&quot;</span><span class="p">);</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">parse_csv</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5"></a><span class="w">    </span><span class="n">data</span><span class="o">:</span><span class="w"> </span><span class="p">[]</span><span class="kr">const</span><span class="w"> </span><span class="kt">u8</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6"></a><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyList</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7"></a><span class="w">    </span><span class="c1">// Parse CSV and return Python list</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8"></a><span class="w">    </span><span class="c1">// Implementation here...</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyList</span><span class="p">.</span><span class="n">new</span><span class="p">();</span>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10"></a><span class="p">}</span>
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11"></a>
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12"></a><span class="kr">comptime</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">rootmodule</span><span class="p">(</span><span class="nb">@This</span><span class="p">());</span>
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="example-2-json-processing-with-nlohmannjson">Example 2: JSON Processing with nlohmann/json</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-22-1">1</a></span>
+<span class="normal"><a href="#__codelineno-22-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1"></a><span class="c1"># Add the library</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2"></a>pyz3<span class="w"> </span>add<span class="w"> </span>https://github.com/nlohmann/json
+</span></code></pre></div></td></tr></table></div>
+<p>Create C++ wrapper (since nlohmann/json is C++):</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-23-1">1</a></span>
+<span class="normal"><a href="#__codelineno-23-2">2</a></span>
+<span class="normal"><a href="#__codelineno-23-3">3</a></span>
+<span class="normal"><a href="#__codelineno-23-4">4</a></span>
+<span class="normal"><a href="#__codelineno-23-5">5</a></span>
+<span class="normal"><a href="#__codelineno-23-6">6</a></span>
+<span class="normal"><a href="#__codelineno-23-7">7</a></span>
+<span class="normal"><a href="#__codelineno-23-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1"></a><span class="c1">// src/json_wrapper.cpp</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;json.hpp&gt;</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3"></a><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4"></a><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="nf">parse_json</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5"></a><span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nlohmann</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">parse</span><span class="p">(</span><span class="n">input</span><span class="p">);</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">j</span><span class="p">.</span><span class="n">dump</span><span class="p">().</span><span class="n">c_str</span><span class="p">();</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p>Use in Zig:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-24-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-24-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-24-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-24-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-24-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-24-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-24-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-24-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-24-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-24-10">10</a></span>
+<span class="normal"><a href="#__codelineno-24-11">11</a></span>
+<span class="normal"><a href="#__codelineno-24-12">12</a></span>
+<span class="normal"><a href="#__codelineno-24-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">py</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;pyz3&quot;</span><span class="p">);</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2"></a><span class="kr">const</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@cImport</span><span class="p">({</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3"></a><span class="w">    </span><span class="nb">@cInclude</span><span class="p">(</span><span class="s">&quot;json_wrapper.h&quot;</span><span class="p">);</span>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4"></a><span class="p">});</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5"></a>
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">parse_json</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">data</span><span class="o">:</span><span class="w"> </span><span class="p">[]</span><span class="kr">const</span><span class="w"> </span><span class="kt">u8</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyString</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="n">parse_json</span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">ptr</span><span class="p">);</span>
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyString</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">std</span><span class="p">.</span><span class="n">mem</span><span class="p">.</span><span class="n">span</span><span class="p">(</span><span class="n">result</span><span class="p">));</span>
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9"></a><span class="p">}</span>
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10"></a>
+</span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11"></a><span class="kr">comptime</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">rootmodule</span><span class="p">(</span><span class="nb">@This</span><span class="p">());</span>
+</span><span id="__span-24-13"><a id="__codelineno-24-13" name="__codelineno-24-13"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="example-3-image-processing-with-stb_image">Example 3: Image Processing with stb_image</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-25-1">1</a></span>
+<span class="normal"><a href="#__codelineno-25-2">2</a></span>
+<span class="normal"><a href="#__codelineno-25-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1"></a><span class="c1"># Add stb_image</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2"></a>pyz3<span class="w"> </span>add<span class="w"> </span>https://github.com/nothings/stb<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3"></a><span class="w">  </span>--headers<span class="w"> </span>stb_image.h
+</span></code></pre></div></td></tr></table></div>
+<p>Use in Zig:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-26-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-26-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-26-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-26-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-26-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-26-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-26-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-26-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-26-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-26-10">10</a></span>
+<span class="normal"><a href="#__codelineno-26-11">11</a></span>
+<span class="normal"><a href="#__codelineno-26-12">12</a></span>
+<span class="normal"><a href="#__codelineno-26-13">13</a></span>
+<span class="normal"><a href="#__codelineno-26-14">14</a></span>
+<span class="normal"><a href="#__codelineno-26-15">15</a></span>
+<span class="normal"><a href="#__codelineno-26-16">16</a></span>
+<span class="normal"><a href="#__codelineno-26-17">17</a></span>
+<span class="normal"><a href="#__codelineno-26-18">18</a></span>
+<span class="normal"><a href="#__codelineno-26-19">19</a></span>
+<span class="normal"><a href="#__codelineno-26-20">20</a></span>
+<span class="normal"><a href="#__codelineno-26-21">21</a></span>
+<span class="normal"><a href="#__codelineno-26-22">22</a></span>
+<span class="normal"><a href="#__codelineno-26-23">23</a></span>
+<span class="normal"><a href="#__codelineno-26-24">24</a></span>
+<span class="normal"><a href="#__codelineno-26-25">25</a></span>
+<span class="normal"><a href="#__codelineno-26-26">26</a></span>
+<span class="normal"><a href="#__codelineno-26-27">27</a></span>
+<span class="normal"><a href="#__codelineno-26-28">28</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">py</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;pyz3&quot;</span><span class="p">);</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2"></a><span class="kr">const</span><span class="w"> </span><span class="n">stb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;../bindings/stb.zig&quot;</span><span class="p">);</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3"></a>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">load_image</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5"></a><span class="w">    </span><span class="n">filename</span><span class="o">:</span><span class="w"> </span><span class="p">[]</span><span class="kr">const</span><span class="w"> </span><span class="kt">u8</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6"></a><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyBytes</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7"></a><span class="w">    </span><span class="kr">var</span><span class="w"> </span><span class="n">width</span><span class="o">:</span><span class="w"> </span><span class="kt">c_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">undefined</span><span class="p">;</span>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8"></a><span class="w">    </span><span class="kr">var</span><span class="w"> </span><span class="n">height</span><span class="o">:</span><span class="w"> </span><span class="kt">c_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">undefined</span><span class="p">;</span>
+</span><span id="__span-26-9"><a id="__codelineno-26-9" name="__codelineno-26-9"></a><span class="w">    </span><span class="kr">var</span><span class="w"> </span><span class="n">channels</span><span class="o">:</span><span class="w"> </span><span class="kt">c_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">undefined</span><span class="p">;</span>
+</span><span id="__span-26-10"><a id="__codelineno-26-10" name="__codelineno-26-10"></a>
+</span><span id="__span-26-11"><a id="__codelineno-26-11" name="__codelineno-26-11"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stb</span><span class="p">.</span><span class="n">c</span><span class="p">.</span><span class="n">stbi_load</span><span class="p">(</span>
+</span><span id="__span-26-12"><a id="__codelineno-26-12" name="__codelineno-26-12"></a><span class="w">        </span><span class="n">args</span><span class="p">.</span><span class="n">filename</span><span class="p">.</span><span class="n">ptr</span><span class="p">,</span>
+</span><span id="__span-26-13"><a id="__codelineno-26-13" name="__codelineno-26-13"></a><span class="w">        </span><span class="o">&amp;</span><span class="n">width</span><span class="p">,</span>
+</span><span id="__span-26-14"><a id="__codelineno-26-14" name="__codelineno-26-14"></a><span class="w">        </span><span class="o">&amp;</span><span class="n">height</span><span class="p">,</span>
+</span><span id="__span-26-15"><a id="__codelineno-26-15" name="__codelineno-26-15"></a><span class="w">        </span><span class="o">&amp;</span><span class="n">channels</span><span class="p">,</span>
+</span><span id="__span-26-16"><a id="__codelineno-26-16" name="__codelineno-26-16"></a><span class="w">        </span><span class="mi">0</span>
+</span><span id="__span-26-17"><a id="__codelineno-26-17" name="__codelineno-26-17"></a><span class="w">    </span><span class="p">);</span>
+</span><span id="__span-26-18"><a id="__codelineno-26-18" name="__codelineno-26-18"></a>
+</span><span id="__span-26-19"><a id="__codelineno-26-19" name="__codelineno-26-19"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">stb</span><span class="p">.</span><span class="n">c</span><span class="p">.</span><span class="n">stbi_image_free</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+</span><span id="__span-26-20"><a id="__codelineno-26-20" name="__codelineno-26-20"></a>
+</span><span id="__span-26-21"><a id="__codelineno-26-21" name="__codelineno-26-21"></a><span class="w">    </span><span class="c1">// Convert to Python bytes</span>
+</span><span id="__span-26-22"><a id="__codelineno-26-22" name="__codelineno-26-22"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@intCast</span><span class="p">(</span><span class="kt">usize</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">height</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">channels</span><span class="p">);</span>
+</span><span id="__span-26-23"><a id="__codelineno-26-23" name="__codelineno-26-23"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyBytes</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">..</span><span class="n">size</span><span class="p">]);</span>
+</span><span id="__span-26-24"><a id="__codelineno-26-24" name="__codelineno-26-24"></a><span class="p">}</span>
+</span><span id="__span-26-25"><a id="__codelineno-26-25" name="__codelineno-26-25"></a>
+</span><span id="__span-26-26"><a id="__codelineno-26-26" name="__codelineno-26-26"></a><span class="kr">comptime</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-26-27"><a id="__codelineno-26-27" name="__codelineno-26-27"></a><span class="w">    </span><span class="n">py</span><span class="p">.</span><span class="n">rootmodule</span><span class="p">(</span><span class="nb">@This</span><span class="p">());</span>
+</span><span id="__span-26-28"><a id="__codelineno-26-28" name="__codelineno-26-28"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="dependency-file-format">Dependency File Format</h2>
+<p>The <code>pyz3_deps.json</code> file stores dependency metadata:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-27-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-27-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-27-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-27-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-27-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-27-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-27-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-27-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-27-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-27-10">10</a></span>
+<span class="normal"><a href="#__codelineno-27-11">11</a></span>
+<span class="normal"><a href="#__codelineno-27-12">12</a></span>
+<span class="normal"><a href="#__codelineno-27-13">13</a></span>
+<span class="normal"><a href="#__codelineno-27-14">14</a></span>
+<span class="normal"><a href="#__codelineno-27-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1"></a><span class="p">{</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2"></a><span class="w">  </span><span class="nt">&quot;library_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;library_name&quot;</span><span class="p">,</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4"></a><span class="w">    </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://github.com/user/repo&quot;</span><span class="p">,</span>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5"></a><span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v1.0.0&quot;</span><span class="p">,</span>
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6"></a><span class="w">    </span><span class="nt">&quot;include_dirs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;deps/library_name/include&quot;</span><span class="p">],</span>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7"></a><span class="w">    </span><span class="nt">&quot;lib_dirs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;deps/library_name/lib&quot;</span><span class="p">],</span>
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8"></a><span class="w">    </span><span class="nt">&quot;libraries&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;mylibrary&quot;</span><span class="p">],</span>
+</span><span id="__span-27-9"><a id="__codelineno-27-9" name="__codelineno-27-9"></a><span class="w">    </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;deps/library_name/include/mylibrary.h&quot;</span><span class="p">],</span>
+</span><span id="__span-27-10"><a id="__codelineno-27-10" name="__codelineno-27-10"></a><span class="w">    </span><span class="nt">&quot;cflags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-DSOME_FLAG&quot;</span><span class="p">],</span>
+</span><span id="__span-27-11"><a id="__codelineno-27-11" name="__codelineno-27-11"></a><span class="w">    </span><span class="nt">&quot;ldflags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-pthread&quot;</span><span class="p">],</span>
+</span><span id="__span-27-12"><a id="__codelineno-27-12" name="__codelineno-27-12"></a><span class="w">    </span><span class="nt">&quot;source_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;deps/library_name/src/file.c&quot;</span><span class="p">],</span>
+</span><span id="__span-27-13"><a id="__codelineno-27-13" name="__codelineno-27-13"></a><span class="w">    </span><span class="nt">&quot;is_header_only&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+</span><span id="__span-27-14"><a id="__codelineno-27-14" name="__codelineno-27-14"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-27-15"><a id="__codelineno-27-15" name="__codelineno-27-15"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="header-not-found-errors">"Header not found" Errors</h3>
+<p>If Zig can't find headers:</p>
+<ol>
+<li>Check <code>include_dirs</code> in <code>pyz3_deps.json</code></li>
+<li>Manually specify headers:
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-28-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1"></a>pyz3<span class="w"> </span>add<span class="w"> </span>&lt;source&gt;<span class="w"> </span>--headers<span class="w"> </span>path/to/header.h
+</span></code></pre></div></td></tr></table></div></li>
+<li>Update <code>bindings/deps.zig.inc</code> if needed</li>
+</ol>
+<h3 id="c-libraries">C++ Libraries</h3>
+<p>For C++ libraries, you need C wrappers:</p>
+<ol>
+<li>Create a C wrapper file (<code>wrapper.cpp</code>)</li>
+<li>Expose C functions with <code>extern "C"</code></li>
+<li>Add wrapper to build system</li>
+<li>Import in Zig using <code>@cImport</code></li>
+</ol>
+<p>Example wrapper:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-29-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-29-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-29-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-29-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-29-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-29-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-29-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-29-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-29-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-29-10">10</a></span>
+<span class="normal"><a href="#__codelineno-29-11">11</a></span>
+<span class="normal"><a href="#__codelineno-29-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1"></a><span class="c1">// src/cpp_wrapper.cpp</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;your_cpp_library.hpp&gt;</span>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3"></a>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4"></a><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5"></a><span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="nf">create_object</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">YourClass</span><span class="p">();</span>
+</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-29-8"><a id="__codelineno-29-8" name="__codelineno-29-8"></a>
+</span><span id="__span-29-9"><a id="__codelineno-29-9" name="__codelineno-29-9"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">destroy_object</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">obj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-29-10"><a id="__codelineno-29-10" name="__codelineno-29-10"></a><span class="w">        </span><span class="k">delete</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">YourClass</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+</span><span id="__span-29-11"><a id="__codelineno-29-11" name="__codelineno-29-11"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-29-12"><a id="__codelineno-29-12" name="__codelineno-29-12"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="version-conflicts">Version Conflicts</h3>
+<p>If dependencies conflict:</p>
+<ol>
+<li>Check versions: <code>pyz3 list</code></li>
+<li>Remove conflicting deps: <code>pyz3 remove &lt;name&gt;</code></li>
+<li>Add specific version (clone specific tag/branch)</li>
+</ol>
+<h3 id="build-errors">Build Errors</h3>
+<p>If build fails:</p>
+<ol>
+<li>Check <code>bindings/deps.zig.inc</code></li>
+<li>Verify include paths</li>
+<li>Ensure C/C++ files compile</li>
+<li>Use <code>pyz3 develop --verbose</code></li>
+</ol>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-document-dependencies">1. Document Dependencies</h3>
+<p>Add to your <code>README.md</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-30-1">1</a></span>
+<span class="normal"><a href="#__codelineno-30-2">2</a></span>
+<span class="normal"><a href="#__codelineno-30-3">3</a></span>
+<span class="normal"><a href="#__codelineno-30-4">4</a></span>
+<span class="normal"><a href="#__codelineno-30-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1"></a><span class="gu">## C/C++ Dependencies</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2"></a>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3"></a>This project uses the following C/C++ libraries:
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4"></a><span class="k">-</span><span class="w"> </span>[<span class="nt">RapidCSV</span>](<span class="na">https://github.com/d99kris/rapidcsv</span>) - CSV parsing
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5"></a><span class="k">-</span><span class="w"> </span>[<span class="nt">nlohmann/json</span>](<span class="na">https://github.com/nlohmann/json</span>) - JSON processing
+</span></code></pre></div></td></tr></table></div>
+<h3 id="2-pin-versions">2. Pin Versions</h3>
+<p>After adding, note the version:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-31-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1"></a>pyz3<span class="w"> </span>list<span class="w">  </span><span class="c1"># Shows: Version: v8.90</span>
+</span></code></pre></div></td></tr></table></div>
+<p>Document in your README which versions are tested.</p>
+<h3 id="3-test-thoroughly">3. Test Thoroughly</h3>
+<p>Create tests for C/C++ integration:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-32-1">1</a></span>
+<span class="normal"><a href="#__codelineno-32-2">2</a></span>
+<span class="normal"><a href="#__codelineno-32-3">3</a></span>
+<span class="normal"><a href="#__codelineno-32-4">4</a></span>
+<span class="normal"><a href="#__codelineno-32-5">5</a></span>
+<span class="normal"><a href="#__codelineno-32-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1"></a><span class="c1"># tests/test_csv.py</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">mymodule</span>
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3"></a>
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_csv_parsing</span><span class="p">():</span>
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">mymodule</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">&quot;a,b,c</span><span class="se">\n</span><span class="s2">1,2,3&quot;</span><span class="p">)</span>
+</span><span id="__span-32-6"><a id="__codelineno-32-6" name="__codelineno-32-6"></a>    <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">]]</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="4-handle-errors">4. Handle Errors</h3>
+<p>C libraries may return errors - handle them:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-33-1">1</a></span>
+<span class="normal"><a href="#__codelineno-33-2">2</a></span>
+<span class="normal"><a href="#__codelineno-33-3">3</a></span>
+<span class="normal"><a href="#__codelineno-33-4">4</a></span>
+<span class="normal"><a href="#__codelineno-33-5">5</a></span>
+<span class="normal"><a href="#__codelineno-33-6">6</a></span>
+<span class="normal"><a href="#__codelineno-33-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">safe_function</span><span class="p">(</span><span class="n">args</span><span class="o">:</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="o">:</span><span class="w"> </span><span class="kt">i32</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">!</span><span class="kt">i32</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c_library</span><span class="p">.</span><span class="n">c</span><span class="p">.</span><span class="n">some_function</span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">value</span><span class="p">);</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyException</span><span class="p">.</span><span class="n">raise</span><span class="p">(</span><span class="s">&quot;LibraryError: Operation failed&quot;</span><span class="p">);</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+</span><span id="__span-33-7"><a id="__codelineno-33-7" name="__codelineno-33-7"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="comparison-with-other-tools">Comparison with Other Tools</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>pyZ3</th>
+<th>Cargo (Rust)</th>
+<th>pip (Python)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Language</td>
+<td>C/C++ → Zig</td>
+<td>Rust</td>
+<td>Python</td>
+</tr>
+<tr>
+<td>Auto-bindings</td>
+<td>✅ Yes</td>
+<td>Manual</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>Version tracking</td>
+<td>✅ Yes</td>
+<td>✅ Yes</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Build integration</td>
+<td>✅ Auto</td>
+<td>✅ Auto</td>
+<td>Manual</td>
+</tr>
+<tr>
+<td>Cross-compilation</td>
+<td>✅ Yes (Zig)</td>
+<td>✅ Yes</td>
+<td>Limited</td>
+</tr>
+</tbody>
+</table>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="../CLI/">CLI Reference</a> - All CLI commands</li>
+<li><a href="https://ziglang.org/documentation/master/#cImport">Zig <code>@cImport</code> docs</a> - How Zig imports C</li>
+<li><a href="https://pyz3.fulcrum.so">pyZ3 Documentation</a> - Main docs</li>
+<li><a href="../example/">Examples</a> - Sample code</li>
+</ul>
+<h2 id="feedback">Feedback</h2>
+<p>Have ideas for improving dependency management?
+<a href="https://github.com/fulcrum-so/pyZ3/issues">Open an issue</a> on GitHub!</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/amiyamandal-dev/pyz3" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/pyZ3/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.indexes", "navigation.expand", "content.code.annotate"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

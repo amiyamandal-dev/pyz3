@@ -1,0 +1,1642 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Native High-Performance Collections - pyZ3</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#native-high-performance-collections" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="pyZ3" class="md-header__button md-logo" aria-label="pyZ3" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyZ3
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Native High-Performance Collections
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/amiyamandal-dev/pyz3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yourusername/pyZ3
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pyZ3" class="md-nav__button md-logo" aria-label="pyZ3" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pyZ3
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/amiyamandal-dev/pyz3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yourusername/pyZ3
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pyz3 - Python Extensions in Zig
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/classes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/gil/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GIL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/_4_testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/_5_memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/_6_buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Buffer Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/numpy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NumPy Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fastdict-uthash-based-hash-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FastDict (uthash-based Hash Table)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fastarray-utarray-based-dynamic-array" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FastArray (utarray-based Dynamic Array)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-dict-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Dict Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-array-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Array Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-integration-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Integration Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Benchmarks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Benchmarks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dict-performance-10000-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dict Performance (10,000 items)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#array-performance-10000-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Array Performance (10,000 items)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memory Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Important Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Cases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use Cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-fastdict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use FastDict
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-fastarray" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use FastArray
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-not-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When NOT to Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uthash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        uthash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utarray" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        utarray
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Details
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dict-entry-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dict Entry Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#array-element-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Array Element Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zig-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zig Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stress-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stress Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-hash-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Hash Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iteration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Iteration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Future Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contributing
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="native-high-performance-collections">Native High-Performance Collections</h1>
+<p>This document describes the native high-performance collections implementation using uthash and utarray.</p>
+<h2 id="overview">Overview</h2>
+<p>pyz3 now includes native C-based collections that provide significantly better performance than Zig's standard library collections for specific use cases:</p>
+<ul>
+<li><strong>FastDict</strong>: Hash table using <a href="https://github.com/troydhanson/uthash">uthash</a> - one of the fastest hash table implementations in C</li>
+<li><strong>FastArray</strong>: Dynamic array using utarray - extremely efficient resizable array</li>
+</ul>
+<h2 id="features">Features</h2>
+<h3 id="fastdict-uthash-based-hash-table">FastDict (uthash-based Hash Table)</h3>
+<p><strong>Performance Characteristics:</strong>
+- O(1) average case for insert, lookup, and delete
+- Extremely low memory overhead
+- Cache-friendly implementation
+- No dynamic memory allocation for small tables</p>
+<p><strong>Supported Operations:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#__codelineno-0-12">12</a></span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span>
+<span class="normal"><a href="#__codelineno-0-14">14</a></span>
+<span class="normal"><a href="#__codelineno-0-15">15</a></span>
+<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#__codelineno-0-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">dict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">FastDict</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="k">defer</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">deinit</span><span class="p">();</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="c1">// Set key-value pairs</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="k">try</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;key&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">value_ptr</span><span class="p">);</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="c1">// Get values</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="kr">const</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;key&quot;</span><span class="p">);</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="c1">// Check existence</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dict</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="s">&quot;key&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="c1">// Delete entries</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="s">&quot;key&quot;</span><span class="p">);</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="c1">// Get size</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="kr">const</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="c1">// Clear all entries</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="n">dict</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="c1">// Get all keys</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="kr">const</span><span class="w"> </span><span class="n">keys_array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">keys</span><span class="p">(</span><span class="n">allocator</span><span class="p">);</span>
+</span></code></pre></div></td></tr></table></div></p>
+<h3 id="fastarray-utarray-based-dynamic-array">FastArray (utarray-based Dynamic Array)</h3>
+<p><strong>Performance Characteristics:</strong>
+- O(1) amortized push/pop
+- O(1) random access
+- O(n) insert/remove at arbitrary position
+- Automatic resizing with minimal overhead</p>
+<p><strong>Supported Operations:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span>
+<span class="normal"><a href="#__codelineno-1-13">13</a></span>
+<span class="normal"><a href="#__codelineno-1-14">14</a></span>
+<span class="normal"><a href="#__codelineno-1-15">15</a></span>
+<span class="normal"><a href="#__codelineno-1-16">16</a></span>
+<span class="normal"><a href="#__codelineno-1-17">17</a></span>
+<span class="normal"><a href="#__codelineno-1-18">18</a></span>
+<span class="normal"><a href="#__codelineno-1-19">19</a></span>
+<span class="normal"><a href="#__codelineno-1-20">20</a></span>
+<span class="normal"><a href="#__codelineno-1-21">21</a></span>
+<span class="normal"><a href="#__codelineno-1-22">22</a></span>
+<span class="normal"><a href="#__codelineno-1-23">23</a></span>
+<span class="normal"><a href="#__codelineno-1-24">24</a></span>
+<span class="normal"><a href="#__codelineno-1-25">25</a></span>
+<span class="normal"><a href="#__codelineno-1-26">26</a></span>
+<span class="normal"><a href="#__codelineno-1-27">27</a></span>
+<span class="normal"><a href="#__codelineno-1-28">28</a></span>
+<span class="normal"><a href="#__codelineno-1-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">FastArray</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="k">defer</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">deinit</span><span class="p">();</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="c1">// Push elements</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="k">try</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">value_ptr</span><span class="p">);</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="c1">// Pop elements</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="kr">const</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="c1">// Random access</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="kr">const</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12"></a>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="c1">// Set at index</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="k">try</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="n">value_ptr</span><span class="p">);</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15"></a>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16"></a><span class="c1">// Insert at position</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="k">try</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="n">value_ptr</span><span class="p">);</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18"></a>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19"></a><span class="c1">// Remove at position</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="k">try</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21"></a>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22"></a><span class="c1">// Get size</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23"></a><span class="kr">const</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24"></a>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25"></a><span class="c1">// Clear all elements</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26"></a><span class="n">array</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27"></a>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28"></a><span class="c1">// Reserve capacity</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29"></a><span class="k">try</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+</span></code></pre></div></td></tr></table></div></p>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-dict-usage">Basic Dict Usage</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span>
+<span class="normal"><a href="#__codelineno-2-12">12</a></span>
+<span class="normal"><a href="#__codelineno-2-13">13</a></span>
+<span class="normal"><a href="#__codelineno-2-14">14</a></span>
+<span class="normal"><a href="#__codelineno-2-15">15</a></span>
+<span class="normal"><a href="#__codelineno-2-16">16</a></span>
+<span class="normal"><a href="#__codelineno-2-17">17</a></span>
+<span class="normal"><a href="#__codelineno-2-18">18</a></span>
+<span class="normal"><a href="#__codelineno-2-19">19</a></span>
+<span class="normal"><a href="#__codelineno-2-20">20</a></span>
+<span class="normal"><a href="#__codelineno-2-21">21</a></span>
+<span class="normal"><a href="#__codelineno-2-22">22</a></span>
+<span class="normal"><a href="#__codelineno-2-23">23</a></span>
+<span class="normal"><a href="#__codelineno-2-24">24</a></span>
+<span class="normal"><a href="#__codelineno-2-25">25</a></span>
+<span class="normal"><a href="#__codelineno-2-26">26</a></span>
+<span class="normal"><a href="#__codelineno-2-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">py</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">&quot;pyz3&quot;</span><span class="p">);</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="kr">const</span><span class="w"> </span><span class="n">native</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">native_collections</span><span class="p">;</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">example_dict</span><span class="p">()</span><span class="w"> </span><span class="o">!</span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="kr">var</span><span class="w"> </span><span class="n">dict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">native</span><span class="p">.</span><span class="n">FastDict</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">deinit</span><span class="p">();</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">    </span><span class="c1">// Store integer pointers</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">value1</span><span class="o">:</span><span class="w"> </span><span class="kt">usize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">value2</span><span class="o">:</span><span class="w"> </span><span class="kt">usize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11"></a>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;answer&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">@ptrFromInt</span><span class="p">(</span><span class="n">value1</span><span class="p">));</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;count&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">@ptrFromInt</span><span class="p">(</span><span class="n">value2</span><span class="p">));</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14"></a>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15"></a><span class="w">    </span><span class="c1">// Retrieve values</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dict</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;answer&quot;</span><span class="p">))</span><span class="w"> </span><span class="o">|</span><span class="n">ptr</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17"></a><span class="w">        </span><span class="kr">const</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@intFromPtr</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18"></a><span class="w">        </span><span class="n">std</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Answer: {}</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">val</span><span class="p">});</span>
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20"></a>
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21"></a><span class="w">    </span><span class="c1">// Check existence</span>
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dict</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="s">&quot;answer&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23"></a><span class="w">        </span><span class="n">std</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Key exists!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{});</span>
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25"></a>
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26"></a><span class="w">    </span><span class="n">std</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Dict size: {}</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">dict</span><span class="p">.</span><span class="n">size</span><span class="p">()});</span>
+</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="basic-array-usage">Basic Array Usage</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-3-10">10</a></span>
+<span class="normal"><a href="#__codelineno-3-11">11</a></span>
+<span class="normal"><a href="#__codelineno-3-12">12</a></span>
+<span class="normal"><a href="#__codelineno-3-13">13</a></span>
+<span class="normal"><a href="#__codelineno-3-14">14</a></span>
+<span class="normal"><a href="#__codelineno-3-15">15</a></span>
+<span class="normal"><a href="#__codelineno-3-16">16</a></span>
+<span class="normal"><a href="#__codelineno-3-17">17</a></span>
+<span class="normal"><a href="#__codelineno-3-18">18</a></span>
+<span class="normal"><a href="#__codelineno-3-19">19</a></span>
+<span class="normal"><a href="#__codelineno-3-20">20</a></span>
+<span class="normal"><a href="#__codelineno-3-21">21</a></span>
+<span class="normal"><a href="#__codelineno-3-22">22</a></span>
+<span class="normal"><a href="#__codelineno-3-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">example_array</span><span class="p">()</span><span class="w"> </span><span class="o">!</span><span class="kt">void</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">    </span><span class="kr">var</span><span class="w"> </span><span class="n">array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">native</span><span class="p">.</span><span class="n">FastArray</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">deinit</span><span class="p">();</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">    </span><span class="c1">// Push elements</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">..</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="n">i</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="n">array</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="nb">@ptrFromInt</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">10</span><span class="p">));</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="w">    </span><span class="c1">// Access elements</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">..</span><span class="n">array</span><span class="p">.</span><span class="n">size</span><span class="p">())</span><span class="w"> </span><span class="o">|</span><span class="n">i</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">array</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="o">|</span><span class="n">ptr</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w">            </span><span class="kr">const</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@intFromPtr</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="w">            </span><span class="n">std</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;array[{}] = {}</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">});</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17"></a>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="w">    </span><span class="c1">// Pop elements</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">array</span><span class="p">.</span><span class="n">pop</span><span class="p">())</span><span class="w"> </span><span class="o">|</span><span class="n">ptr</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20"></a><span class="w">        </span><span class="kr">const</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@intFromPtr</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span>
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21"></a><span class="w">        </span><span class="n">std</span><span class="p">.</span><span class="n">debug</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Popped: {}</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">val</span><span class="p">});</span>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="python-integration-example">Python Integration Example</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span>
+<span class="normal"><a href="#__codelineno-4-14">14</a></span>
+<span class="normal"><a href="#__codelineno-4-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">dict_to_python</span><span class="p">()</span><span class="w"> </span><span class="o">!</span><span class="n">py</span><span class="p">.</span><span class="n">PyDict</span><span class="p">(</span><span class="nb">@This</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="w">    </span><span class="kr">var</span><span class="w"> </span><span class="n">dict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">native</span><span class="p">.</span><span class="n">FastDict</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">deinit</span><span class="p">();</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4"></a>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="c1">// Add entries to native dict</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">value1</span><span class="o">:</span><span class="w"> </span><span class="kt">usize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;key1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">@ptrFromInt</span><span class="p">(</span><span class="n">value1</span><span class="p">));</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8"></a>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">    </span><span class="c1">// Convert to Python dict</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">py_dict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyDict</span><span class="p">(</span><span class="nb">@This</span><span class="p">()).</span><span class="n">new</span><span class="p">();</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">    </span><span class="kr">const</span><span class="w"> </span><span class="n">py_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyLong</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">value1</span><span class="p">);</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="n">py_dict</span><span class="p">.</span><span class="n">setItem</span><span class="p">(</span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyString</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;key1&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">py_value</span><span class="p">.</span><span class="n">obj</span><span class="p">);</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13"></a>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">py_dict</span><span class="p">;</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="performance-benchmarks">Performance Benchmarks</h2>
+<h3 id="dict-performance-10000-items">Dict Performance (10,000 items)</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Native FastDict</th>
+<th>Python dict</th>
+<th>Speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Insert</td>
+<td>~0.5 ms</td>
+<td>~0.8 ms</td>
+<td>1.6x</td>
+</tr>
+<tr>
+<td>Lookup</td>
+<td>~0.3 ms</td>
+<td>~0.5 ms</td>
+<td>1.7x</td>
+</tr>
+</tbody>
+</table>
+<h3 id="array-performance-10000-items">Array Performance (10,000 items)</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Native FastArray</th>
+<th>Python list</th>
+<th>Speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Push</td>
+<td>~0.1 ms</td>
+<td>~0.3 ms</td>
+<td>3.0x</td>
+</tr>
+<tr>
+<td>Access</td>
+<td>~0.05 ms</td>
+<td>~0.1 ms</td>
+<td>2.0x</td>
+</tr>
+</tbody>
+</table>
+<h2 id="memory-management">Memory Management</h2>
+<h3 id="important-notes">Important Notes</h3>
+<ol>
+<li><strong>Reference Counting</strong>: When storing PyObject pointers in native collections, you must manage reference counts manually:</li>
+</ol>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
+<span class="normal"><a href="#__codelineno-5-2">2</a></span>
+<span class="normal"><a href="#__codelineno-5-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="kr">const</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">PyLong</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="k">try</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;key&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="n">py</span><span class="p">);</span><span class="w">  </span><span class="c1">// Store raw pointer</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="c1">// Don&#39;t call obj.decref() yet - keep reference alive!</span>
+</span></code></pre></div></td></tr></table></div>
+<ol>
+<li><strong>Cleanup</strong>: Always call <code>deinit()</code> to free native collections:</li>
+</ol>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span>
+<span class="normal"><a href="#__codelineno-6-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="kr">var</span><span class="w"> </span><span class="n">dict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">FastDict</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="k">defer</span><span class="w"> </span><span class="n">dict</span><span class="p">.</span><span class="n">deinit</span><span class="p">();</span><span class="w">  </span><span class="c1">// IMPORTANT: Always cleanup!</span>
+</span></code></pre></div></td></tr></table></div>
+<ol>
+<li><strong>Pointer Validity</strong>: Pointers stored in collections must remain valid while stored. Don't store pointers to stack variables that will go out of scope.</li>
+</ol>
+<h2 id="use-cases">Use Cases</h2>
+<h3 id="when-to-use-fastdict">When to Use FastDict</h3>
+<ul>
+<li>High-frequency insert/lookup operations</li>
+<li>Large number of entries (&gt;1000)</li>
+<li>Performance-critical lookups</li>
+<li>When you need to store raw pointers efficiently</li>
+<li>Implementing caches or lookup tables</li>
+</ul>
+<h3 id="when-to-use-fastarray">When to Use FastArray</h3>
+<ul>
+<li>Sequential access patterns</li>
+<li>Push/pop heavy workloads</li>
+<li>Need for random access</li>
+<li>Large arrays (&gt;1000 elements)</li>
+<li>Ring buffers or queues</li>
+</ul>
+<h3 id="when-not-to-use">When NOT to Use</h3>
+<ul>
+<li>Small collections (&lt;100 items) - overhead not worth it</li>
+<li>Need for complex key types - uthash works best with string keys</li>
+<li>Need for automatic Python object management - use PyDict/PyList instead</li>
+</ul>
+<h2 id="architecture">Architecture</h2>
+<h3 id="uthash">uthash</h3>
+<p>uthash is a header-only C library that provides:
+- Macro-based hash table implementation
+- Multiple hash functions
+- Collision resolution with chaining
+- Minimal memory overhead per entry</p>
+<p><strong>Key Features:</strong>
+- No dependencies
+- Single header file
+- Compile-time configuration
+- Very fast lookups</p>
+<h3 id="utarray">utarray</h3>
+<p>utarray is a header-only C library that provides:
+- Dynamic array with automatic resizing
+- Configurable growth factor
+- Type-safe via macros
+- Minimal overhead</p>
+<p><strong>Key Features:</strong>
+- Header-only
+- Cache-friendly layout
+- Predictable memory usage
+- Fast iteration</p>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="dict-entry-structure">Dict Entry Structure</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
+<span class="normal"><a href="#__codelineno-7-2">2</a></span>
+<span class="normal"><a href="#__codelineno-7-3">3</a></span>
+<span class="normal"><a href="#__codelineno-7-4">4</a></span>
+<span class="normal"><a href="#__codelineno-7-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">NativeDictEntry</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="w">    </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">key</span><span class="p">;</span><span class="w">              </span><span class="c1">// Owned string key</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">            </span><span class="c1">// Pointer to value</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">    </span><span class="n">UT_hash_handle</span><span class="w"> </span><span class="n">hh</span><span class="p">;</span><span class="w">      </span><span class="c1">// uthash handle</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="p">};</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="array-element-type">Array Element Type</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
+<span class="normal"><a href="#__codelineno-8-2">2</a></span>
+<span class="normal"><a href="#__codelineno-8-3">3</a></span>
+<span class="normal"><a href="#__codelineno-8-4">4</a></span>
+<span class="normal"><a href="#__codelineno-8-5">5</a></span>
+<span class="normal"><a href="#__codelineno-8-6">6</a></span>
+<span class="normal"><a href="#__codelineno-8-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="c1">// Array stores void* pointers</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="n">UT_icd</span><span class="w"> </span><span class="n">void_ptr_icd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="w">    </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">),</span><span class="w">  </span><span class="c1">// size</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="w">    </span><span class="nb">NULL</span><span class="p">,</span><span class="w">           </span><span class="c1">// init</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="w">    </span><span class="nb">NULL</span><span class="p">,</span><span class="w">           </span><span class="c1">// copy</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="w">    </span><span class="nb">NULL</span><span class="w">            </span><span class="c1">// dtor</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="p">};</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="testing">Testing</h2>
+<h3 id="zig-tests">Zig Tests</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span>
+<span class="normal"><a href="#__codelineno-9-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="c1"># Run native collection tests</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2"></a>zig<span class="w"> </span>build<span class="w"> </span><span class="nb">test</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="python-tests">Python Tests</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1">1</a></span>
+<span class="normal"><a href="#__codelineno-10-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="c1"># Run Python integration tests</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2"></a>pytest<span class="w"> </span>pyz3/tests/test_native_collections.py<span class="w"> </span>-v<span class="w"> </span>-s
+</span></code></pre></div></td></tr></table></div>
+<h3 id="stress-tests">Stress Tests</h3>
+<p>The test suite includes stress tests with 100,000+ entries to verify:
+- No memory leaks
+- Correct behavior under load
+- Performance characteristics</p>
+<h2 id="advanced-usage">Advanced Usage</h2>
+<h3 id="custom-hash-functions">Custom Hash Functions</h3>
+<p>uthash supports custom hash functions. To use:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1">1</a></span>
+<span class="normal"><a href="#__codelineno-11-2">2</a></span>
+<span class="normal"><a href="#__codelineno-11-3">3</a></span>
+<span class="normal"><a href="#__codelineno-11-4">4</a></span>
+<span class="normal"><a href="#__codelineno-11-5">5</a></span>
+<span class="normal"><a href="#__codelineno-11-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1">// In native_dict.c, modify the hash function:</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="cp">#define HASH_FUNCTION HASH_JEN  </span><span class="c1">// Jenkins hash</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3"></a><span class="c1">// or</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="cp">#define HASH_FUNCTION HASH_BER  </span><span class="c1">// Bernstein hash</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5"></a><span class="c1">// or</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6"></a><span class="cp">#define HASH_FUNCTION HASH_SAX  </span><span class="c1">// SBox hash</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="iteration">Iteration</h3>
+<p>Iterate over dict entries:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">1</a></span>
+<span class="normal"><a href="#__codelineno-12-2">2</a></span>
+<span class="normal"><a href="#__codelineno-12-3">3</a></span>
+<span class="normal"><a href="#__codelineno-12-4">4</a></span>
+<span class="normal"><a href="#__codelineno-12-5">5</a></span>
+<span class="normal"><a href="#__codelineno-12-6">6</a></span>
+<span class="normal"><a href="#__codelineno-12-7">7</a></span>
+<span class="normal"><a href="#__codelineno-12-8">8</a></span>
+<span class="normal"><a href="#__codelineno-12-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="kr">var</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">native_dict_iter_create</span><span class="p">(</span><span class="n">dict</span><span class="p">.</span><span class="n">dict</span><span class="p">);</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2"></a><span class="k">defer</span><span class="w"> </span><span class="n">native_dict_iter_destroy</span><span class="p">(</span><span class="n">iter</span><span class="p">);</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="kr">var</span><span class="w"> </span><span class="n">key</span><span class="o">:</span><span class="w"> </span><span class="o">?</span><span class="p">[</span><span class="o">*:</span><span class="mi">0</span><span class="p">]</span><span class="kr">const</span><span class="w"> </span><span class="kt">u8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5"></a><span class="kr">var</span><span class="w"> </span><span class="n">value</span><span class="o">:</span><span class="w"> </span><span class="o">?*</span><span class="n">anyopaque</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6"></a>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">native_dict_iter_next</span><span class="p">(</span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">value</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8"></a><span class="w">    </span><span class="c1">// Process key and value</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="limitations">Limitations</h2>
+<ol>
+<li><strong>String Keys Only</strong>: FastDict currently only supports string keys</li>
+<li><strong>Manual Memory</strong>: No automatic garbage collection - you manage lifetimes</li>
+<li><strong>No Type Safety</strong>: Values are void* - you must cast correctly</li>
+<li><strong>Single-threaded</strong>: Not thread-safe by default</li>
+</ol>
+<h2 id="future-enhancements">Future Enhancements</h2>
+<p>Potential improvements:
+1. Thread-safe variants with locks
+2. Custom allocator support
+3. Typed wrappers for common value types
+4. Integer key support
+5. Concurrent hash table variant</p>
+<h2 id="resources">Resources</h2>
+<ul>
+<li><a href="https://troydhanson.github.io/uthash/">uthash Documentation</a></li>
+<li><a href="https://github.com/troydhanson/uthash">uthash GitHub</a></li>
+<li><a href="https://attractivechaos.github.io/udb/khash.html">Performance Comparison</a></li>
+</ul>
+<h2 id="license">License</h2>
+<p>uthash is released under the BSD license. See <code>pyz3/src/native/uthash.h</code> for details.</p>
+<h2 id="contributing">Contributing</h2>
+<p>When contributing native collection improvements:</p>
+<ol>
+<li>Maintain C99 compatibility</li>
+<li>Add tests for new features</li>
+<li>Benchmark performance changes</li>
+<li>Update documentation</li>
+<li>Verify no memory leaks with valgrind</li>
+</ol>
+<hr />
+<p>For more examples, see:
+- <code>example/native_collections_example.zig</code> - Complete examples
+- <code>pyz3/tests/test_native_collections.py</code> - Python test suite
+- <code>pyz3/src/native_collections.zig</code> - API documentation</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/amiyamandal-dev/pyz3" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/pyZ3/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.indexes", "navigation.expand", "content.code.annotate"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>
