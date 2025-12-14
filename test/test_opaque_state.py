@@ -5,10 +5,10 @@ import sys
 
 def test_buffer_manager_functionality(example):
     """Test that BufferManager works correctly"""
-    mgr = example.opaque_state.BufferManager(size=100)
+    mgr = example.opaque_state.BufferManager(100)
 
-    mgr.write(data=b"hello ")
-    mgr.write(data=b"world")
+    mgr.write("hello ")
+    mgr.write("world")
 
     result = mgr.read_all()
     assert result == b"hello world"
@@ -20,7 +20,7 @@ def test_buffer_manager_functionality(example):
 
 def test_buffer_manager_opaque_state(example):
     """Test that internal state is NOT accessible from Python"""
-    mgr = example.opaque_state.BufferManager(size=100)
+    mgr = example.opaque_state.BufferManager(100)
 
     # ✅ Cannot access allocator
     with pytest.raises(AttributeError):
@@ -52,9 +52,9 @@ def test_buffer_manager_opaque_state(example):
 
 def test_data_processor_opaque_structures(example):
     """Test that complex Zig structures are opaque"""
-    proc = example.opaque_state.DataProcessor(buffer_size=1024)
+    proc = example.opaque_state.DataProcessor(1024)
 
-    result = proc.process(data=b"hello world")
+    result = proc.process("hello world")
     assert result == b"HELLO WORLD"
 
     count = proc.get_process_count()
@@ -86,7 +86,7 @@ def test_secure_storage_encryption_key_hidden(example):
     storage = example.opaque_state.SecureStorage()
 
     # Store and retrieve data
-    storage.store(data=b"my secret password")
+    storage.store("my secret password")
     result = storage.retrieve()
     assert result == b"my secret password"
 
@@ -123,8 +123,8 @@ def test_file_manager_handle_hidden(example):
     with tempfile.TemporaryDirectory() as tmpdir:
         path = os.path.join(tmpdir, "test.txt")
 
-        mgr.open(path=path)
-        mgr.write(data=b"test content")
+        mgr.open(path)
+        mgr.write("test content")
         assert mgr.get_bytes_written() == 12
         mgr.close()
 
@@ -165,7 +165,7 @@ def test_shared_resource_ref_counting_hidden(example):
 
 def test_no_dict_exposure(example):
     """Test that __dict__ doesn't expose internal state"""
-    mgr = example.opaque_state.BufferManager(size=100)
+    mgr = example.opaque_state.BufferManager(100)
 
     # Most Zig classes won't have __dict__ or it will be empty
     if hasattr(mgr, '__dict__'):
@@ -174,11 +174,11 @@ def test_no_dict_exposure(example):
 
 def test_no_setattr_to_create_state(example):
     """Test that Python can't add attributes to shadow internal state"""
-    mgr = example.opaque_state.BufferManager(size=100)
+    mgr = example.opaque_state.BufferManager(100)
 
     # Even if we try to set an attribute with the same name,
     # it should either fail or not affect internal state
-    mgr.write(data=b"original")
+    mgr.write("original")
 
     try:
         # Try to override internal field
@@ -194,7 +194,7 @@ def test_no_setattr_to_create_state(example):
 
 def test_no_vars_exposure(example):
     """Test that vars() doesn't reveal internal state"""
-    mgr = example.opaque_state.BufferManager(size=100)
+    mgr = example.opaque_state.BufferManager(100)
 
     # vars() should show no internal state
     try:
@@ -210,8 +210,8 @@ def test_cleanup_deterministic(example):
     import gc
 
     # Create and destroy object
-    mgr = example.opaque_state.BufferManager(size=1000)
-    mgr.write(data=b"test")
+    mgr = example.opaque_state.BufferManager(1000)
+    mgr.write("test")
     del mgr
 
     # Force garbage collection
@@ -219,21 +219,21 @@ def test_cleanup_deterministic(example):
 
     # If we got here without segfault, cleanup worked
     # Create another to verify allocator still works
-    mgr2 = example.opaque_state.BufferManager(size=1000)
-    mgr2.write(data=b"test2")
+    mgr2 = example.opaque_state.BufferManager(1000)
+    mgr2.write("test2")
     assert mgr2.read_all() == b"test2"
 
 
 def test_no_memory_leak_on_error(example):
     """Test that memory is cleaned up even when errors occur"""
-    mgr = example.opaque_state.BufferManager(size=10)
+    mgr = example.opaque_state.BufferManager(10)
 
     # This should fail (buffer overflow)
     with pytest.raises(ValueError, match="Buffer overflow"):
-        mgr.write(data=b"this is way too long for the buffer")
+        mgr.write("this is way too long for the buffer")
 
     # Object should still be usable
-    mgr.write(data=b"short")
+    mgr.write("short")
     assert mgr.read_all() == b"short"
 
     # Cleanup should work normally
@@ -242,17 +242,17 @@ def test_no_memory_leak_on_error(example):
 
 def test_finalize_prevents_double_free(example):
     """Test that finalize flag prevents double-free"""
-    proc = example.opaque_state.DataProcessor(buffer_size=100)
+    proc = example.opaque_state.DataProcessor(100)
 
     # Process some data
-    proc.process(data=b"test")
+    proc.process("test")
 
     # Manually finalize
     proc.finalize()
 
     # Should raise error if used after finalize
     with pytest.raises(RuntimeError, match="finalized"):
-        proc.process(data=b"test2")
+        proc.process("test2")
 
     # Cleanup should be safe (won't double-free)
     del proc
@@ -264,8 +264,8 @@ def test_secure_storage_key_randomness(example):
     storage2 = example.opaque_state.SecureStorage()
 
     # Store same data in both
-    storage1.store(data=b"same data")
-    storage2.store(data=b"same data")
+    storage1.store("same data")
+    storage2.store("same data")
 
     # Both should retrieve correctly
     assert storage1.retrieve() == b"same data"
@@ -277,20 +277,20 @@ def test_secure_storage_key_randomness(example):
 
 
 def test_python_cannot_influence_lifetime(example):
-    """Test that Python code cannot affect Zig memory lifetime"""
-    mgr = example.opaque_state.BufferManager(size=100)
-    mgr.write(data=b"test")
+    """Test that manual __del__ calls are handled safely"""
+    mgr = example.opaque_state.BufferManager(100)
+    mgr.write("test")
 
-    # Try various ways to mess with the object
-    try:
-        mgr.__del__()  # Try to call __del__ manually
-    except:
-        pass
+    # Try calling __del__ manually (undefined behavior in Python)
+    mgr.__del__()
 
-    # Object should still work (Python-level __del__ doesn't affect Zig state)
-    # Note: calling __del__ manually is undefined behavior, but shouldn't crash
-    result = mgr.read_all()
-    assert result == b"test"
+    # After manual __del__, subsequent operations should raise RuntimeError
+    # (buffer has been freed) instead of crashing
+    with pytest.raises(RuntimeError, match="Buffer has been freed"):
+        mgr.read_all()
+
+    # Calling __del__ again should be safe (idempotent)
+    mgr.__del__()  # Should not crash
 
 
 if __name__ == "__main__":
