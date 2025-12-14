@@ -167,3 +167,4 @@ zig-out/
 
 test.build.zig
 zls.build.json
+numpy_src/

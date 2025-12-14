@@ -271,6 +271,32 @@ pub fn build(b: *std.Build) void {
         .ld_flags = &.{},
     });
 
+    _ = pyz3.addPythonModule(.{
+        .name = "example.list_conversion_example",
+        .root_source_file = b.path("example/list_conversion_example.zig"),
+        .limited_api = true,
+        .target = target,
+        .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
+    });
+
+    _ = pyz3.addPythonModule(.{
+        .name = "example.opaque_state",
+        .root_source_file = b.path("example/opaque_state.zig"),
+        .limited_api = true,
+        .target = target,
+        .optimize = optimize,
+        .c_sources = &.{},
+        .c_include_dirs = &.{},
+        .c_libraries = &.{},
+        .c_flags = &.{},
+        .ld_flags = &.{},
+    });
+
 
 }
 

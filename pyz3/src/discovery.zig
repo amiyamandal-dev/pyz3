@@ -11,6 +11,11 @@
 // limitations under the License.
 const std = @import("std");
 
+// Increase eval branch quota for complex modules with many classes
+comptime {
+    @setEvalBranchQuota(50000);
+}
+
 /// Captures the type of the Pydust object.
 pub const Definition = struct {
     definition: type,
@@ -32,7 +37,7 @@ const Identifier = struct {
 };
 
 fn countDefinitions(comptime definition: type) usize {
-    @setEvalBranchQuota(10000);
+    @setEvalBranchQuota(100000);
     comptime var count = 0;
     switch (@typeInfo(definition)) {
         .@"struct" => |info| {
