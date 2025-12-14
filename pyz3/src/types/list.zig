@@ -106,6 +106,96 @@ pub fn PyList(comptime root: type) type {
             const pytuple = ffi.PyList_AsTuple(self.obj.py) orelse return PyError.PyRaised;
             return py.PyTuple(root).from.unchecked(.{ .py = pytuple });
         }
+
+        /// Create a PyList from a Zig slice or array
+        /// Recursively handles nested collections via py.create()
+        pub fn fromSlice(items: anytype) !Self {
+            const T = @TypeOf(items);
+            const typeInfo = @typeInfo(T);
+
+            const slice = switch (typeInfo) {
+                .pointer => |p| blk: {
+                    if (p.size == .slice) {
+                        break :blk items;
+                    } else if (p.size == .one) {
+                        // Handle pointer to array: *[N]T or *const [N]T
+                        const childInfo = @typeInfo(p.child);
+                        if (childInfo == .array) {
+                            break :blk items[0..childInfo.array.len];
+                        }
+                    }
+                    @compileError("Expected slice or pointer to array, got " ++ @typeName(T));
+                },
+                .array => &items,
+                else => @compileError("Expected slice or array, got " ++ @typeName(T)),
+            };
+
+            const list = try new(slice.len);
+            for (slice, 0..) |item, i| {
+                // Recursively create each item (handles nested collections)
+                try list.setOwnedItem(i, try py.create(root, item));
+            }
+            return list;
+        }
+
+        /// Convert PyList to Zig slice
+        /// Caller owns returned memory allocated with py.allocator
+        pub fn toSlice(self: Self, comptime T: type) ![]T {
+            const len = self.length();
+            const result = try py.allocator.alloc(T, len);
+            errdefer py.allocator.free(result);
+
+            for (0..len) |i| {
+                // Recursively unwrap each element (handles nested collections)
+                result[i] = try self.getItem(T, @intCast(i));
+            }
+
+            return result;
+        }
+
+        /// Create a PyList from a Zig slice/array value
+        /// This is the high-level API matching PyDict.create() and PyTuple.create()
+        pub fn create(value: anytype) !Self {
+            const T = @TypeOf(value);
+            const typeInfo = @typeInfo(T);
+
+            // Validate that value is a slice, array, or pointer to array
+            switch (typeInfo) {
+                .pointer => |p| {
+                    if (p.size == .slice) {
+                        // Slice is OK
+                    } else if (p.size == .one) {
+                        const childInfo = @typeInfo(p.child);
+                        if (childInfo != .array) {
+                            @compileError("PyList.create expects a slice or array, got " ++ @typeName(T));
+                        }
+                    } else {
+                        @compileError("PyList.create expects a slice or array, got " ++ @typeName(T));
+                    }
+                },
+                .array => {},
+                else => @compileError("PyList.create expects a slice or array, got " ++ @typeName(T)),
+            }
+
+            return fromSlice(value);
+        }
+
+        /// Convert PyList to Zig slice type
+        /// Returns owned memory allocated with py.allocator - caller must free
+        pub fn as(self: Self, comptime T: type) !T {
+            const typeInfo = @typeInfo(T);
+
+            // Validate T is a slice type
+            if (typeInfo != .pointer) {
+                @compileError("PyList.as expects a slice type, got " ++ @typeName(T));
+            }
+            if (typeInfo.pointer.size != .slice) {
+                @compileError("PyList.as expects a slice type, got " ++ @typeName(T));
+            }
+
+            const ChildT = typeInfo.pointer.child;
+            return self.toSlice(ChildT);
+        }
     };
 }
 
@@ -161,4 +251,76 @@ test "PyList setOwnedItem" {
 
     try std.testing.expectEqual(@as(u8, 1), try list.getItem(u8, 0));
     try std.testing.expectEqual(@as(u8, 2), try list.getItem(u8, 1));
+}
+
+test "PyList fromSlice and toSlice - basic types" {
+    py.initialize();
+    defer py.finalize();
+
+    const root = @This();
+
+    // Test i64 slice
+    const ints = [_]i64{ 1, 2, 3, 4, 5 };
+    const list = try PyList(root).fromSlice(&ints);
+    defer list.obj.decref();
+
+    try testing.expectEqual(@as(usize, 5), list.length());
+    try testing.expectEqual(@as(i64, 3), try list.getItem(i64, 2));
+
+    // Convert back
+    const result = try list.toSlice(i64);
+    defer py.allocator.free(result);
+
+    try testing.expectEqual(@as(usize, 5), result.len);
+    try testing.expectEqual(@as(i64, 1), result[0]);
+    try testing.expectEqual(@as(i64, 5), result[4]);
+
+    // Test f64 slice
+    const floats = [_]f64{ 1.1, 2.2, 3.3 };
+    const flist = try PyList(root).fromSlice(&floats);
+    defer flist.obj.decref();
+
+    const fresult = try flist.toSlice(f64);
+    defer py.allocator.free(fresult);
+
+    try testing.expectEqual(@as(f64, 2.2), fresult[1]);
+}
+
+test "PyList fromSlice - empty slice" {
+    py.initialize();
+    defer py.finalize();
+
+    const root = @This();
+
+    const empty = [_]i64{};
+    const list = try PyList(root).fromSlice(&empty);
+    defer list.obj.decref();
+
+    try testing.expectEqual(@as(usize, 0), list.length());
+
+    const result = try list.toSlice(i64);
+    defer py.allocator.free(result);
+
+    try testing.expectEqual(@as(usize, 0), result.len);
+}
+
+test "PyList create and as - high level API" {
+    py.initialize();
+    defer py.finalize();
+
+    const root = @This();
+
+    // Test create
+    const floats = [_]f64{ 1.1, 2.2, 3.3 };
+    const list = try PyList(root).create(&floats);
+    defer list.obj.decref();
+
+    try testing.expectEqual(@as(usize, 3), list.length());
+
+    // Test as
+    const result = try list.as([]f64);
+    defer py.allocator.free(result);
+
+    try testing.expectEqual(@as(usize, 3), result.len);
+    try testing.expectEqual(@as(f64, 2.2), result[1]);
 }

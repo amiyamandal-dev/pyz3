@@ -239,11 +239,29 @@ pub fn Trampoline(comptime root: type, comptime T: type) type {
                         return FastPath.wrapString(obj);
                     }
 
+                    // Handle other slices -> PyList
+                    if (p.size == .slice) {
+                        return (try py.PyList(root).fromSlice(obj)).obj;
+                    }
+
                     // Also pointers to u8 arrays *[_]u8
                     const childInfo = @typeInfo(p.child);
                     if (childInfo == .array and childInfo.array.child == u8) {
                         return (try py.PyString.create(obj)).obj;
                     }
+
+                    // Handle other array pointers -> PyList
+                    if (childInfo == .array) {
+                        return (try py.PyList(root).fromSlice(obj.*)).obj;
+                    }
+                },
+                .array => |a| {
+                    // Arrays (not pointers to arrays) should convert to PyList
+                    // Exception: u8 arrays are strings (handled in pointer case when passed as *[N]u8)
+                    if (a.child == u8) {
+                        @compileError("u8 arrays should be passed as pointers (*[N]u8) for string conversion");
+                    }
+                    return (try py.PyList(root).fromSlice(&obj)).obj;
                 },
                 .@"struct" => |s| {
                     // If the struct is a tuple, convert into a Python tuple
@@ -342,6 +360,12 @@ pub fn Trampoline(comptime root: type, comptime T: type) type {
                     // We make the assumption that []const u8 is converted from a PyString
                     if (p.child == u8 and p.size == .slice and p.is_const) {
                         return (try py.PyString.from.checked(root, obj)).asSlice();
+                    }
+
+                    // Handle other slices <- PyList
+                    if (p.size == .slice) {
+                        const pylist = try py.PyList(root).from.checked(root, obj);
+                        return try pylist.toSlice(p.child);
                     }
 
                     @compileError("Unsupported pointer type " ++ @typeName(p.child));

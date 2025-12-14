@@ -245,8 +245,9 @@ def stub_contents(module, module_name: str) -> str:
 
 def write(module, directory: Path, module_name: str) -> None:
     pyi_content = stub_contents(module, module_name)
-    os.makedirs(directory, exist_ok=True)
-    module_pyi_path(directory, module_name).write_text(pyi_content, "utf-8")
+    pyi_path = module_pyi_path(directory, module_name)
+    os.makedirs(pyi_path.parent, exist_ok=True)
+    pyi_path.write_text(pyi_content, "utf-8")
 
 
 def check_contents(module, directory: Path, module_name: str) -> None:

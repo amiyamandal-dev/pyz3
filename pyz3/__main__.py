@@ -18,6 +18,7 @@ from pathlib import Path
 
 from pyz3 import buildzig, config, deps, deploy, develop, init, watch
 from pyz3 import wheel as wheel_module
+from pyz3 import auto_stubs
 from pyz3.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -289,6 +290,43 @@ check_sp.add_argument(
     help="enable strict checking",
 )
 
+# Stubs command
+stubs_sp = sub.add_parser(
+    "stubs",
+    help="Generate .pyi stub files for type hints from compiled modules",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+stubs_sp.add_argument(
+    "-o",
+    "--output",
+    default=".",
+    help="output directory for stub files (defaults to package directory)",
+)
+stubs_sp.add_argument(
+    "-p",
+    "--pyproject",
+    type=Path,
+    default=Path.cwd() / "pyproject.toml",
+    help="path to pyproject.toml",
+)
+stubs_sp.add_argument(
+    "-m",
+    "--modules",
+    nargs="+",
+    help="specific module names to generate stubs for (if not specified, reads from pyproject.toml)",
+)
+stubs_sp.add_argument(
+    "--no-py-typed",
+    action="store_true",
+    help="don't create py.typed marker file",
+)
+stubs_sp.add_argument(
+    "-v",
+    "--verbose",
+    action="store_true",
+    help="verbose output",
+)
+
 
 def main():
     args = parser.parse_args()
@@ -328,6 +366,9 @@ def main():
 
     elif args.command == "check":
         check_packages(args)
+
+    elif args.command == "stubs":
+        generate_stubs_cmd(args)
 
 
 def _parse_exts(exts: list[str], limited_api: bool = True, prefix: str = "") -> list[config.ExtModule]:
@@ -496,6 +537,38 @@ def check_packages(args):
         dist_dir=args.dist_dir,
         strict=args.strict,
     ):
+        sys.exit(1)
+
+
+def generate_stubs_cmd(args):
+    """Generate .pyi stub files for type hints."""
+    import logging
+
+    if args.verbose:
+        logging.basicConfig(level=logging.INFO)
+
+    # If specific modules provided, use those
+    if args.modules:
+        success = auto_stubs.generate_stubs_for_modules(
+            modules=args.modules,
+            destination=args.output,
+            create_py_typed=not args.no_py_typed,
+        )
+    else:
+        # Read from pyproject.toml
+        if not args.pyproject.exists():
+            logger.error(f"pyproject.toml not found at {args.pyproject}")
+            sys.exit(1)
+
+        success = auto_stubs.integrate_stub_generation_into_build(
+            pyproject_path=args.pyproject,
+            destination=args.output,
+        )
+
+    if success:
+        logger.info(f"✓ Stub files generated successfully in {args.output}")
+    else:
+        logger.error("✗ Failed to generate some stub files")
         sys.exit(1)
 
 

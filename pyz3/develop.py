@@ -89,6 +89,19 @@ def develop_install(
         )
         print("  ✓ Extension modules built successfully")
         logger.info("Zig extension modules built successfully")
+
+        # Generate stub files after successful build
+        logger.debug("Generating stub files...")
+        try:
+            from pyz3 import auto_stubs
+
+            if auto_stubs.integrate_stub_generation_into_build(pyproject_path, "."):
+                logger.info("Stub files generated successfully")
+            else:
+                logger.warning("Some stub files may not have been generated")
+        except Exception as e:
+            logger.warning(f"Failed to generate stub files: {e}")
+
     except ImportError as e:
         logger.error(f"Failed to import pyz3 modules: {e}")
         print(f"  ❌ Failed to import pyz3 modules: {e}")
@@ -257,6 +270,20 @@ def develop_build_only(optimize: str = "Debug", verbose: bool = False) -> None:
         )
         print("✅ Extension modules built successfully!")
         logger.info("Build-only mode completed successfully")
+
+        # Generate stub files after successful build
+        logger.debug("Generating stub files...")
+        try:
+            from pyz3 import auto_stubs
+
+            if auto_stubs.integrate_stub_generation_into_build(pyproject_path, "."):
+                print("  ✓ Stub files generated")
+                logger.info("Stub files generated successfully")
+            else:
+                logger.warning("Some stub files may not have been generated")
+        except Exception as e:
+            logger.warning(f"Failed to generate stub files: {e}")
+
     except ImportError as e:
         logger.error(f"Failed to import pyz3 modules: {e}")
         print(f"❌ Failed to import pyz3 modules: {e}")
