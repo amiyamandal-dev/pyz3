@@ -1,45 +1,63 @@
-# pyz3 Documentation Index
+# Welcome to pyZ3
 
-Welcome to the pyz3 documentation! This index helps you find what you need quickly.
+**pyZ3** is a high-performance framework for building Python extension modules in Zig. It provides seamless Python-Zig interoperability, first-class NumPy integration, and a powerful CLI to streamline your development workflow.
 
-## 📚 Getting Started
+This documentation will guide you through everything from getting started to advanced performance optimization and distribution.
 
-- **[Main README](../README.md)** - Project overview, installation, and quick start
-- **[Quick Start Guide](guides/QUICK_START.md)** - Get up and running in 5 minutes
-- **[Getting Started](getting_started.md)** - Detailed setup and configuration
+---
 
-## 🔧 User Guides
+## 🚀 Getting Started
 
-### Core Features
-- **[Modules](guide/modules.md)** - Creating and using Python modules in Zig
-- **[Functions](guide/functions.md)** - Defining Python-callable functions
-- **[Classes](guide/classes.md)** - Building Python classes in Zig
-- **[Exceptions](guide/exceptions.md)** - Error handling and exceptions
-- **[GIL Management](guide/gil.md)** - Working with Python's Global Interpreter Lock
-- **[Memory Management](guide/_5_memory.md)** - Memory safety and lifecycle
-- **[Buffer Protocol](guide/_6_buffers.md)** - Zero-copy data exchange
-- **[NumPy Integration](guide/numpy.md)** - Working with NumPy arrays
+New to pyZ3? Start here.
 
-### Advanced Features
-- **[zigimport - Auto Import](guides/ZIGIMPORT_README.md)** - Import .zig files like Python modules
-- **[zigimport Advanced Features](guides/ZIGIMPORT_ADVANCED.md)** - Dependency tracking, watch mode, caching
-- **[zigimport Implementation](guides/ZIGIMPORT_COMPLETE.md)** - Implementation details and architecture
+- **[Introduction & Setup](getting_started.md)**: A guide to installing prerequisites and setting up your first project.
+- **[Quick Start Guide](guides/quick_start.md)**: A 5-minute guide to creating and running your first extension.
+- **[CLI Reference](CLI.md)**: A complete reference for all command-line interface commands.
 
-## 👨‍💻 Development
+---
 
-- **[DEVELOPMENT.md](../DEVELOPMENT.md)** - Development setup and workflow
-- **[Implementation Summary](development/IMPLEMENTATION_SUMMARY.md)** - Technical implementation details
-- **[Reorganization Summary](development/REORGANIZATION_SUMMARY.md)** - Project reorganization notes
+## 📖 User Guides
 
-## 🆘 Troubleshooting
+Dive deeper into specific features and topics.
 
-Common issues and solutions:
-1. **Build errors** → See [DEVELOPMENT.md](../DEVELOPMENT.md#troubleshooting)
-2. **Import errors** → Check [zigimport guide](guides/ZIGIMPORT_README.md)
-3. **Memory leaks** → Read [Memory Management](guide/_5_memory.md)
+### Core Concepts
+- **[Modules](guides/modules.md)**: Learn how to structure your Zig code as Python modules.
+- **[Functions](guides/functions.md)**: Define Python-callable functions with automatic type conversion.
+- **[Classes](guides/classes.md)**: Build Python classes in Zig with methods and properties.
+- **[Exceptions](guides/exceptions.md)**: Handle errors and raise Python exceptions from Zig.
+- **[Testing](guides/testing.md)**: Write and run tests for your extensions using Pytest.
 
-## 🔗 External Links
+### Advanced Topics
+- **[NumPy Integration](guides/numpy.md)**: Leverage zero-copy array access for high-performance data science.
+- **[Memory Management](guides/memory.md)**: Understand reference counting and pyZ3's memory model.
+- **[Buffer Protocol](guides/buffers.md)**: Work with Python's buffer protocol for efficient data exchange.
+- **[GIL Management](guides/gil.md)**: Release the GIL for true parallel processing in CPU-bound tasks.
+- **[C/C++ Integration](guides/c_cpp_integration.md)**: Use existing C/C++ libraries in your pyZ3 project.
+- **[Dependency Management](guides/dependency_management.md)**: Manage external C/C++ dependencies automatically.
 
-- [GitHub Repository](https://github.com/amiyamandal-dev/pyz3)
-- [Zig Documentation](https://ziglang.org/documentation/master/)
-- [Python C API Reference](https://docs.python.org/3/c-api/)
+### `zigimport` - The Magic Import Hook
+- **[Intro to zigimport](guides/zigimport_readme.md)**: Import `.zig` files directly from Python, no manual compilation needed.
+- **[Advanced zigimport](guides/zigimport_advanced.md)**: Explore dependency tracking, watch mode, and remote caching.
+
+### Distribution
+- **[Distribution Quick Start](guides/distribution_quickstart.md)**: A fast track to building and publishing your package.
+- **[Full Distribution Guide](guides/distribution.md)**: In-depth guide to cross-compilation and wheel building.
+
+---
+
+## 👨‍💻 For Contributors
+
+Interested in contributing to pyZ3?
+
+- **[Development Setup](../DEVELOPMENT.md)**: A complete guide to setting up a development environment for pyz3 itself.
+- **[Repository Structure](REPOSITORY_STRUCTURE.md)**: An overview of the project's layout.
+- **[Roadmap](ROADMAP.md)**: See what's next for pyZ3.
+- **[Implementation Notes](development/README.md)**: Read the technical summaries behind pyZ3's features.
+
+---
+
+## 🆘 Resources
+
+- **[Quick Reference](QUICK_REFERENCE.md)**: A cheat sheet for common commands and code patterns.
+- **[Examples](examples/)**: A directory full of working examples.
+- **[GitHub Repository](https://github.com/amiyamandal-dev/pyz3)**: Report issues, ask questions, and contribute.
