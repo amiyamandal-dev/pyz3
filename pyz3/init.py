@@ -1,8 +1,7 @@
 """
-Project initialization utilities for Pydust.
+Simple project initialization for pyz3.
 
-Similar to Maturin's init functionality, this module provides templates
-and utilities for bootstrapping new Pydust projects.
+Creates a minimal project structure without external dependencies.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,28 +17,27 @@ limitations under the License.
 """
 
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
 from typing import Optional
 
 from pyz3.logging_config import get_logger
-from pyz3.security import SecurityError, SecurityValidator
+from pyz3.security import SecurityValidator
 
 logger = get_logger(__name__)
 
 
-def init_project_cookiecutter(
+def init_project(
     path: Path,
     package_name: Optional[str] = None,
     author_name: Optional[str] = None,
     author_email: Optional[str] = None,
     description: Optional[str] = None,
-    use_interactive: bool = True,
+    **kwargs
 ) -> None:
     """
-    Initialize a new Pydust project using the cookiecutter template.
+    Initialize a new pyz3 project with minimal structure.
 
     Args:
         path: Directory to initialize the project in
@@ -47,98 +45,200 @@ def init_project_cookiecutter(
         author_name: Author name (defaults to git config)
         author_email: Author email (defaults to git config)
         description: Project description
-        use_interactive: Use interactive mode for cookiecutter
     """
-    try:
-        from cookiecutter.main import cookiecutter
-    except ImportError:
-        logger.error("cookiecutter is not installed")
-        print("❌ Error: cookiecutter is required to initialize projects.")
-        print("\nTo install cookiecutter:")
-        print("  pip install cookiecutter")
-        print("  # or")
-        print("  uv pip install cookiecutter")
+    logger.info(f"Initializing pyz3 project in {path}")
+
+    # Determine project name
+    if package_name is None:
+        package_name = path.name.replace("-", "_").lower()
+
+    # Validate package name
+    is_valid, error, sanitized_name = SecurityValidator.sanitize_package_name(package_name)
+    if not is_valid:
+        logger.error(f"Invalid package name: {error}")
+        print(f"❌ Error: {error}")
         sys.exit(1)
 
-    logger.info(f"Initializing Pydust project with cookiecutter in {path}")
+    package_name = sanitized_name
 
-    # Find the template directory
-    pyz3_package = Path(__file__).parent
-    template_path = pyz3_package / "pyZ3-template"
+    # Create project directory if it doesn't exist
+    path.mkdir(parents=True, exist_ok=True)
 
-    if not template_path.exists():
-        logger.error(f"Template not found at {template_path}")
-        print(f"❌ Error: Template directory not found at {template_path}")
-        print("\nPlease ensure pyZ3-template is in the repository root.")
-        sys.exit(1)
+    # Get git user info
+    git_name, git_email_full = get_git_user_info()
+    if author_name is None:
+        author_name = git_name.split("<")[0].strip() if "<" in git_name else git_name
+    if author_email is None and "<" in git_email_full:
+        author_email = git_email_full.split("<")[1].rstrip(">").strip()
+    elif author_email is None:
+        author_email = "your.email@example.com"
 
-    # Prepare cookiecutter context
-    extra_context = {}
+    if description is None:
+        description = f"A pyz3 extension module"
 
-    if package_name:
-        extra_context["project_name"] = package_name.replace("_", " ").title()
-    else:
-        extra_context["project_name"] = path.name.replace("-", " ").replace("_", " ").title()
+    # Create project structure
+    create_project_structure(
+        path,
+        package_name=package_name,
+        author_name=author_name,
+        author_email=author_email,
+        description=description,
+    )
 
-    if author_name:
-        extra_context["author_name"] = author_name
+    print(f"\n✅ Project '{package_name}' initialized successfully at {path}")
+    print(f"\nNext steps:")
+    print(f"  cd {path}")
+    print(f"  # Edit {package_name}.zig")
+    print(f"  zig build")
+    print(f"  pytest")
 
-    if author_email:
-        extra_context["author_email"] = author_email
-
-    if description:
-        extra_context["description"] = description
-
-    # Get git user info if not provided
-    if not author_name or not author_email:
-        git_name, git_email_full = get_git_user_info()
-        if not author_name and "<" in git_email_full:
-            # Parse "Name <email>" format
-            parts = git_email_full.split("<")
-            extra_context["author_name"] = parts[0].strip()
-            if len(parts) > 1:
-                extra_context["author_email"] = parts[1].rstrip(">").strip()
-
-    try:
-        # Run cookiecutter
-        # Determine output directory - if initializing in current directory,
-        # we need to let cookiecutter create the project folder
-        output_dir = path.parent if path != Path.cwd() else Path.cwd()
-
-        # Build cookiecutter kwargs
-        cookiecutter_kwargs = {
-            "no_input": not use_interactive,
-            "extra_context": extra_context,
-        }
-
-        # Only specify output_dir if not current directory
-        # to let cookiecutter create the project folder
-        if path != Path.cwd():
-            cookiecutter_kwargs["output_dir"] = str(output_dir)
-
-        cookiecutter(
-            str(template_path),
-            **cookiecutter_kwargs,
-        )
-
-        print("\n✅ Project initialized successfully!")
-        logger.info("Project initialized successfully with cookiecutter")
-
-    except Exception as e:
-        logger.error(f"Failed to initialize project with cookiecutter: {e}")
-        print(f"❌ Error: Failed to initialize project: {e}")
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)
+    logger.info("Project initialized successfully")
 
 
-# Alias for backward compatibility
-init_project = init_project_cookiecutter
+def create_project_structure(
+    path: Path,
+    package_name: str,
+    author_name: str,
+    author_email: str,
+    description: str,
+):
+    """Create minimal project structure."""
+
+    # Create directories
+    (path / "test").mkdir(exist_ok=True)
+
+    # Create main Zig file
+    zig_content = f'''const py = @import("pyz3");
+
+pub fn hello(args: struct {{ name: []const u8 }}) ![]const u8 {{
+    return "Hello, " ++ args.name ++ "!";
+}}
+
+pub fn add(args: struct {{ a: i64, b: i64 }}) i64 {{
+    return args.a + args.b;
+}}
+
+comptime {{
+    py.rootmodule(@This());
+}}
+'''
+    (path / f"{package_name}.zig").write_text(zig_content)
+
+    # Create pyproject.toml
+    pyproject_content = f'''[build-system]
+requires = ["pyz3"]
+build-backend = "pyz3.build"
+
+[project]
+name = "{package_name}"
+version = "0.1.0"
+description = "{description}"
+authors = [
+    {{name = "{author_name}", email = "{author_email}"}}
+]
+requires-python = ">=3.11"
+dependencies = [
+    "pyz3",
+]
+
+[tool.pyz3]
+root = "."
+build_zig = "build.zig"
+
+[[tool.pyz3.ext_module]]
+name = "{package_name}"
+root = "{package_name}.zig"
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+'''
+    (path / "pyproject.toml").write_text(pyproject_content)
+
+    # Create build.zig (will be auto-generated by pyz3)
+    # We don't create it here as pyz3 will generate it
+
+    # Create test file
+    test_content = f'''import pytest
+import {package_name}
+
+
+def test_hello():
+    """Test hello function."""
+    result = {package_name}.hello("World")
+    assert result == "Hello, World!"
+
+
+def test_add():
+    """Test add function."""
+    result = {package_name}.add(5, 3)
+    assert result == 8
+'''
+    (path / "test" / f"test_{package_name}.py").write_text(test_content)
+
+    # Create README.md
+    readme_content = f'''# {package_name}
+
+{description}
+
+## Installation
+
+```bash
+pip install -e .
+```
+
+## Development
+
+```bash
+# Build the extension
+zig build
+
+# Run tests
+pytest
+
+# Or use zigimport for automatic compilation
+python -c "import pyz3.zigimport; import {package_name}; print({package_name}.hello('World'))"
+```
+
+## Usage
+
+```python
+import {package_name}
+
+print({package_name}.hello("World"))
+print({package_name}.add(5, 3))
+```
+'''
+    (path / "README.md").write_text(readme_content)
+
+    # Create .gitignore
+    gitignore_content = '''# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Zig
+zig-cache/
+zig-out/
+build.zig
+pyz3.build.zig
+
+# IDE
+.idea/
+.vscode/
+*.swp
+'''
+    (path / ".gitignore").write_text(gitignore_content)
 
 
 def get_git_user_info() -> tuple[str, str]:
     """Get git user name and email if available."""
-    name = "Your Name <your.email@example.com>"
+    name = "Your Name"
+    email_full = "Your Name <your.email@example.com>"
+
     try:
         git_name = subprocess.check_output(
             ["git", "config", "user.name"],
@@ -153,22 +253,20 @@ def get_git_user_info() -> tuple[str, str]:
             timeout=5,
         ).strip()
         if git_name and git_email:
-            name = f"{git_name} <{git_email}>"
-            logger.debug(f"Detected git user: {name}")
-    except subprocess.TimeoutExpired:
-        logger.warning("Git config command timed out")
-    except subprocess.CalledProcessError as e:
-        logger.debug(f"Git config not available: {e}")
-    except FileNotFoundError:
-        logger.debug("Git not found in PATH")
+            name = git_name
+            email_full = f"{git_name} <{git_email}>"
+            logger.debug(f"Detected git user: {email_full}")
+    except (subprocess.TimeoutExpired, subprocess.CalledProcessError, FileNotFoundError):
+        logger.debug("Git config not available, using defaults")
     except Exception as e:
         logger.warning(f"Unexpected error getting git info: {e}")
-    return name, name
+
+    return name, email_full
 
 
 def new_project(name: str, path: Optional[Path] = None) -> None:
     """
-    Create a new Pydust project in a new directory.
+    Create a new pyz3 project in a new directory.
 
     Args:
         name: Name of the project
@@ -193,4 +291,8 @@ def new_project(name: str, path: Optional[Path] = None) -> None:
         sys.exit(1)
 
     logger.debug(f"Creating project at {project_path}")
-    init_project_cookiecutter(project_path, package_name=sanitized_name)
+    init_project(project_path, package_name=sanitized_name)
+
+
+# Backward compatibility
+init_project_cookiecutter = init_project

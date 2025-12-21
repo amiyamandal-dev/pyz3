@@ -1,134 +1,308 @@
-# Getting Started
+# Getting Started with pyz3
 
-pyZ3 is currently designed to be embedded within a Python [Poetry](https://python-poetry.org/) project. [Reach out](https://github.com/fulcrum-so/pyZ3/issues) if you'd like help integrating pyZ3 with other build setups.
+pyz3 is a framework for building high-performance Python extensions in Zig. This guide will get you up and running in minutes.
 
-See also the [generated Zig documentation](https://pyz3.fulcrum.so/zig).
+## Prerequisites
 
-## GitHub Template
+- **Python 3.11+** (Python 3.12 and 3.13 supported)
+- **Zig 0.15.x** ([Download](https://ziglang.org/download/))
+- **Git** (for dependency management)
 
-By far the easiest way to get started is by creating a project from our GitHub template: [github.com/fulcrum-so/pyZ3-template/](https://github.com/fulcrum-so/pyZ3-template/)
+## Installation
 
-This template includes:
-
-- A Python Poetry project
-- A `src/` directory containing a pyZ3 Python module
-- Pytest setup for running both Python and Zig unit tests.
-- GitHub Actions workflows for building and publishing the package.
-- VSCode settings for recommended extensions, debugger configurations, etc.
-
-## Poetry Setup
-
-Assuming you have an existing Poetry project, these are the changes you need to make to
-your `pyproject.toml` to setup Ziggy pyZ3. But first, add pyZ3 as a dev dependency:
+### Option 1: Using uv (Recommended - Fast!)
 
 ```bash
-poetry add -G dev pyZ3
+# Install uv if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install pyz3
+uv pip install pyz3
 ```
 
-```diff title="pyproject.toml"
-[tool.poetry]
-name = "your-package"
-packages = [ { include = "your-module" } ]
-+ include = [ { path = "src/", format = "sdist" }, { path = "your-module/*.so", format = "wheel" } ]
+### Option 2: Using pip
 
-+ [tool.poetry.build]
-+ script = "build.py"
+```bash
+pip install pyz3
+```
 
+### Option 3: Using Poetry
+
+```bash
+poetry add pyz3
+```
+
+## Quick Start
+
+### Create a New Project
+
+The easiest way to get started is with the `pyz3 new` command:
+
+```bash
+# Create a new project
+pyz3 new myproject
+
+# Navigate to it
+cd myproject
+
+# Build and test
+zig build
+pytest
+```
+
+This creates a complete project structure:
+
+```
+myproject/
+├── myproject.zig          # Your Zig code
+├── pyproject.toml         # Project configuration
+├── test/
+│   └── test_myproject.py  # Tests
+├── README.md
+└── .gitignore
+```
+
+### Initialize in Existing Directory
+
+If you already have a directory:
+
+```bash
+cd my-existing-project
+pyz3 init -n mypackage --description "My awesome extension"
+```
+
+## Your First Extension
+
+The generated `myproject.zig` contains a simple example:
+
+```zig
+const py = @import("pyz3");
+
+pub fn hello(args: struct { name: []const u8 }) ![]const u8 {
+    return "Hello, " ++ args.name ++ "!";
+}
+
+pub fn add(args: struct { a: i64, b: i64 }) i64 {
+    return args.a + args.b;
+}
+
+comptime {
+    py.rootmodule(@This());
+}
+```
+
+## Building & Testing
+
+### Option 1: Manual Build (Development)
+
+```bash
+# Build the extension
+zig build
+
+# Run tests
+pytest
+```
+
+### Option 2: Auto-Import with zigimport
+
+For rapid development, use zigimport to automatically compile on import:
+
+```python
+import pyz3.zigimport  # Enable auto-import
+import myproject
+
+# Your .zig file is automatically compiled!
+print(myproject.hello("World"))  # "Hello, World!"
+print(myproject.add(5, 3))        # 8
+```
+
+See [zigimport guide](guides/ZIGIMPORT_README.md) for advanced features like watch mode and dependency tracking.
+
+### Option 3: Development Mode
+
+Install your package in editable mode:
+
+```bash
+pyz3 develop
+```
+
+This builds the extension and installs it in development mode (like `pip install -e .`).
+
+## Project Configuration
+
+Your `pyproject.toml` is pre-configured:
+
+```toml
 [build-system]
-- requires = ["poetry-core"]
-+ requires = ["poetry-core", "pyZ3==TODO_SET_VERSION"]
-build-backend = "poetry.core.masonry.api"
-```
+requires = ["pyz3"]
+build-backend = "pyz3.build"
 
-As well as creating the `build.py` for Poetry to invoke the pyZ3 build.
+[project]
+name = "myproject"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["pyz3"]
 
-```python title="build.py"
-from pyz3.build import build
-
-build()
-```
-
-## My First Module
-
-Once Poetry is configured, add a pyZ3 module to your `pyproject.toml` and start writing some Zig!
-
-```toml title="pyproject.toml"
-[[tool.pyz3.ext_module]]
-name = "example.hello"
-root = "src/hello.zig"
-```
-
-```zig title="src/hello.zig"
---8<-- "example/hello.zig:ex"
-```
-
-Running `poetry install` will build your modules. After this, you will be
-able to import your module from within `poetry shell` or `poetry run pytest`.
-
-```python title="test/test_hello.py"
---8<-- "test/test_hello.py:ex"
-```
-
-## Zig Language Server
-
-!!! warning
-
-    Currently ZLS (at least when running in VSCode) requires a small amount of manual setup.
-
-In the root of your project, create a `zls.build.json` file containing the path to your python executable.
-This can be obtained by running `poetry env info -e`.
-
-```json title="zls.build.json"
-{
-    "build_options": [
-        {
-            "name": "python-exe",
-            "value": "/path/to/your/poetry/venv/bin/python",
-        }
-    ]
-}
-```
-
-## Self-managed Mode
-
-pyZ3 makes it easy to get started building a Zig extension for Python. But when your use-case becomes sufficiently
-complex, you may wish to have full control of your `build.zig` file.
-
-By default, pyZ3 will generated two files:
-
-* `pyz3.build.zig` - a Zig file used for bootstrapping pyZ3 and configuring Python modules.
-* `build.zig` - a valid Zig build configuration based on the `tool.pyz3.ext_module` entries in your `pyproject.toml`.
-
-In self-managed mode, pyZ3 will only generate the `pyz3.build.zig` file and your are free to manage your own `build.zig`.
-To enable this mode, set the flag in your `pyproject.toml` and remove any `ext_module` entries.
-
-```diff title="pyproject.toml"
 [tool.pyz3]
-+ self_managed = true
+root = "."
+build_zig = "build.zig"
 
-- [[tool.pyz3.ext_module]]
-- name = "example.hello"
-- root = "example/hello.zig"
+[[tool.pyz3.ext_module]]
+name = "myproject"
+root = "myproject.zig"
 ```
 
-You can then configure Python modules from a custom `build.zig` file:
+## Next Steps
 
-```zig title="build.zig"
-const std = @import("std");
-const py = @import("./pyz3.build.zig");
+### Learn the Basics
 
-pub fn build(b: *std.Build) void {
-    const target = b.standardTargetOptions(.{});
-    const optimize = b.standardOptimizeOption(.{});
+1. **[Modules](guide/modules.md)** - Creating Python modules
+2. **[Functions](guide/functions.md)** - Defining functions
+3. **[Classes](guide/classes.md)** - Building classes
+4. **[Exceptions](guide/exceptions.md)** - Error handling
 
-    // Each Python module consists of a library_step and a test_step
-    const module = pyz3.addPythonModule(.{
-        .name = "example.hello",
-        .root_source_file = .{ .path = "example/hello.zig" },
-        .target = target,
-        .optimize = optimize,
-    });
-    module.library_step.addModule(..., ...);
-    module.test_step.addModule(..., ...);
-}
+### Advanced Features
+
+- **[zigimport](guides/ZIGIMPORT_README.md)** - Auto-compilation and hot reload
+- **[Memory Management](guide/_5_memory.md)** - Memory safety
+- **[GIL Management](guide/gil.md)** - Concurrency
+- **[Buffer Protocol](guide/_6_buffers.md)** - Zero-copy data exchange
+- **[NumPy Integration](guide/numpy.md)** - Working with arrays
+
+### Development Workflow
+
+1. **Watch Mode** - Auto-rebuild on changes:
+   ```bash
+   pyz3 watch --test
+   ```
+
+2. **Type Checking** - Add type hints:
+   ```bash
+   mypy .
+   ```
+
+3. **Testing** - Run tests with coverage:
+   ```bash
+   pytest --cov=myproject --cov-report=html
+   ```
+
+4. **Building Wheels** - For distribution:
+   ```bash
+   pyz3 build-wheel --optimize=ReleaseFast
+   ```
+
+## IDE Setup
+
+### VS Code
+
+Recommended extensions:
+- **Zig Language** - Zig syntax highlighting
+- **Python** - Python support
+- **Pylance** - Type checking
+
+### PyCharm
+
+1. Install Zig plugin
+2. Configure Python interpreter to use your project's venv
+3. Mark `test/` as test sources
+
+## Troubleshooting
+
+### "Zig not found"
+
+Make sure Zig is in your PATH:
+
+```bash
+zig version  # Should print: 0.15.x
 ```
+
+### "Module not found" after build
+
+Ensure you're running Python from the project directory:
+
+```bash
+cd /path/to/myproject
+python -c "import myproject"
+```
+
+Or install in development mode:
+
+```bash
+pyz3 develop
+```
+
+### Build errors
+
+Check that your Zig code compiles:
+
+```bash
+zig build
+```
+
+Enable verbose output:
+
+```bash
+zig build --verbose
+```
+
+### Import errors with zigimport
+
+Check the build directory:
+
+```bash
+ls ~/.zigimport/
+```
+
+Enable verbose mode:
+
+```bash
+export ZIGIMPORT_VERBOSE=1
+python -c "import pyz3.zigimport; import myproject"
+```
+
+## Common Workflows
+
+### Adding C Dependencies
+
+```bash
+pyz3 add https://github.com/user/c-library
+```
+
+### Publishing to PyPI
+
+```bash
+# Build wheels for all platforms
+pyz3 build-wheel --all-platforms
+
+# Check the wheels
+pyz3 check
+
+# Upload to PyPI
+pyz3 deploy
+```
+
+### Running Examples
+
+```bash
+# Run example modules
+cd example/
+python -c "import pyz3.zigimport; import hello; print(hello.add(1, 2))"
+```
+
+## Getting Help
+
+- **[Documentation Index](INDEX.md)** - Complete documentation
+- **[Development Guide](../DEVELOPMENT.md)** - Contributing guide
+- **[GitHub Issues](https://github.com/amiyamandal-dev/pyz3/issues)** - Report bugs
+- **[Examples](../example/)** - Example code
+
+## Version Information
+
+**Current Version**: 0.8.0  
+**Python Support**: 3.11, 3.12, 3.13  
+**Zig Version**: 0.15.x  
+**License**: Apache 2.0
+
+---
+
+**Ready to build something awesome?** Check out the [examples](../example/) directory for inspiration!

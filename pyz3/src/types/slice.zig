@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 const std = @import("std");
 const py = @import("../pyz3.zig");
 const PyObjectMixin = @import("./obj.zig").PyObjectMixin;
@@ -26,7 +14,9 @@ pub fn PySlice(comptime root: type) type {
         pub const from = PyObjectMixin("slice", "PySlice", Self);
 
         pub fn create(start: anytype, stop: anytype, step: anytype) !Self {
-            // TODO(ngates): think about how to improve comptime optional handling?
+            // Note: This manual optional handling is verbose but correct. A helper function could
+            // simplify this pattern: optionalCreate(root, value) -> ?*PyObject
+            // However, the current approach is clear and avoids hidden allocations/decrefs.
             const pystart = if (@typeInfo(@TypeOf(start)) == .null) null else (try py.create(root, start)).py;
             defer if (@typeInfo(@TypeOf(start)) != .null) py.decref(root, pystart);
             const pystop = if (@typeInfo(@TypeOf(stop)) == .null) null else (try py.create(root, stop)).py;

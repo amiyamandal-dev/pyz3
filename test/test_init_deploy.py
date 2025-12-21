@@ -6,14 +6,6 @@ from pathlib import Path
 import pytest
 
 
-def _check_cookiecutter_available() -> bool:
-    try:
-        import cookiecutter
-        return True
-    except ImportError:
-        return False
-
-
 class TestInitCommand:
 
     def test_init_help(self):
@@ -25,11 +17,8 @@ class TestInitCommand:
         assert result.returncode == 0
         assert "init" in result.stdout
 
-    @pytest.mark.skipif(
-        not _check_cookiecutter_available(),
-        reason="cookiecutter required"
-    )
     def test_init_in_temp_dir(self):
+        """Test init command creates project files in current directory."""
         with tempfile.TemporaryDirectory() as tmpdir:
             tmppath = Path(tmpdir)
 
@@ -48,27 +37,18 @@ class TestInitCommand:
                 text=True,
             )
 
-            if result.returncode == 0:
-                possible_paths = [
-                    tmppath,
-                    tmppath / "test-package",
-                    tmppath / "test_package",
-                ]
+            assert result.returncode == 0, f"Init failed. Output: {result.stdout}\nError: {result.stderr}"
 
-                found = False
-                for path in possible_paths:
-                    if (path / "pyproject.toml").exists():
-                        found = True
-                        assert (path / "src").exists()
-                        break
+            # Check that files were created in tmppath directly
+            assert (tmppath / "pyproject.toml").exists(), "pyproject.toml not created"
+            assert (tmppath / "test_package.zig").exists(), "test_package.zig not created"
+            assert (tmppath / "README.md").exists(), "README.md not created"
+            assert (tmppath / ".gitignore").exists(), ".gitignore not created"
+            assert (tmppath / "test").exists(), "test directory not created"
+            assert (tmppath / "test" / "test_test_package.py").exists(), "test file not created"
 
-                assert found, f"pyproject.toml not created. Output: {result.stdout}\nError: {result.stderr}"
-
-    @pytest.mark.skipif(
-        not _check_cookiecutter_available(),
-        reason="cookiecutter required"
-    )
     def test_new_command(self):
+        """Test new command creates project in a new subdirectory."""
         with tempfile.TemporaryDirectory() as tmpdir:
             tmppath = Path(tmpdir)
 
@@ -86,19 +66,16 @@ class TestInitCommand:
                 text=True,
             )
 
-            if result.returncode == 0:
-                possible_paths = [
-                    tmppath / "my_test_project",
-                    tmppath / "my-test-project",
-                ]
+            assert result.returncode == 0, f"New command failed. Output: {result.stdout}\nError: {result.stderr}"
 
-                found = False
-                for path in possible_paths:
-                    if path.exists() and (path / "pyproject.toml").exists():
-                        found = True
-                        break
-
-                assert found, f"Project not created. Output: {result.stdout}\nError: {result.stderr}"
+            # Check that project directory was created
+            project_path = tmppath / "my_test_project"
+            assert project_path.exists(), "Project directory not created"
+            assert (project_path / "pyproject.toml").exists(), "pyproject.toml not created"
+            assert (project_path / "my_test_project.zig").exists(), "my_test_project.zig not created"
+            assert (project_path / "README.md").exists(), "README.md not created"
+            assert (project_path / ".gitignore").exists(), ".gitignore not created"
+            assert (project_path / "test").exists(), "test directory not created"
 
 
 class TestDeployCommand:
@@ -180,13 +157,37 @@ class TestCheckCommand:
             assert result.returncode != 0 or "twine" in (result.stdout + result.stderr)
 
 
-class TestTemplateIntegration:
+class TestProjectStructure:
+    """Test the structure of generated projects."""
 
-    def test_template_exists(self):
-        from pyz3 import init
+    def test_init_creates_valid_pyproject_toml(self):
+        """Test that init creates a valid pyproject.toml with required fields."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmppath = Path(tmpdir)
 
-        pyz3_package = Path(init.__file__).parent
-        template_path = pyz3_package / "pyZ3-template"
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "pyz3",
+                    "init",
+                    "-n",
+                    "test_pkg",
+                ],
+                cwd=tmppath,
+                capture_output=True,
+                text=True,
+            )
 
-        assert template_path.exists(), f"Template directory not found at {template_path}"
-        assert (template_path / "cookiecutter.json").exists()
+            assert result.returncode == 0
+
+            pyproject = tmppath / "pyproject.toml"
+            assert pyproject.exists()
+
+            content = pyproject.read_text()
+            # Check for required sections
+            assert "[build-system]" in content
+            assert "[project]" in content
+            assert "[tool.pyz3]" in content
+            assert "pyz3" in content  # build backend
+            assert "test_pkg" in content  # package name

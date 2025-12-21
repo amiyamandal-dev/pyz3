@@ -1,17 +1,3 @@
-"""
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
-
 import enum
 import io
 import struct
@@ -108,7 +94,9 @@ class ZigFile(pytest.File):
             proc.wait()
 
         for test in test_metas:
-            # TODO(ngates): we could override the path here if test_metadata provided source provenance.
+            # Note: test_metadata could include source file/line info for better pytest reporting.
+            # This would require extending the Zig test runner to emit source locations.
+            # For now, tests report their module name without specific file paths.
             yield ZigItem.from_parent(self, name=test["name"], ext_module=ext_module, test_meta=test)
 
     @staticmethod
@@ -174,7 +162,9 @@ class ZigItem(pytest.Item):
             fail = bool(flags & 0x01)
             skip = bool(flags & 0x02)
             leak = bool(flags & 0x04)
-            # TODO(ngates): log_error_count: u29 isn't currently passed back but should be
+            # Note: The flags field could include log_error_count (bits 5-33) from Zig's test runner.
+            # This would require extending the protocol to pack error counts into the response.
+            # For now, we rely on stderr output for error details.
 
             with open(stderr.name) as f:
                 self.add_report_section("call", "stderr", f.read())
@@ -192,12 +182,12 @@ class ZigItem(pytest.Item):
 
         if leak:
             leak_msg = (
-                f"\n{'='*70}\n"
+                f"\n{'=' * 70}\n"
                 f"MEMORY LEAK DETECTED in '{self.nodeid}'\n"
-                f"{'='*70}\n"
+                f"{'=' * 70}\n"
                 f"The test allocator detected unreleased memory.\n"
                 f"Please ensure all allocations are properly freed.\n"
-                f"{'='*70}\n"
+                f"{'=' * 70}\n"
             )
             self.add_report_section("call", "memory leaks", leak_msg)
 

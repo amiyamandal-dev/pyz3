@@ -502,7 +502,13 @@ pub const c = @cImport({{
         binding_content += f"""}});
 
 // Re-export commonly used types and functions
-// TODO: Add convenience wrappers for common operations
+// Note: Convenience wrappers can be added here to provide idiomatic Zig APIs
+// wrapping the C functions. For example:
+// pub fn someOperation(args: ArgType) !ReturnType {{
+//     const result = c.some_function(args);
+//     if (result == null) return error.OperationFailed;
+//     return result;
+// }}
 
 // Example usage:
 // const {dep.name} = @import("{dep.name}.zig");

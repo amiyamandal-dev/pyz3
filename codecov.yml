@@ -1,0 +1,36 @@
+# Codecov configuration for pyz3
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+  
+  status:
+    project:
+      default:
+        target: 70%
+        threshold: 5%
+        if_ci_failed: error
+    
+    patch:
+      default:
+        target: 80%
+        threshold: 10%
+
+ignore:
+  - "pyz3/tests/**"
+  - "test/**"
+  - "example/**"
+  - "docs/**"
+  - "**/test_*.py"
+  - "**/__pycache__/**"
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+
+github_checks:
+  annotations: true

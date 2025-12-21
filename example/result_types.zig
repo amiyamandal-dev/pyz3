@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 const std = @import("std");
 const py = @import("pyz3");
 
@@ -37,7 +25,10 @@ pub fn zigu64() u64 {
     return 8589934592;
 }
 
-// TODO: support numbers bigger than long
+// Note: u128/i128 support would require using Python's arbitrary precision integers.
+// Python's int can handle any size, but the conversion would need PyLong_FromString()
+// or manual digit manipulation since PyLong_FromLongLong() is limited to 64 bits.
+// Example implementation would convert the u128 to a decimal string first.
 // pub fn zigu128() u128 {
 //     return 9223372036854775809;
 // }
@@ -50,7 +41,8 @@ pub fn zigi64() i64 {
     return -8589934592;
 }
 
-// TODO: support numbers bigger than long
+// Note: i128 support would require using Python's arbitrary precision integers.
+// Similar to u128, this would need PyLong_FromString() with sign handling.
 // pub fn zigi128() i128 {
 //     return -9223372036854775809;
 // }

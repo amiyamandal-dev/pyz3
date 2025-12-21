@@ -9,7 +9,7 @@
 
 <p align="center">
 <a href="https://github.com/amiyamandal-dev/pyz3/actions" target="_blank">
-    <img src="https://img.shields.io/github/actions/workflow/status/yourusername/pyz3/ci.yml?branch=main&logo=github" alt="Actions">
+    <img src="https://img.shields.io/github/actions/workflow/status/amiyamandal-dev/pyz3/ci.yml?branch=main&logo=github" alt="Actions">
 </a>
 <a href="https://pypi.org/project/pyz3" target="_blank">
     <img src="https://img.shields.io/pypi/v/pyz3" alt="Package version">
@@ -18,7 +18,7 @@
     <img src="https://img.shields.io/pypi/pyversions/pyz3" alt="Python version">
 </a>
 <a href="https://github.com/amiyamandal-dev/pyz3/blob/main/LICENSE" target="_blank">
-    <img src="https://img.shields.io/github/license/yourusername/pyz3" alt="License">
+    <img src="https://img.shields.io/github/license/amiyamandal-dev/pyz3" alt="License">
 </a>
 </p>
 
@@ -125,8 +125,8 @@ pip install pyz3[dist]
 ### 1. Create a New Project
 
 ```bash
-# Create project using cookiecutter template
-pyz3 init -n myproject --description "My awesome extension" --email "you@example.com" --no-interactive
+# Create a new project
+pyz3 init -n myproject --description "My awesome extension" --email "you@example.com"
 
 cd myproject
 ```
@@ -278,6 +278,120 @@ Apache License 2.0
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+### Development Setup
+
+To set up a development environment for contributing to pyz3:
+
+#### 1. Clone the Repository
+
+```bash
+git clone https://github.com/amiyamandal-dev/pyz3.git
+cd pyz3
+```
+
+#### 2. Set Up Python Virtual Environment
+
+```bash
+# Create virtual environment
+python3 -m venv .venv
+
+# Activate virtual environment
+source .venv/bin/activate  # On Linux/macOS
+# or
+.venv\Scripts\activate  # On Windows
+
+# Install uv (fast Python package installer)
+pip install uv
+
+# Install dependencies
+uv pip install -r requirements.txt
+```
+
+#### 3. Install Development Dependencies
+
+```bash
+# Install distribution dependencies (optional, for building wheels)
+uv pip install -r requirements-dist.txt
+```
+
+#### 4. Build the Project
+
+```bash
+# Build with Zig
+zig build
+
+# Or use Make
+make build
+```
+
+#### 5. Run Tests
+
+```bash
+# Run all tests
+./run_all_tests.sh
+
+# Or run specific test suites
+make test          # Python tests only
+make test-zig      # Zig tests only
+make test-all      # All tests
+
+# Or use pytest directly
+pytest test/ -v
+```
+
+#### 6. Quick Verification
+
+```bash
+# Quick 5-second verification check
+./run_all_tests.sh --quick
+```
+
+### Project Structure
+
+```
+pyz3/
+├── pyz3/               # Main Python package
+│   ├── src/            # Core Zig source files
+│   └── tests/          # Unit tests
+├── example/            # Example Zig modules
+├── test/               # Integration tests
+├── docs/               # Documentation
+├── build.zig           # Root build configuration
+├── pytest.build.zig    # Pytest integration build
+├── pyz3.build.zig      # PyZ3 build API
+├── pyproject.toml      # Poetry configuration
+├── requirements.txt    # Python dependencies (uv pip)
+└── run_all_tests.sh    # Comprehensive test runner
+```
+
+### Available Commands
+
+```bash
+# Version management
+make version                # Show current version
+make bump-patch            # Bump patch version
+make bump-minor            # Bump minor version
+make bump-major            # Bump major version
+
+# Testing
+make test                  # Run Python tests
+make test-zig              # Run Zig tests
+make test-all              # Run all tests
+
+# Building
+make build                 # Build package
+make clean                 # Clean build artifacts
+make install               # Install in development mode
+```
+
+### Notes for Contributors
+
+- The project uses both **Poetry** and **uv pip** for dependency management
+- Python path is automatically detected from `.venv/bin/python`
+- All tests should pass before submitting a PR
+- Generated files (`.pyi` stubs, `.abi3.so` extensions) are gitignored
+- Use `zig build` for development builds, `zig build -Doptimize=ReleaseFast` for production
 
 ## Links
 

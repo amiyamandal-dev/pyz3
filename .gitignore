@@ -163,7 +163,27 @@ zig-out/
 /build-*/
 /docgen_tmp/
 
-.idea
+# Project specific
+numpy_src/
+example/*.pyi
+example/*.abi3.so
+.ruff_cache/
 
+# Generated Zig build files
+pyz3.build.zig
+pytest.build.zig
 test.build.zig
 zls.build.json
+
+# Generated Python stub files
+*.pyi
+
+# Compiled extensions and libraries
+*.abi3.so
+*.a
+
+# Zig intermediate files
+*.zir
+*.o
+
+.idea

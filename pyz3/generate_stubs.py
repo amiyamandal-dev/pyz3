@@ -1,17 +1,3 @@
-"""
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
-
 # Adapted from https://github.com/huggingface/tokenizers/blob/18bd5e8f9d3aa56612b8aeba5d0d8821e16b3105/bindings/python/stub.py under Apache 2.0 license # noqa: E501
 
 import argparse
@@ -202,7 +188,11 @@ def pyi_file(obj, name: str, indent: str = "") -> str:
         result_content += function(obj, indent)
 
     elif inspect.isgetsetdescriptor(obj):
-        # TODO it would be interesing to add the setter maybe ?
+        # Note: Python's getsetdescriptor doesn't expose whether a setter exists.
+        # To support @property.setter stubs, we'd need to:
+        # 1. Try calling the setter (risky/side-effects)
+        # 2. Use CPython internals (non-portable)
+        # For now, we generate getter-only properties (most common case).
         result_content += f"{indent}@property\n"
         result_content += function(obj, indent, text_signature="(self, /)")
 

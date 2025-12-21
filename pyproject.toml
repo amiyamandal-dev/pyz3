@@ -37,7 +37,6 @@ ziglang = "^0.15.1"
 pydantic = "^2.3.0"
 setuptools = "^80.0.0"
 black = "^25.0.0"
-cookiecutter = "^2.6.0"
 
 # Distribution dependencies
 build = { version = "^1.0.0", optional = true }
@@ -79,6 +78,31 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 testpaths = ["test", "example"]
+
+[tool.coverage.run]
+source = ["pyz3"]
+omit = [
+    "pyz3/tests/*",
+    "pyz3/__pycache__/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+show_missing = true
+precision = 2
+
+[tool.coverage.html]
+directory = "htmlcov"
 
 # Out test modules
 

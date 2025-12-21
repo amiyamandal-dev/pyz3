@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 const std = @import("std");
 const py = @import("../pyz3.zig");
 const ffi = py.ffi;
@@ -73,7 +61,7 @@ pub const PyBuffer = extern struct {
     internal: ?*anyopaque = null,
 
     pub fn release(self: *const Self) void {
-        ffi.PyBuffer_Release(@constCast(@ptrCast(self)));
+        ffi.PyBuffer_Release(@ptrCast(@constCast(self)));
     }
 
     /// Returns whether the buffer is contiguous in either C or Fortran order.
@@ -104,7 +92,10 @@ pub const PyBuffer = extern struct {
     }
 
     pub fn getFormat(comptime value_type: type) [:0]const u8 {
-        // TODO(ngates): support more complex composite types.
+        // Note: Currently supports basic integer and float types per Python's buffer protocol.
+        // Complex composite types (structs, arrays) would require recursive format string
+        // generation following struct module syntax (e.g., "iii" for 3 ints, "{iff}" for struct).
+        // Add support as needed based on use cases.
         switch (@typeInfo(value_type)) {
             .int => |i| {
                 switch (i.signedness) {

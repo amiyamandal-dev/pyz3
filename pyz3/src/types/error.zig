@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 const builtin = @import("builtin");
 const std = @import("std");
 const ffi = @import("ffi");
@@ -252,7 +240,10 @@ fn PyExc(comptime root: type, comptime name: [:0]const u8) type {
         }
 
         /// In debug mode, augment the Python traceback to include Zig stack frames.
-        /// Warning: hackery ahead!
+        /// Note: This uses internal CPython APIs to manipulate tracebacks directly.
+        /// The implementation fetches the current exception, walks the Zig stack, and
+        /// creates synthetic Python frame objects. Handle with care as this depends on
+        /// CPython internals that may change between versions.
         fn augmentTraceback() PyError!void {
             if (builtin.mode == .Debug) {
                 // First of all, grab the current Python exception
@@ -329,7 +320,7 @@ fn PyExc(comptime root: type, comptime name: [:0]const u8) type {
 
                     // Restore the original exception, augment it with the new frame, then fetch the new exception.
                     ffi.PyErr_Restore(ptype, pvalue, ptraceback);
-                    _ = ffi.PyTraceBack_Here(@alignCast(@ptrCast(frame)));
+                    _ = ffi.PyTraceBack_Here(@ptrCast(@alignCast(frame)));
                     ffi.PyErr_Fetch(&ptype, &pvalue, &ptraceback);
                 }
 

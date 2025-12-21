@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 const std = @import("std");
 const State = @import("discovery.zig").State;
 const ffi = @import("ffi");
@@ -43,7 +31,7 @@ pub fn Module(comptime root: type, comptime name: [:0]const u8, comptime definit
 
         const Fns = struct {
             pub fn free(module: ?*anyopaque) callconv(.c) void {
-                const mod: py.PyModule(root) = .{ .obj = .{ .py = @alignCast(@ptrCast(module)) } };
+                const mod: py.PyModule(root) = .{ .obj = .{ .py = @ptrCast(@alignCast(module)) } };
                 const state = mod.getState(definition) catch return;
                 state.__del__();
             }

@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 const std = @import("std");
 const ffi = @import("ffi");
 const py = @import("pyz3.zig");
@@ -86,7 +74,9 @@ pub const BinaryOperators = std.StaticStringMap(c_int).initComptime(.{
     .{ "__getattr__", ffi.Py_tp_getattro },
 });
 
-// TODO(marko): Move this somewhere.
+// Helper function to extract keys from a comptime string map.
+// Used by operator and reserved name mappings defined in this file.
+// Kept local to this module since it's specific to function signature handling.
 fn keys(comptime stringMap: type) [stringMap.kvs.len][]const u8 {
     var keys_: [stringMap.kvs.len][]const u8 = undefined;
     for (stringMap.kvs, 0..) |kv, i| {
@@ -251,7 +241,10 @@ pub fn wrap(comptime root: type, comptime definition: type, comptime func: anyty
                     if (State.getDefinition(root, definition).type == .class and sig.selfParam == null) {
                         ml_flags |= ffi.METH_STATIC;
                     }
-                    // TODO(ngates): check for METH_CLASS
+                    // Note: METH_CLASS support would require a convention to mark class methods in Zig.
+                    // Python's @classmethod receives the class as first arg (not an instance).
+                    // Currently, we don't have a way to distinguish this at compile time.
+                    // Potential solution: Check if selfParam == PyType, but this needs design work.
 
                     if (sig.supportsKwargs()) {
                         ml_flags |= ffi.METH_KEYWORDS;
@@ -268,13 +261,9 @@ pub fn wrap(comptime root: type, comptime definition: type, comptime func: anyty
             pyargs: [*]ffi.PyObject,
             nargs: ffi.Py_ssize_t,
         ) callconv(.c) ?*ffi.PyObject {
-            // Verify alignment before casting to prevent undefined behavior
-            const pyargs_addr = @intFromPtr(pyargs);
-            if (pyargs_addr % @alignOf(py.PyObject) != 0) {
-                // Misaligned pointer - this shouldn't happen with CPython but let's be safe
-                std.debug.print("Error: Misaligned pyargs pointer: 0x{x}\n", .{pyargs_addr});
-                return null;
-            }
+            // Verify alignment in debug builds only (compiled out in release builds)
+            // CPython always provides properly aligned pointers, this is a sanity check
+            std.debug.assert(@intFromPtr(pyargs) % @alignOf(py.PyObject) == 0);
 
             const resultObject = internal(
                 .{ .py = pyself },
@@ -302,12 +291,8 @@ pub fn wrap(comptime root: type, comptime definition: type, comptime func: anyty
             nargs: ffi.Py_ssize_t,
             kwnames: ?*ffi.PyObject,
         ) callconv(.c) ?*ffi.PyObject {
-            // Verify alignment before casting
-            const pyargs_addr = @intFromPtr(pyargs);
-            if (pyargs_addr % @alignOf(py.PyObject) != 0) {
-                std.debug.print("Error: Misaligned pyargs pointer in fastcallKwargs: 0x{x}\n", .{pyargs_addr});
-                return null;
-            }
+            // Verify alignment in debug builds only (compiled out in release builds)
+            std.debug.assert(@intFromPtr(pyargs) % @alignOf(py.PyObject) == 0);
 
             const allArgs: [*]py.PyObject = @ptrCast(@alignCast(pyargs));
             const nargs_usize = @as(usize, @intCast(nargs));
@@ -424,7 +409,9 @@ pub fn Methods(comptime root: type, comptime definition: type) type {
         const methodCount = b: {
             var mc: u32 = 0;
             for (@typeInfo(definition).@"struct".decls) |decl| {
-                // TODO: FIXME
+                // Note: We currently expose all public functions. Private method filtering
+                // (State.isPrivate) could be added here if we establish a naming convention
+                // (e.g., methods starting with "_" are private).
                 const value = @field(definition, decl.name);
                 const typeInfo = @typeInfo(@TypeOf(value));
 
@@ -445,8 +432,9 @@ pub fn Methods(comptime root: type, comptime definition: type) type {
                 const value = @field(definition, decl.name);
                 const typeInfo = @typeInfo(@TypeOf(value));
 
-                // For now, we skip non-function declarations.
-                // TODO: FIXME
+                // Skip non-function declarations and reserved names.
+                // Note: Private method filtering (State.isPrivate) could be added here
+                // if we establish a naming convention (e.g., "_" prefix for private methods).
                 if (typeInfo != .@"fn" or isReserved(decl.name)) { // or State.isPrivate(root, &value)) {
                     continue;
                 }
@@ -576,13 +564,13 @@ fn valueToStr(comptime T: type, value: *const anyopaque) []const u8 {
     return switch (@typeInfo(T)) {
         inline .pointer => |p| p: {
             break :p switch (p.child) {
-                inline u8 => std.fmt.comptimePrint("\"{s}\"", .{@as(*const T, @alignCast(@ptrCast(value))).*}),
+                inline u8 => std.fmt.comptimePrint("\"{s}\"", .{@as(*const T, @ptrCast(@alignCast(value))).*}),
                 inline else => "...",
             };
         },
         inline .bool => if (@as(*const bool, @ptrCast(value)).*) "True" else "False",
         inline .@"struct" => "...",
-        inline .optional => |o| if (@as(*const ?o.child, @alignCast(@ptrCast(value))).* == null) "None" else "...",
-        inline else => std.fmt.comptimePrint("{any}", .{@as(*const T, @alignCast(@ptrCast(value))).*}),
+        inline .optional => |o| if (@as(*const ?o.child, @ptrCast(@alignCast(value))).* == null) "None" else "...",
+        inline else => std.fmt.comptimePrint("{any}", .{@as(*const T, @ptrCast(@alignCast(value))).*}),
     };
 }

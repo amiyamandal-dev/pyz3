@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 const std = @import("std");
 const py = @import("../pyz3.zig");
 const PyObjectMixin = @import("./obj.zig").PyObjectMixin;
@@ -39,7 +27,9 @@ pub fn PyIter(comptime root: type) type {
             return PyError.PyRaised;
         }
 
-        // TODO(ngates): implement PyIter_Send when required
+        // Note: PyIter_Send is used for async generators and coroutines (PEP 525).
+        // Implementation would add: pub fn send(self: Self, value: anytype) !py.PyObject
+        // wrapping ffi.PyIter_Send(). Add when async generator support is needed.
     };
 }
 

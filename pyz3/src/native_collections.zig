@@ -45,6 +45,10 @@ extern fn native_array_free_ptr_array(ptr_array: [*]?*anyopaque) void;
 pub const FastDict = struct {
     dict: *NativeDict,
 
+    /// Maximum key size for stack buffer optimization
+    /// Keys larger than this will still use heap allocation
+    const MAX_STACK_KEY_SIZE = 256;
+
     pub fn init() !FastDict {
         const dict = native_dict_create() orelse return error.OutOfMemory;
         return FastDict{ .dict = dict };
@@ -55,6 +59,20 @@ pub const FastDict = struct {
     }
 
     pub fn set(self: *FastDict, key: []const u8, value: ?*anyopaque) !void {
+        // Fast path: use stack buffer for small keys (most common case)
+        if (key.len < MAX_STACK_KEY_SIZE - 1) {
+            var stack_buffer: [MAX_STACK_KEY_SIZE]u8 = undefined;
+            @memcpy(stack_buffer[0..key.len], key);
+            stack_buffer[key.len] = 0;
+            const key_z: [*:0]const u8 = @ptrCast(stack_buffer[0..key.len :0]);
+
+            if (!native_dict_set(self.dict, key_z, value)) {
+                return error.OutOfMemory;
+            }
+            return;
+        }
+
+        // Slow path: heap allocate for large keys (rare)
         const key_z = try std.heap.c_allocator.dupeZ(u8, key);
         defer std.heap.c_allocator.free(key_z);
 
@@ -64,6 +82,17 @@ pub const FastDict = struct {
     }
 
     pub fn get(self: *FastDict, key: []const u8) ?*anyopaque {
+        // Fast path: use stack buffer for small keys (most common case)
+        if (key.len < MAX_STACK_KEY_SIZE - 1) {
+            var stack_buffer: [MAX_STACK_KEY_SIZE]u8 = undefined;
+            @memcpy(stack_buffer[0..key.len], key);
+            stack_buffer[key.len] = 0;
+            const key_z: [*:0]const u8 = @ptrCast(stack_buffer[0..key.len :0]);
+
+            return native_dict_get(self.dict, key_z);
+        }
+
+        // Slow path: heap allocate for large keys (rare)
         const key_z = std.heap.c_allocator.dupeZ(u8, key) catch return null;
         defer std.heap.c_allocator.free(key_z);
 
@@ -71,6 +100,17 @@ pub const FastDict = struct {
     }
 
     pub fn delete(self: *FastDict, key: []const u8) bool {
+        // Fast path: use stack buffer for small keys (most common case)
+        if (key.len < MAX_STACK_KEY_SIZE - 1) {
+            var stack_buffer: [MAX_STACK_KEY_SIZE]u8 = undefined;
+            @memcpy(stack_buffer[0..key.len], key);
+            stack_buffer[key.len] = 0;
+            const key_z: [*:0]const u8 = @ptrCast(stack_buffer[0..key.len :0]);
+
+            return native_dict_delete(self.dict, key_z);
+        }
+
+        // Slow path: heap allocate for large keys (rare)
         const key_z = std.heap.c_allocator.dupeZ(u8, key) catch return false;
         defer std.heap.c_allocator.free(key_z);
 
@@ -78,6 +118,17 @@ pub const FastDict = struct {
     }
 
     pub fn contains(self: *FastDict, key: []const u8) bool {
+        // Fast path: use stack buffer for small keys (most common case)
+        if (key.len < MAX_STACK_KEY_SIZE - 1) {
+            var stack_buffer: [MAX_STACK_KEY_SIZE]u8 = undefined;
+            @memcpy(stack_buffer[0..key.len], key);
+            stack_buffer[key.len] = 0;
+            const key_z: [*:0]const u8 = @ptrCast(stack_buffer[0..key.len :0]);
+
+            return native_dict_contains(self.dict, key_z);
+        }
+
+        // Slow path: heap allocate for large keys (rare)
         const key_z = std.heap.c_allocator.dupeZ(u8, key) catch return false;
         defer std.heap.c_allocator.free(key_z);
 

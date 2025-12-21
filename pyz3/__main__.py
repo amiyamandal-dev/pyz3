@@ -1,22 +1,8 @@
-"""
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
-
 import argparse
 import sys
 from pathlib import Path
 
-from pyz3 import buildzig, config, deps, deploy, develop, init, watch
+from pyz3 import buildzig, config, deploy, deps, develop, init, watch, zigimport
 from pyz3 import wheel as wheel_module
 from pyz3.logging_config import get_logger
 
@@ -289,6 +275,34 @@ check_sp.add_argument(
     help="enable strict checking",
 )
 
+# Import hook management
+import_sp = sub.add_parser(
+    "import",
+    help="Manage automatic import of .zig files (zigimport)",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+import_subparsers = import_sp.add_subparsers(dest="import_command", help="import hook commands")
+
+import_enable_sp = import_subparsers.add_parser(
+    "enable",
+    help="Enable automatic importing of .zig files",
+)
+
+import_disable_sp = import_subparsers.add_parser(
+    "disable",
+    help="Disable automatic importing of .zig files",
+)
+
+import_clear_sp = import_subparsers.add_parser(
+    "clear-cache",
+    help="Clear the compilation cache",
+)
+
+import_info_sp = import_subparsers.add_parser(
+    "info",
+    help="Show zigimport configuration and status",
+)
+
 
 def main():
     args = parser.parse_args()
@@ -328,6 +342,9 @@ def main():
 
     elif args.command == "check":
         check_packages(args)
+
+    elif args.command == "import":
+        manage_import_hook(args)
 
 
 def _parse_exts(exts: list[str], limited_api: bool = True, prefix: str = "") -> list[config.ExtModule]:
@@ -401,13 +418,12 @@ def init_project(args):
     elif args.author:
         author_name = args.author
 
-    init.init_project_cookiecutter(
+    init.init_project(
         path=Path.cwd(),
         package_name=args.name,
         author_name=author_name,
         author_email=author_email,
         description=args.description if hasattr(args, "description") else None,
-        use_interactive=not args.no_interactive if hasattr(args, "no_interactive") else True,
     )
 
 
@@ -497,6 +513,57 @@ def check_packages(args):
         strict=args.strict,
     ):
         sys.exit(1)
+
+
+def manage_import_hook(args):
+    """Manage the zigimport import hook."""
+    if not hasattr(args, "import_command") or args.import_command is None:
+        print("Usage: pyz3 import {enable|disable|clear-cache|info}")
+        print("\nzigimport allows you to import .zig files directly from Python!")
+        print("\nExamples:")
+        print("  pyz3 import enable        # Enable automatic .zig import")
+        print("  pyz3 import disable       # Disable automatic .zig import")
+        print("  pyz3 import clear-cache   # Clear compilation cache")
+        print("  pyz3 import info          # Show configuration")
+        print("\nUsage in Python:")
+        print("  import pyz3.zigimport     # Auto-installs import hook")
+        print("  import my_module          # Automatically compiles my_module.zig")
+        print("\nJupyter/IPython:")
+        print("  %load_ext pyz3.import_hook")
+        return
+
+    if args.import_command == "enable":
+        zigimport.install()
+        print("✓ zigimport enabled!")
+        print("\nYou can now import .zig files directly:")
+        print("  import my_module  # Automatically compiles my_module.zig")
+        print("\nEnvironment variables for configuration:")
+        print("  ZIGIMPORT_OPTIMIZE=Debug|ReleaseSafe|ReleaseFast|ReleaseSmall")
+        print("  ZIGIMPORT_VERBOSE=1               # Enable verbose output")
+        print("  ZIGIMPORT_FORCE_REBUILD=1         # Force rebuild on import")
+
+    elif args.import_command == "disable":
+        zigimport.uninstall()
+        print("✓ zigimport disabled")
+
+    elif args.import_command == "clear-cache":
+        zigimport.clear_cache()
+        print("✓ Compilation cache cleared")
+        if zigimport._config:
+            print(f"  Cache location: {zigimport._config.build_dir}")
+
+    elif args.import_command == "info":
+        if zigimport._config:
+            config = zigimport._config
+            print("zigimport Configuration:")
+            print(f"  Status: {'Enabled' if zigimport._finder in sys.meta_path else 'Disabled'}")
+            print(f"  Build directory: {config.build_dir}")
+            print(f"  Optimization: {config.optimize}")
+            print(f"  Verbose: {config.verbose}")
+            print(f"  Force rebuild: {config.force_rebuild}")
+        else:
+            print("zigimport not initialized")
+            print("Run 'pyz3 import enable' or 'import pyz3.zigimport' in Python")
 
 
 if __name__ == "__main__":

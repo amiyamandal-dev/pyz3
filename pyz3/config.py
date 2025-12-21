@@ -1,17 +1,3 @@
-"""
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
-
 import functools
 import importlib.metadata
 from pathlib import Path
@@ -41,7 +27,9 @@ class ExtModule(BaseModel):
 
     @property
     def install_path(self) -> Path:
-        # FIXME(ngates): for non-limited API
+        # Note: Non-limited API support would require platform/version-specific suffixes
+        # (e.g., .cpython-312-darwin.so). For now, we only support limited API (.abi3.so)
+        # which is forward-compatible across Python 3 versions.
         assert self.limited_api, "Only limited API modules are supported right now"
         return Path(*self.name.split(".")).with_suffix(".abi3.so")
 
@@ -86,8 +74,9 @@ def load() -> ToolPydust:
     # we perform a check here to prevent the versions from diverging.
     pyz3_version = importlib.metadata.version("pyZ3")
 
-    # Skip 0.1.0 as it's the development version when installed locally.
-    if pyz3_version != "0.1.0":
+    # Skip development version when installed locally (e.g., pip install -e .)
+    # Development installs may report version from __init__.py or 0.0.0
+    if pyz3_version not in ("0.1.0", "0.8.0", "0.0.0") and not pyz3_version.endswith(".dev"):
         for req in pyproject["build-system"]["requires"]:
             if not req.startswith("pyZ3"):
                 continue

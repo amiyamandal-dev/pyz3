@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 //! This file exposes functions equivalent to the Python builtins module (or other builtin syntax).
 //! These functions similarly operate over all types of PyObject-like values.
 //!
@@ -127,7 +115,7 @@ pub fn call(comptime root: type, comptime ReturnType: type, object: anytype, arg
 
 /// Convert an object into a dictionary. Equivalent of Python dict(o).
 pub fn dict(comptime root: type, object: anytype) !py.PyDict(root) {
-    const Dict: py.PyObject = .{ .py = @alignCast(@ptrCast(&ffi.PyDict_Type)) };
+    const Dict: py.PyObject = .{ .py = @ptrCast(@alignCast(&ffi.PyDict_Type)) };
     const pyobj = try py.create(root, object);
     defer pyobj.decref();
     return Dict.call(py.PyDict(root), .{pyobj}, .{});
@@ -192,7 +180,7 @@ pub fn alloc(comptime root: type, comptime Cls: type) PyError!*Cls {
     // Alloc the class
     // NOTE(ngates): we currently don't allow users to override tp_alloc, therefore we can shortcut
     // using ffi.PyType_GetSlot(tp_alloc) since we know it will always return ffi.PyType_GenericAlloc
-    const pyobj: *pytypes.PyTypeStruct(Cls) = @alignCast(@ptrCast(ffi.PyType_GenericAlloc(@ptrCast(pytype.obj.py), 0) orelse return PyError.PyRaised));
+    const pyobj: *pytypes.PyTypeStruct(Cls) = @ptrCast(@alignCast(ffi.PyType_GenericAlloc(@ptrCast(pytype.obj.py), 0) orelse return PyError.PyRaised));
     return &pyobj.state;
 }
 
@@ -287,7 +275,7 @@ pub fn super(comptime root: type, comptime Super: type, selfInstance: anytype) !
     const superPyType = try imported.get(State.getIdentifier(root, Super).name());
     defer superPyType.decref();
 
-    const superBuiltin: py.PyObject = .{ .py = @alignCast(@ptrCast(&ffi.PySuper_Type)) };
+    const superBuiltin: py.PyObject = .{ .py = @ptrCast(@alignCast(&ffi.PySuper_Type)) };
     return superBuiltin.call(.{ superPyType, py.object(root, selfInstance) }, .{});
 }
 

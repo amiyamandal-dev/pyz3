@@ -1,0 +1,6 @@
+# Distribution dependencies
+# Install with: uv pip install -r requirements-dist.txt
+
+build>=1.0.0
+twine>=5.0.0
+wheel>=0.43.0

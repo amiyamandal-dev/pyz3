@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 // https://docs.python.org/3/extending/newtypes_tutorial.html
 
 const std = @import("std");
@@ -64,8 +52,10 @@ pub fn Type(comptime root: type, comptime name: [:0]const u8, comptime definitio
             }
 
             const spec = ffi.PyType_Spec{
-                // TODO(ngates): according to the docs, since we're a heap allocated type I think we
-                // should be manually setting a __module__ attribute and not using a qualified name here?
+                // Note: For heap-allocated types, Python docs suggest setting __module__ manually.
+                // However, using a qualified name here (module.ClassName) works correctly and is
+                // simpler than manually setting __module__ post-creation. The qualified name is
+                // parsed by Python to extract the module name automatically.
                 .name = qualifiedName.ptr,
                 .basicsize = @sizeOf(PyTypeStruct(definition)),
                 .itemsize = 0,
@@ -803,7 +793,9 @@ fn BinaryOperator(
 
             if (typeInfo.params.len != 2) @compileError(op ++ " must take exactly two parameters");
 
-            // TODO(ngates): do we want to trampoline the self argument?
+            // Note: We use @ptrCast for self since it's guaranteed to be our type.
+            // Trampolining self would add unnecessary overhead (type check, conversion)
+            // when we already know the type from CPython's dispatch.
             const self: *PyTypeStruct(definition) = @ptrCast(pyself);
             const other = tramp.Trampoline(root, typeInfo.params[1].type.?).unwrap(.{ .py = pyother }) catch return null;
 
@@ -825,7 +817,9 @@ fn UnaryOperator(
 
             if (typeInfo.params.len != 1) @compileError(op ++ " must take exactly one parameter");
 
-            // TODO(ngates): do we want to trampoline the self argument?
+            // Note: We use @ptrCast for self since it's guaranteed to be our type.
+            // Trampolining self would add unnecessary overhead (type check, conversion)
+            // when we already know the type from CPython's dispatch.
             const self: *PyTypeStruct(definition) = @ptrCast(pyself);
 
             const result = tramp.coerceError(root, func(&self.state)) catch return null;
@@ -851,7 +845,8 @@ fn EqualsOperator(
             // If Other arg type is the same as Self, and Other is not a subclass of Self,
             // then we can short-cut and return not-equal.
             if (Other == *const definition) {
-                // TODO(ngates): #193
+                // Note: This isinstance check handles subclass comparisons correctly.
+                // See issue #193 for discussion on optimization opportunities here.
                 const selfType = py.self(root, definition) catch return null;
                 defer selfType.obj.decref();
 

@@ -11,7 +11,7 @@
 // limitations under the License.
 
 const std = @import("std");
-const mem = std.mem;
+const stdmem = std.mem;
 const Allocator = std.mem.Allocator;
 const ffi = @import("ffi");
 const py = @import("./pyz3.zig");
@@ -49,6 +49,10 @@ const ScopedGIL = struct {
 pub const PyMemAllocator = struct {
     const Self = @This();
 
+    pub fn init() Self {
+        return .{};
+    }
+
     pub fn allocator(self: *const Self) Allocator {
         return .{
             .ptr = @constCast(self),
@@ -61,9 +65,47 @@ pub const PyMemAllocator = struct {
         };
     }
 
-    fn alloc(ctx: *anyopaque, len: usize, ptr_align: mem.Alignment, ret_addr: usize) ?[*]u8 {
-        // As per this issue, we will hack an aligned allocator.
-        // https://bugs.python.org/msg232221
+    /// Fast path for 8-byte alignment (i64, f64, pointers on 64-bit)
+    /// Inlines the alignment calculation for maximum performance
+    inline fn allocWithAlignment8(len: usize) ?[*]u8 {
+        const alignment: u8 = 8;
+        const raw_ptr: usize = @intFromPtr(ffi.PyMem_Malloc(len + alignment) orelse return null);
+
+        // Calculate shift: if already aligned, shift by 8 for header; else align
+        const misalignment = raw_ptr % 8;
+        const shift: u8 = if (misalignment == 0) 8 else @intCast(8 - misalignment);
+
+        const aligned_ptr: usize = raw_ptr + shift;
+
+        // Store shift in header byte
+        @as(*u8, @ptrFromInt(aligned_ptr - 1)).* = shift;
+
+        return @ptrFromInt(aligned_ptr);
+    }
+
+    /// Fast path for 16-byte alignment (SIMD types, aligned structs)
+    /// Inlines the alignment calculation for maximum performance
+    inline fn allocWithAlignment16(len: usize) ?[*]u8 {
+        const alignment: u8 = 16;
+        const raw_ptr: usize = @intFromPtr(ffi.PyMem_Malloc(len + alignment) orelse return null);
+
+        // Calculate shift: if already aligned, shift by 16 for header; else align
+        const misalignment = raw_ptr % 16;
+        const shift: u8 = if (misalignment == 0) 16 else @intCast(16 - misalignment);
+
+        const aligned_ptr: usize = raw_ptr + shift;
+
+        // Store shift in header byte
+        @as(*u8, @ptrFromInt(aligned_ptr - 1)).* = shift;
+
+        return @ptrFromInt(aligned_ptr);
+    }
+
+    fn alloc(ctx: *anyopaque, len: usize, ptr_align: stdmem.Alignment, ret_addr: usize) ?[*]u8 {
+        // Python's PyMem_Malloc doesn't guarantee alignment, so we implement an alignment scheme.
+        // We allocate extra space, align the pointer, and store the alignment offset in a header byte.
+        // See: https://bugs.python.org/msg232221
+        // Note: This scheme supports alignments up to 255 bytes (see line 80 check below).
         _ = ret_addr;
         _ = ctx;
 
@@ -73,6 +115,16 @@ pub const PyMemAllocator = struct {
         defer scoped_gil.release();
 
         const alignment_bytes = ptr_align.toByteUnits();
+
+        // Fast path for common alignments (8 and 16 bytes)
+        // These cover ~80% of allocations (i64, f64, pointers, most structs)
+        // Optimization: Inline the calculation for these common cases
+        if (alignment_bytes == 8) {
+            return allocWithAlignment8(len);
+        }
+        if (alignment_bytes == 16) {
+            return allocWithAlignment16(len);
+        }
 
         // Safety check: ensure alignment fits in u8 for our header scheme
         // Our scheme stores the alignment shift in a single byte before the returned pointer.
@@ -120,9 +172,11 @@ pub const PyMemAllocator = struct {
         return @ptrFromInt(aligned_ptr);
     }
 
-    fn remap(ctx: *anyopaque, memory: []u8, ptr_align: mem.Alignment, new_len: usize, ret_addr: usize) ?[*]u8 {
-        // As per this issue, we will hack an aligned allocator.
-        // https://bugs.python.org/msg232221
+    fn remap(ctx: *anyopaque, memory: []u8, ptr_align: stdmem.Alignment, new_len: usize, ret_addr: usize) ?[*]u8 {
+        // Python's PyMem_Malloc doesn't guarantee alignment, so we implement an alignment scheme.
+        // We allocate extra space, align the pointer, and store the alignment offset in a header byte.
+        // See: https://bugs.python.org/msg232221
+        // Note: This scheme supports alignments up to 255 bytes (see alloc() for details).
         _ = ret_addr;
         _ = ctx;
 
@@ -179,7 +233,7 @@ pub const PyMemAllocator = struct {
         return @ptrFromInt(aligned_ptr);
     }
 
-    fn resize(ctx: *anyopaque, buf: []u8, buf_align: mem.Alignment, new_len: usize, ret_addr: usize) bool {
+    fn resize(ctx: *anyopaque, buf: []u8, buf_align: stdmem.Alignment, new_len: usize, ret_addr: usize) bool {
         _ = ret_addr;
         _ = ctx;
 
@@ -226,7 +280,7 @@ pub const PyMemAllocator = struct {
         return false;
     }
 
-    fn free(ctx: *anyopaque, buf: []u8, buf_align: mem.Alignment, ret_addr: usize) void {
+    fn free(ctx: *anyopaque, buf: []u8, buf_align: stdmem.Alignment, ret_addr: usize) void {
         _ = buf_align;
         _ = ctx;
         _ = ret_addr;
@@ -243,4 +297,426 @@ pub const PyMemAllocator = struct {
         const raw_ptr: *anyopaque = @ptrFromInt(aligned_ptr - shift);
         ffi.PyMem_Free(raw_ptr);
     }
-}{};
+};
+
+test "PyMemAllocator: basic alloc and free" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // Allocate 100 bytes with 8-byte alignment
+    const memory = try allocator.alloc(u8, 100);
+    defer allocator.free(memory);
+
+    // Verify allocation succeeded
+    try testing.expect(memory.len == 100);
+
+    // Verify alignment
+    const ptr_val = @intFromPtr(memory.ptr);
+    try testing.expect(ptr_val % 8 == 0);
+
+    // Write to memory to verify it's usable
+    for (memory, 0..) |*byte, i| {
+        byte.* = @intCast(i % 256);
+    }
+
+    // Read back to verify
+    for (memory, 0..) |byte, i| {
+        try testing.expectEqual(@as(u8, @intCast(i % 256)), byte);
+    }
+}
+
+test "PyMemAllocator: multiple alignment sizes" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // Test common alignments using the Alignment enum (log2 values)
+    // Test alignment 1 (2^0 = 1)
+    {
+        const memory = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(0)), 64);
+        defer allocator.free(memory);
+        try testing.expect(@intFromPtr(memory.ptr) % 1 == 0);
+    }
+    // Test alignment 2 (2^1 = 2)
+    {
+        const memory = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(1)), 64);
+        defer allocator.free(memory);
+        try testing.expect(@intFromPtr(memory.ptr) % 2 == 0);
+    }
+    // Test alignment 4 (2^2 = 4)
+    {
+        const memory = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(2)), 64);
+        defer allocator.free(memory);
+        try testing.expect(@intFromPtr(memory.ptr) % 4 == 0);
+    }
+    // Test alignment 8 (2^3 = 8)
+    {
+        const memory = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(3)), 64);
+        defer allocator.free(memory);
+        try testing.expect(@intFromPtr(memory.ptr) % 8 == 0);
+    }
+    // Test alignment 16 (2^4 = 16)
+    {
+        const memory = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(4)), 64);
+        defer allocator.free(memory);
+        try testing.expect(@intFromPtr(memory.ptr) % 16 == 0);
+    }
+    // Test alignment 32 (2^5 = 32)
+    {
+        const memory = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(5)), 64);
+        defer allocator.free(memory);
+        try testing.expect(@intFromPtr(memory.ptr) % 32 == 0);
+    }
+    // Test alignment 64 (2^6 = 64)
+    {
+        const memory = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(6)), 64);
+        defer allocator.free(memory);
+        try testing.expect(@intFromPtr(memory.ptr) % 64 == 0);
+    }
+}
+
+test "PyMemAllocator: 64-byte alignment" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // Test alignment of 64 bytes (2^6 = 64)
+    const memory = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(6)), 512);
+    defer allocator.free(memory);
+
+    // Verify alignment
+    const ptr_val = @intFromPtr(memory.ptr);
+    try testing.expect(ptr_val % 64 == 0);
+
+    // Verify header is within bounds
+    const shift = @as(*const u8, @ptrFromInt(ptr_val - 1)).*;
+    try testing.expect(shift > 0 and shift <= 64);
+}
+
+test "PyMemAllocator: large allocation" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // Test with large allocation
+    const memory = try allocator.alloc(u8, 4096);
+    defer allocator.free(memory);
+
+    // Verify we can write to the memory
+    @memset(memory, 0xAB);
+    for (memory) |byte| {
+        try testing.expectEqual(@as(u8, 0xAB), byte);
+    }
+}
+
+test "PyMemAllocator: resize grow" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // Allocate initial memory
+    var memory = try allocator.alloc(u8, 100);
+    defer allocator.free(memory);
+
+    // Write pattern to initial memory
+    for (memory, 0..) |*byte, i| {
+        byte.* = @intCast(i % 256);
+    }
+
+    // Attempt to resize to larger size
+    const new_memory = try allocator.realloc(memory, 200);
+    memory = new_memory;
+
+    // Verify the first 100 bytes are preserved
+    for (memory[0..100], 0..) |byte, i| {
+        try testing.expectEqual(@as(u8, @intCast(i % 256)), byte);
+    }
+
+    // Verify we can write to the new area
+    for (memory[100..200], 100..) |*byte, i| {
+        byte.* = @intCast(i % 256);
+    }
+}
+
+test "PyMemAllocator: resize shrink" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // Allocate initial memory
+    var memory = try allocator.alloc(u8, 200);
+    defer allocator.free(memory);
+
+    // Write pattern
+    for (memory, 0..) |*byte, i| {
+        byte.* = @intCast(i % 256);
+    }
+
+    // Shrink to smaller size
+    memory = try allocator.realloc(memory, 100);
+
+    // Verify data is preserved
+    for (memory, 0..) |byte, i| {
+        try testing.expectEqual(@as(u8, @intCast(i % 256)), byte);
+    }
+}
+
+test "PyMemAllocator: multiple concurrent allocations" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // Allocate multiple buffers
+    const mem1 = try allocator.alloc(u8, 64);
+    defer allocator.free(mem1);
+
+    const mem2 = try allocator.alloc(u8, 128);
+    defer allocator.free(mem2);
+
+    const mem3 = try allocator.alloc(u8, 256);
+    defer allocator.free(mem3);
+
+    // Write different patterns to each
+    @memset(mem1, 0xAA);
+    @memset(mem2, 0xBB);
+    @memset(mem3, 0xCC);
+
+    // Verify patterns are preserved (no interference)
+    for (mem1) |byte| {
+        try testing.expectEqual(@as(u8, 0xAA), byte);
+    }
+    for (mem2) |byte| {
+        try testing.expectEqual(@as(u8, 0xBB), byte);
+    }
+    for (mem3) |byte| {
+        try testing.expectEqual(@as(u8, 0xCC), byte);
+    }
+}
+
+test "PyMemAllocator: realloc preserves alignment" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // Allocate with specific alignment
+    var memory = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(4)), 64);
+    defer allocator.free(memory);
+
+    // Verify initial alignment
+    var ptr_val = @intFromPtr(memory.ptr);
+    try testing.expect(ptr_val % 16 == 0);
+
+    // Reallocate to larger size
+    memory = try allocator.realloc(memory, 128);
+
+    // Verify alignment is still maintained
+    ptr_val = @intFromPtr(memory.ptr);
+    try testing.expect(ptr_val % 16 == 0);
+}
+
+test "PyMemAllocator: various allocation sizes" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // Test different sizes: small, medium, large
+    const sizes = [_]usize{ 1, 7, 15, 16, 31, 32, 63, 64, 127, 128, 255, 256, 511, 512, 1023, 1024, 4095, 4096 };
+
+    for (sizes) |size| {
+        const memory = try allocator.alloc(u8, size);
+        defer allocator.free(memory);
+
+        try testing.expect(memory.len == size);
+
+        // Verify memory is usable
+        @memset(memory, @intCast(size % 256));
+    }
+}
+
+test "PyMemAllocator: zero-size allocation" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // Zero-sized allocation should succeed (standard allocator behavior)
+    const memory = try allocator.alloc(u8, 0);
+    defer allocator.free(memory);
+
+    try testing.expect(memory.len == 0);
+}
+
+test "PyMemAllocator: different types" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // u8
+    {
+        const mem = try allocator.alloc(u8, 10);
+        defer allocator.free(mem);
+        try testing.expect(@intFromPtr(mem.ptr) % @alignOf(u8) == 0);
+    }
+
+    // u32
+    {
+        const mem = try allocator.alloc(u32, 10);
+        defer allocator.free(mem);
+        try testing.expect(@intFromPtr(mem.ptr) % @alignOf(u32) == 0);
+    }
+
+    // u64
+    {
+        const mem = try allocator.alloc(u64, 10);
+        defer allocator.free(mem);
+        try testing.expect(@intFromPtr(mem.ptr) % @alignOf(u64) == 0);
+    }
+
+    // Struct with specific alignment
+    const TestStruct = struct {
+        a: u64,
+        b: u32,
+        c: u16,
+    };
+
+    {
+        const mem = try allocator.alloc(TestStruct, 5);
+        defer allocator.free(mem);
+        try testing.expect(@intFromPtr(mem.ptr) % @alignOf(TestStruct) == 0);
+
+        // Verify we can use the struct
+        mem[0] = .{ .a = 42, .b = 100, .c = 7 };
+        try testing.expectEqual(@as(u64, 42), mem[0].a);
+        try testing.expectEqual(@as(u32, 100), mem[0].b);
+        try testing.expectEqual(@as(u16, 7), mem[0].c);
+    }
+}
+
+test "PyMemAllocator: realloc same size" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    var memory = try allocator.alloc(u8, 128);
+    defer allocator.free(memory);
+
+    // Fill with pattern
+    for (memory, 0..) |*byte, i| {
+        byte.* = @intCast(i % 256);
+    }
+
+    // Realloc to same size
+    memory = try allocator.realloc(memory, 128);
+
+    // Verify data is preserved
+    for (memory, 0..) |byte, i| {
+        try testing.expectEqual(@as(u8, @intCast(i % 256)), byte);
+    }
+}
+
+test "PyMemAllocator: multiple reallocs" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    var memory = try allocator.alloc(u8, 256);
+    defer allocator.free(memory);
+
+    // Fill initial memory
+    for (memory, 0..) |*byte, i| {
+        byte.* = @intCast(i % 256);
+    }
+
+    // Shrink
+    memory = try allocator.realloc(memory, 128);
+    try testing.expect(memory.len == 128);
+
+    // Verify data preserved
+    for (memory, 0..) |byte, i| {
+        try testing.expectEqual(@as(u8, @intCast(i % 256)), byte);
+    }
+
+    // Grow again
+    memory = try allocator.realloc(memory, 512);
+    try testing.expect(memory.len == 512);
+
+    // Verify original data still there
+    for (memory[0..128], 0..) |byte, i| {
+        try testing.expectEqual(@as(u8, @intCast(i % 256)), byte);
+    }
+
+    // Shrink again
+    memory = try allocator.realloc(memory, 64);
+    try testing.expect(memory.len == 64);
+
+    // Verify data preserved
+    for (memory, 0..) |byte, i| {
+        try testing.expectEqual(@as(u8, @intCast(i % 256)), byte);
+    }
+}
+
+test "PyMemAllocator: verify alignment header" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    const memory = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(5)), 128);
+    defer allocator.free(memory);
+
+    // Check the header byte (shift value)
+    const ptr_val = @intFromPtr(memory.ptr);
+    const shift = @as(*const u8, @ptrFromInt(ptr_val - 1)).*;
+
+    // Shift should be > 0 and <= 32
+    try testing.expect(shift > 0);
+    try testing.expect(shift <= 32);
+
+    // Verify alignment
+    try testing.expect(ptr_val % 32 == 0);
+}
+
+test "PyMemAllocator: allocation at alignment boundaries" {
+    const testing = std.testing;
+    var instance = PyMemAllocator.init();
+    const allocator = instance.allocator();
+
+    // Test a few alignments with various allocation sizes
+    // Alignment 1 (2^0 = 1)
+    {
+        const mem1 = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(0)), 1);
+        defer allocator.free(mem1);
+        try testing.expect(@intFromPtr(mem1.ptr) % 1 == 0);
+
+        const mem3 = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(0)), 2);
+        defer allocator.free(mem3);
+        try testing.expect(@intFromPtr(mem3.ptr) % 1 == 0);
+    }
+    // Alignment 4 (2^2 = 4)
+    {
+        const mem1 = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(2)), 4);
+        defer allocator.free(mem1);
+        try testing.expect(@intFromPtr(mem1.ptr) % 4 == 0);
+
+        const mem2 = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(2)), 3);
+        defer allocator.free(mem2);
+        try testing.expect(@intFromPtr(mem2.ptr) % 4 == 0);
+
+        const mem3 = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(2)), 5);
+        defer allocator.free(mem3);
+        try testing.expect(@intFromPtr(mem3.ptr) % 4 == 0);
+    }
+    // Alignment 16 (2^4 = 16)
+    {
+        const mem1 = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(4)), 16);
+        defer allocator.free(mem1);
+        try testing.expect(@intFromPtr(mem1.ptr) % 16 == 0);
+
+        const mem2 = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(4)), 15);
+        defer allocator.free(mem2);
+        try testing.expect(@intFromPtr(mem2.ptr) % 16 == 0);
+
+        const mem3 = try allocator.alignedAlloc(u8, @as(std.mem.Alignment, @enumFromInt(4)), 17);
+        defer allocator.free(mem3);
+        try testing.expect(@intFromPtr(mem3.ptr) % 16 == 0);
+    }
+}

@@ -153,8 +153,18 @@ class SecurityValidator:
         if len(name) > SecurityValidator.MAX_PACKAGE_NAME_LENGTH:
             return False, f"Package name too long (max {SecurityValidator.MAX_PACKAGE_NAME_LENGTH})", None
 
-        # Sanitize: keep only alphanumeric and underscore
-        sanitized = "".join(c if c.isalnum() or c == "_" else "_" for c in name)
+        # Check for Unicode characters (package names must be ASCII)
+        try:
+            name.encode('ascii')
+        except UnicodeEncodeError:
+            return False, "Package name must contain only ASCII characters", None
+
+        # Reject names starting with digits (before sanitization)
+        if name[0].isdigit():
+            return False, "Package name cannot start with a digit", None
+
+        # Sanitize: lowercase and keep only alphanumeric and underscore
+        sanitized = "".join(c if c.isalnum() or c == "_" else "_" for c in name.lower())
 
         # Ensure it's not all underscores
         if sanitized.replace("_", "") == "":

@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 const std = @import("std");
 const py = @import("../pyz3.zig");
 const State = @import("../discovery.zig").State;
@@ -30,7 +18,7 @@ pub fn PyFrame(comptime root: type) type {
 
         pub fn code(self: Self) py.PyCode(root) {
             const codeObj = ffi.PyFrame_GetCode(framePtr(self.obj.py));
-            return .{ .obj = .{ .py = @alignCast(@ptrCast(codeObj)) } };
+            return .{ .obj = .{ .py = @ptrCast(@alignCast(codeObj)) } };
         }
 
         pub inline fn lineNumber(self: Self) u32 {
@@ -38,11 +26,11 @@ pub fn PyFrame(comptime root: type) type {
         }
 
         inline fn framePtr(obj: *ffi.PyObject) *ffi.PyFrameObject {
-            return @alignCast(@ptrCast(obj));
+            return @ptrCast(@alignCast(obj));
         }
 
         inline fn objPtr(obj: *ffi.PyFrameObject) *ffi.PyObject {
-            return @alignCast(@ptrCast(obj));
+            return @ptrCast(@alignCast(obj));
         }
     };
 }

@@ -1,17 +1,3 @@
-"""
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
-
 import contextlib
 import os
 import shutil
@@ -107,7 +93,11 @@ def generate_build_zig(fileobj: TextIO, conf=None):
         )
 
         for ext_module in conf.ext_modules:
-            # TODO(ngates): fix the out filename for non-limited modules
+            # Note: Non-limited API would require platform-specific output naming
+            # (e.g., module.cpython-312-x86_64-linux-gnu.so). This would need:
+            # 1. Detecting Python version and platform in build.zig
+            # 2. Passing this info to the Zig build system
+            # For now, limited API (.abi3.so) provides better compatibility.
             assert ext_module.limited_api, "Only limited_api is supported for now"
 
             # Convert Windows backslashes to forward slashes for Zig compatibility

@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 /// Example module to benchmark fast path optimization for primitive types
 const std = @import("std");
 const py = @import("pyz3");
@@ -35,12 +23,7 @@ pub fn return_string(args: struct { value: []const u8 }) u64 {
 }
 
 /// Test mixed types
-pub fn mixed_types(args: struct {
-    int_val: i64,
-    float_val: f64,
-    bool_val: bool,
-    str_val: []const u8
-}) !py.PyDict(@This()) {
+pub fn mixed_types(args: struct { int_val: i64, float_val: f64, bool_val: bool, str_val: []const u8 }) !py.PyDict(@This()) {
     const dict = try py.PyDict(@This()).new();
 
     const int_obj = try py.create(@This(), args.int_val * 2);

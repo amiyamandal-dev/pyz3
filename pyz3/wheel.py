@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-"""
-Wheel building and cross-compilation support for Pydust.
-
-This module provides utilities for building Python wheels for multiple platforms,
-including cross-compilation support.
-"""
 
 import os
 import platform
@@ -199,6 +193,7 @@ class WheelBuilder:
             dir_path = self.project_root / dir_name
             if dir_path.exists():
                 import shutil
+
                 shutil.rmtree(dir_path)
                 print(f"Cleaned {dir_name}/")
 
@@ -269,7 +264,8 @@ if __name__ == "__main__":
         help="Don't clean before building",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Verbose output",
     )

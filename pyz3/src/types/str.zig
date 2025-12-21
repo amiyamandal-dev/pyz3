@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//         http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 const std = @import("std");
 const py = @import("../pyz3.zig");
 const PyObjectMixin = @import("./obj.zig").PyObjectMixin;
@@ -52,9 +40,10 @@ pub const PyString = extern struct {
     }
 
     fn appendObj(self: Self, other: PyObject) !Self {
-        // This function effectively decref's the left-hand side.
-        // The semantics therefore sort of imply mutation, and so we expose the same in our API.
-        // FIXME(ngates): this comment
+        // Note: PyUnicode_Append modifies the first argument in-place and decrefs it on error.
+        // This is different from typical Python semantics where strings are immutable.
+        // We expose this behavior in the API since it matches the underlying CPython function.
+        // The caller is responsible for managing the reference count appropriately.
         var self_ptr: ?*ffi.PyObject = self.obj.py;
         ffi.PyUnicode_Append(&self_ptr, other.py);
         if (self_ptr) |ptr| {
