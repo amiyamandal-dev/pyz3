@@ -14,7 +14,7 @@ pub fn build(b: *std.Build) void {
     const pythonLib = getPythonLibraryPath(python_exe, b.allocator) catch @panic("Missing python");
     const pythonVer = getPythonLDVersion(python_exe, b.allocator) catch @panic("Missing python");
     const pythonHome = getPythonHome(python_exe, b.allocator) catch @panic("Missing python");
-    const pythonLibName = std.fmt.allocPrint(b.allocator, "python{s}", .{pythonVer}) catch @panic("Missing python");
+    const pythonLibName = std.fmt.allocPrint(b.allocator, "python{}", .{pythonVer}) catch @panic("Missing python");
 
     const test_step = b.step("test", "Run library tests");
     const docs_step = b.step("docs", "Generate docs");
