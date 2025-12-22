@@ -190,6 +190,10 @@ pub const errors_enhanced = @import("errors_enhanced.zig");
 // Native high-performance collections using uthash/utarray
 pub const native_collections = @import("native_collections.zig");
 
+// NumPy integration - full C API access
+pub const numpy = @import("numpy.zig");
+pub const PyArray = numpy.PyArray;
+
 // Testing utilities
 pub const testing = @import("testing.zig");
 

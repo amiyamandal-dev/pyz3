@@ -31,6 +31,10 @@ const ScopedGIL = struct {
             gil_depth = 1;
             return .{ .acquired = true };
         } else {
+            // Protect against overflow - this would be a bug but let's be defensive
+            if (gil_depth == std.math.maxInt(u32)) {
+                std.debug.panic("GIL depth counter overflow - possible infinite recursion", .{});
+            }
             gil_depth += 1;
             return .{ .acquired = false };
         }
@@ -49,9 +53,13 @@ const ScopedGIL = struct {
 pub const PyMemAllocator = struct {
     const Self = @This();
 
-    pub fn allocator(self: *const Self) Allocator {
+    /// Get the global Python memory allocator instance
+    /// PyMemAllocator is stateless, so we use a global instance
+    const instance: Self = .{};
+
+    pub fn allocator() Allocator {
         return .{
-            .ptr = @constCast(self),
+            .ptr = @constCast(&instance),
             .vtable = &.{
                 .alloc = alloc,
                 .remap = remap,
@@ -167,6 +175,30 @@ pub const PyMemAllocator = struct {
 
         const aligned_ptr: usize = raw_ptr + shift;
 
+        // CRITICAL: If the shift changed, we need to move the data
+        // to account for the new alignment offset
+        if (shift != old_shift) {
+            // Data is currently at (raw_ptr + old_shift), but needs to be at (raw_ptr + shift)
+            // Regions may overlap, so we need to be careful about copy direction
+            const src = raw_ptr + old_shift;
+            const dst = aligned_ptr;
+            const copy_len = @min(memory.len, new_len);
+
+            if (src != dst and copy_len > 0) {
+                const src_ptr: [*]u8 = @ptrFromInt(src);
+                const dst_ptr: [*]u8 = @ptrFromInt(dst);
+
+                // Handle overlapping memory regions correctly
+                if (dst < src) {
+                    // Moving backwards - copy from start to end
+                    std.mem.copyForwards(u8, dst_ptr[0..copy_len], src_ptr[0..copy_len]);
+                } else {
+                    // Moving forwards - copy from end to start
+                    std.mem.copyBackwards(u8, dst_ptr[0..copy_len], src_ptr[0..copy_len]);
+                }
+            }
+        }
+
         // Safety assertions
         std.debug.assert(aligned_ptr > raw_ptr);
         std.debug.assert(aligned_ptr - 1 >= raw_ptr);
@@ -182,13 +214,12 @@ pub const PyMemAllocator = struct {
     fn resize(ctx: *anyopaque, buf: []u8, buf_align: mem.Alignment, new_len: usize, ret_addr: usize) bool {
         _ = ret_addr;
         _ = ctx;
+        _ = buf_align;
 
         // PyMem functions require the GIL
         // Optimized: Check if GIL already held to avoid overhead in re-entrant calls
         const scoped_gil = ScopedGIL.acquire();
         defer scoped_gil.release();
-
-        const alignment_bytes = buf_align.toByteUnits();
 
         // Shrinking always succeeds - we just report the smaller size
         // PyMem will keep track of the actual allocation size for us
@@ -196,38 +227,20 @@ pub const PyMemAllocator = struct {
             return true;
         }
 
-        // For growing, we try to realloc in-place
-        // Get the original pointer before alignment adjustment
-        const aligned_ptr: usize = @intFromPtr(buf.ptr);
-        const shift = @as(*const u8, @ptrFromInt(aligned_ptr - 1)).*;
-        const origin_mem_ptr: *anyopaque = @ptrFromInt(aligned_ptr - shift);
-
-        // Try to realloc. If it succeeds in-place, the pointer won't change
-        // Safety check for alignment
-        if (alignment_bytes > 255) {
-            return false; // Can't handle large alignments
-        }
-
-        const alignment: u8 = @intCast(alignment_bytes);
-        const new_ptr = ffi.PyMem_Realloc(origin_mem_ptr, new_len + alignment) orelse return false;
-
-        // Check if realloc succeeded in-place (pointer didn't move)
-        // If it moved, we can't update buf.ptr, so return false to force remap/alloc
-        if (@intFromPtr(new_ptr) == aligned_ptr - shift) {
-            // Success! Allocation grew in-place
-            return true;
-        }
-
-        // Allocation moved - we need to copy to new location, so return false
-        // to let the allocator handle it via remap
-        // Note: We've already reallocated, but we can't use the new pointer
-        // This is a limitation of the resize() API. The caller will call remap()
-        // which will realloc again, but PyMem_Realloc should be smart enough to reuse
+        // For growing, we cannot resize in place if the alignment might change
+        // The resize() API doesn't allow us to return a new pointer, only true/false
+        // If realloc moves the memory, we'd need to recalculate alignment which could
+        // give us a different aligned pointer than what the caller expects
+        //
+        // Therefore, we conservatively return false for any growth, forcing the
+        // allocator to use remap() which can return a new pointer
+        //
+        // Note: We could optimize this for cases where we know alignment won't change,
+        // but that requires more complex logic and isn't worth the risk
         return false;
     }
 
     fn free(ctx: *anyopaque, buf: []u8, buf_align: mem.Alignment, ret_addr: usize) void {
-        _ = buf_align;
         _ = ctx;
         _ = ret_addr;
 
@@ -236,11 +249,78 @@ pub const PyMemAllocator = struct {
         const scoped_gil = ScopedGIL.acquire();
         defer scoped_gil.release();
 
-        // Fetch the alignment shift. We could check it matches the buf_align, but it's a bit annoying.
+        const alignment_bytes = buf_align.toByteUnits();
+
+        // Safety check: alignment must be reasonable
+        if (alignment_bytes > 255) {
+            std.debug.panic("free() called with invalid alignment {d} bytes", .{alignment_bytes});
+        }
+
+        const alignment: u8 = @intCast(alignment_bytes);
+
+        // Fetch and validate the alignment shift from the header
         const aligned_ptr: usize = @intFromPtr(buf.ptr);
         const shift = @as(*const u8, @ptrFromInt(aligned_ptr - 1)).*;
+
+        // Validate the shift value is reasonable
+        // shift must be > 0 (we always shift at least 1 byte for header)
+        // and <= alignment (within our padding region)
+        if (shift == 0 or shift > alignment) {
+            // Corrupted header or pointer not allocated by this allocator
+            std.debug.panic("free() detected corrupted memory header: shift={d}, alignment={d}", .{ shift, alignment });
+        }
 
         const raw_ptr: *anyopaque = @ptrFromInt(aligned_ptr - shift);
         ffi.PyMem_Free(raw_ptr);
     }
-}{};
+};
+
+/// Arena allocator for temporary allocations during function calls
+/// All allocations are freed at once when the arena is deinitialized
+/// This significantly reduces allocation overhead for functions with many temporary objects
+pub const ArenaAllocator = struct {
+    arena: std.heap.ArenaAllocator,
+
+    /// Initialize a new arena backed by Python's memory allocator
+    pub fn init() ArenaAllocator {
+        const py_allocator = PyMemAllocator.allocator();
+        return .{
+            .arena = std.heap.ArenaAllocator.init(py_allocator),
+        };
+    }
+
+    /// Free all allocations at once
+    pub fn deinit(self: *ArenaAllocator) void {
+        self.arena.deinit();
+    }
+
+    /// Get the allocator interface for this arena
+    pub fn allocator(self: *ArenaAllocator) Allocator {
+        return self.arena.allocator();
+    }
+
+    /// Reset the arena without freeing the underlying memory
+    /// This allows reusing the same arena for multiple operations
+    pub fn reset(self: *ArenaAllocator) void {
+        _ = self.arena.reset(.retain_capacity);
+    }
+};
+
+/// Helper function to execute a function with an arena allocator
+/// The arena is automatically cleaned up after the function returns
+///
+/// Example:
+/// ```zig
+/// const result = try withArena(struct {
+///     fn call(arena: Allocator) !i32 {
+///         const temp = try arena.alloc(u8, 100);
+///         // Use temp...
+///         return 42;
+///     }
+/// }.call);
+/// ```
+pub fn withArena(comptime func: anytype) !@typeInfo(@TypeOf(func)).Fn.return_type.? {
+    var arena = ArenaAllocator.init();
+    defer arena.deinit();
+    return func(arena.allocator());
+}

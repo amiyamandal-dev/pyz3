@@ -13,6 +13,7 @@
 const std = @import("std");
 const py = @import("../pyz3.zig");
 const PyObjectMixin = @import("./obj.zig").PyObjectMixin;
+const PySequenceMixin = @import("./sequence.zig").PySequenceMixin;
 const ffi = py.ffi;
 const PyLong = @import("long.zig").PyLong;
 const PyFloat = @import("float.zig").PyFloat;
@@ -26,6 +27,10 @@ pub fn PyTuple(comptime root: type) type {
 
         const Self = @This();
         pub const from = PyObjectMixin("tuple", "PyTuple", Self);
+
+        // Include all sequence protocol operations
+        // TODO: Fix PySequenceMixin integration - currently conflicts with existing methods
+        // pub usingnamespace PySequenceMixin(Self);
 
         /// Construct a PyTuple from the given Zig tuple.
         pub fn create(values: anytype) !Self {
@@ -60,12 +65,19 @@ pub fn PyTuple(comptime root: type) type {
         }
 
         pub fn new(size: usize) !Self {
+            // Check for integer overflow before casting to isize
+            if (size > std.math.maxInt(isize)) {
+                return PyError.PyRaised; // Python will raise OverflowError
+            }
             const tuple = ffi.PyTuple_New(@intCast(size)) orelse return PyError.PyRaised;
             return .{ .obj = .{ .py = tuple } };
         }
 
         pub fn length(self: *const Self) usize {
-            return @intCast(ffi.PyTuple_Size(self.obj.py));
+            const size = ffi.PyTuple_Size(self.obj.py);
+            // PyTuple_Size returns isize, which should always be >= 0 for valid tuples
+            if (size < 0) return 0; // Error case, but we can't return error from this function
+            return @intCast(size);
         }
 
         pub fn getItem(self: *const Self, comptime T: type, idx: usize) !T {

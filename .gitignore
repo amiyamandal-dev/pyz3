@@ -167,3 +167,6 @@ zig-out/
 
 test.build.zig
 zls.build.json
+
+# Auto-generated build configuration - do not track
+pyz3.build.zig

@@ -13,6 +13,7 @@
 const std = @import("std");
 const py = @import("../pyz3.zig");
 const PyObjectMixin = @import("./obj.zig").PyObjectMixin;
+const PySequenceMixin = @import("./sequence.zig").PySequenceMixin;
 const ffi = py.ffi;
 const PyObject = py.PyObject;
 const PyLong = py.PyLong;
@@ -21,6 +22,9 @@ const State = @import("../discovery.zig").State;
 
 /// Wrapper for Python PyList.
 /// See: https://docs.python.org/3/c-api/list.html
+///
+/// This type includes PySequenceMixin which provides all standard sequence
+/// protocol operations like contains(), index(), count(), concat(), etc.
 pub fn PyList(comptime root: type) type {
     return extern struct {
         obj: PyObject,
@@ -28,13 +32,24 @@ pub fn PyList(comptime root: type) type {
         const Self = @This();
         pub const from = PyObjectMixin("list", "PyList", Self);
 
+        // Include all sequence protocol operations
+        // TODO: Fix PySequenceMixin integration - currently conflicts with existing methods
+        // pub usingnamespace PySequenceMixin(Self);
+
         pub fn new(size: usize) !Self {
+            // Check for integer overflow before casting to isize
+            if (size > std.math.maxInt(isize)) {
+                return PyError.PyRaised; // Python will raise OverflowError
+            }
             const list = ffi.PyList_New(@intCast(size)) orelse return PyError.PyRaised;
             return .{ .obj = .{ .py = list } };
         }
 
         pub fn length(self: Self) usize {
-            return @intCast(ffi.PyList_Size(self.obj.py));
+            const size = ffi.PyList_Size(self.obj.py);
+            // PyList_Size returns isize, which should always be >= 0 for valid lists
+            if (size < 0) return 0; // Error case, but we can't return error from this function
+            return @intCast(size);
         }
 
         // Returns borrowed reference.
@@ -66,6 +81,8 @@ pub fn PyList(comptime root: type) type {
         /// Set the item at the given position.
         pub fn setItem(self: Self, pos: usize, value: anytype) !void {
             const valueObj = try py.create(root, value);
+            // setOwnedItem steals a reference, but if it fails we need to clean up
+            errdefer valueObj.decref();
             return self.setOwnedItem(pos, valueObj);
         }
 

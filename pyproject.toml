@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyz3"
-version = "0.8.0"
+version = "0.9.0"
 description = "Build high-performance Python extensions in Zig with automatic memory management. Inspired by ziggy-pydust."
 authors = ["amiya mandal <amiya19mandal@pm.me>"]
 license = "Apache 2.0"
@@ -38,6 +38,7 @@ pydantic = "^2.3.0"
 setuptools = "^80.0.0"
 black = "^25.0.0"
 cookiecutter = "^2.6.0"
+numpy = "^2.0.0"
 
 # Distribution dependencies
 build = { version = "^1.0.0", optional = true }
@@ -171,3 +172,7 @@ root = "example/native_collections_example.zig"
 c_sources = ["pyz3/src/native/native_dict.c", "pyz3/src/native/native_array.c"]
 c_include_dirs = ["pyz3/src/native/"]
 c_flags = ["-std=c99"]
+
+[[tool.pyz3.ext_module]]
+name = "example.numpy_example"
+root = "example/numpy_example.zig"
