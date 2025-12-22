@@ -24,6 +24,27 @@ Thank you for your interest in contributing to pyz3!
    ./run_all_tests.sh
    ```
 
+### Important: Generated Files
+
+Some files are **auto-generated** and should not be committed:
+
+- **`pyz3.build.zig`** - Auto-generated from `pyz3/src/pyz3.build.zig`
+  - Automatically created when you run any build command
+  - Listed in `.gitignore`
+  - If missing, run any build command to regenerate it
+
+**Don't worry if you see this error:**
+```
+error: unable to load 'pyz3.build.zig': FileNotFound
+```
+**Solution:** Just run any build command:
+```bash
+poetry install
+# or
+make install
+```
+The file will be auto-generated and the error will disappear.
+
 ## Managing Dependencies
 
 ### Adding New Dependencies
