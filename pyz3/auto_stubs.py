@@ -5,6 +5,7 @@ This module integrates stub generation into the build process,
 ensuring type stubs are always up-to-date with the compiled modules.
 """
 
+import hashlib
 import os
 import sys
 import importlib
@@ -16,6 +17,46 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _file_hash(path: Path) -> str:
+    """Compute MD5 hash of file contents for change detection."""
+    if not path.exists():
+        return ""
+    return hashlib.md5(path.read_bytes()).hexdigest()
+
+
+def _get_stub_cache_file(package_name: str, destination: Path) -> Path:
+    """Get the cache file path for stub generation metadata."""
+    return destination / f".{package_name}.stub_cache"
+
+
+def _needs_stub_regeneration(module_path: Path, stub_file: Path, cache_file: Path) -> bool:
+    """Check if stubs need to be regenerated based on file hashes."""
+    if not stub_file.exists():
+        return True
+
+    if not cache_file.exists():
+        return True
+
+    try:
+        # Read cached hash
+        cached_hash = cache_file.read_text().strip()
+        current_hash = _file_hash(module_path)
+
+        return cached_hash != current_hash
+    except Exception:
+        # If anything goes wrong, regenerate to be safe
+        return True
+
+
+def _update_stub_cache(module_path: Path, cache_file: Path) -> None:
+    """Update the stub cache with current module hash."""
+    try:
+        current_hash = _file_hash(module_path)
+        cache_file.write_text(current_hash)
+    except Exception as e:
+        logger.warning(f"Failed to update stub cache: {e}")
+
+
 class AutoStubGenerator:
     """Automatic stub file generator for pyz3 modules."""
 
@@ -24,14 +65,37 @@ class AutoStubGenerator:
         self.destination = Path(destination)
         self.destination.mkdir(parents=True, exist_ok=True)
 
-    def generate(self) -> bool:
+    def generate(self, force: bool = False) -> bool:
         """Generate stub files for the package.
+
+        Args:
+            force: If True, regenerate stubs even if cache indicates they're up-to-date
 
         Returns:
             bool: True if generation succeeded, False otherwise
         """
         try:
-            logger.info(f"Generating stubs for {self.package_name}")
+            # Try to find the compiled module file
+            try:
+                module = importlib.import_module(self.package_name)
+                if hasattr(module, '__file__') and module.__file__:
+                    module_path = Path(module.__file__)
+                else:
+                    module_path = None
+            except ImportError:
+                module_path = None
+                logger.warning(f"Could not import {self.package_name} to check cache")
+
+            # Check if we need to regenerate
+            stub_file = self.destination / f"{self.package_name.replace('.', '/')}.pyi"
+            cache_file = _get_stub_cache_file(self.package_name, self.destination)
+
+            if not force and module_path:
+                if not _needs_stub_regeneration(module_path, stub_file, cache_file):
+                    logger.info(f"✓ Stubs for {self.package_name} are up-to-date (cached)")
+                    return True
+
+            logger.info(f"📝 Generating stubs for {self.package_name}")
 
             # Import the generate_stubs module
             from pyz3.generate_stubs import generate_stubs
@@ -39,7 +103,11 @@ class AutoStubGenerator:
             # Generate stubs
             generate_stubs(self.package_name, str(self.destination), check=False)
 
-            logger.info(f"Stubs generated successfully in {self.destination}")
+            # Update cache
+            if module_path:
+                _update_stub_cache(module_path, cache_file)
+
+            logger.info(f"✓ Stubs generated successfully in {self.destination}")
             return True
 
         except Exception as e:

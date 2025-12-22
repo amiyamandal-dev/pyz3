@@ -13,6 +13,7 @@ limitations under the License.
 """
 
 import contextlib
+import hashlib
 import os
 import shutil
 import subprocess
@@ -45,14 +46,30 @@ else:
     PYLDLIB = os.path.splitext(PYLDLIB)[0]
 
 
+def _file_hash(path: Path) -> str:
+    """Compute MD5 hash of file contents for change detection."""
+    if not path.exists():
+        return ""
+    return hashlib.md5(path.read_bytes()).hexdigest()
+
+
+def _needs_copy(source: Path, dest: Path) -> bool:
+    """Check if source file needs to be copied to dest based on content hash."""
+    if not dest.exists():
+        return True
+    return _file_hash(source) != _file_hash(dest)
+
+
 def zig_build(argv: list[str], conf: config.ToolPydust | None = None):
     conf = conf or config.load()
 
-    # Always generate the supporting pydist.build.zig
-    shutil.copy(
-        Path(pyz3.__file__).parent.joinpath("src/pyz3.build.zig"),
-        conf.pyz3_build_zig,
-    )
+    # Generate the supporting pyz3.build.zig (only if changed)
+    source_build_zig = Path(pyz3.__file__).parent.joinpath("src/pyz3.build.zig")
+    if _needs_copy(source_build_zig, conf.pyz3_build_zig):
+        print(f"📝 Updating build script: {conf.pyz3_build_zig}")
+        shutil.copy(source_build_zig, conf.pyz3_build_zig)
+    else:
+        print(f"✓ Build script up-to-date: {conf.pyz3_build_zig}")
 
     if not conf.self_managed:
         # Generate the build.zig if we're managing the ext_modules ourselves

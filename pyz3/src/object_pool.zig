@@ -33,6 +33,18 @@ pub const ObjectPool = struct {
     /// references to avoid repeated lookups
     small_ints: [262]?*ffi.PyObject = [_]?*ffi.PyObject{null} ** 262,
 
+    /// Cached common floats (0.0, 1.0, -1.0, 0.5)
+    float_zero: ?*ffi.PyObject = null,
+    float_one: ?*ffi.PyObject = null,
+    float_neg_one: ?*ffi.PyObject = null,
+    float_half: ?*ffi.PyObject = null,
+
+    /// Cached common strings
+    str_empty: ?*ffi.PyObject = null,
+    str_none: ?*ffi.PyObject = null,
+    str_true: ?*ffi.PyObject = null,
+    str_false: ?*ffi.PyObject = null,
+
     /// Initialize the object pool
     pub fn init(self: *ObjectPool) void {
         // Create and cache empty tuple
@@ -63,6 +75,32 @@ pub const ObjectPool = struct {
                 _ = ffi.Py_IncRef(obj);
             }
         }
+
+        // Cache common floats
+        self.float_zero = ffi.PyFloat_FromDouble(0.0);
+        if (self.float_zero) |f| _ = ffi.Py_IncRef(f);
+
+        self.float_one = ffi.PyFloat_FromDouble(1.0);
+        if (self.float_one) |f| _ = ffi.Py_IncRef(f);
+
+        self.float_neg_one = ffi.PyFloat_FromDouble(-1.0);
+        if (self.float_neg_one) |f| _ = ffi.Py_IncRef(f);
+
+        self.float_half = ffi.PyFloat_FromDouble(0.5);
+        if (self.float_half) |f| _ = ffi.Py_IncRef(f);
+
+        // Cache common strings
+        self.str_empty = ffi.PyUnicode_FromString("");
+        if (self.str_empty) |s| _ = ffi.Py_IncRef(s);
+
+        self.str_none = ffi.PyUnicode_FromString("None");
+        if (self.str_none) |s| _ = ffi.Py_IncRef(s);
+
+        self.str_true = ffi.PyUnicode_FromString("True");
+        if (self.str_true) |s| _ = ffi.Py_IncRef(s);
+
+        self.str_false = ffi.PyUnicode_FromString("False");
+        if (self.str_false) |s| _ = ffi.Py_IncRef(s);
     }
 
     /// Cleanup the object pool
@@ -84,6 +122,18 @@ pub const ObjectPool = struct {
                 ffi.Py_DecRef(obj);
             }
         }
+
+        // Release common floats
+        if (self.float_zero) |f| ffi.Py_DecRef(f);
+        if (self.float_one) |f| ffi.Py_DecRef(f);
+        if (self.float_neg_one) |f| ffi.Py_DecRef(f);
+        if (self.float_half) |f| ffi.Py_DecRef(f);
+
+        // Release common strings
+        if (self.str_empty) |s| ffi.Py_DecRef(s);
+        if (self.str_none) |s| ffi.Py_DecRef(s);
+        if (self.str_true) |s| ffi.Py_DecRef(s);
+        if (self.str_false) |s| ffi.Py_DecRef(s);
     }
 
     /// Get a cached empty tuple (returns a borrowed reference)
@@ -130,15 +180,62 @@ pub const ObjectPool = struct {
     pub inline fn isSmallInt(value: i64) bool {
         return value >= -5 and value <= 256;
     }
+
+    /// Get a cached common float (returns a new reference)
+    /// Returns null if value is not in the cached set
+    pub fn getCommonFloat(self: *const ObjectPool, value: f64) ?*ffi.PyObject {
+        const obj = if (value == 0.0)
+            self.float_zero
+        else if (value == 1.0)
+            self.float_one
+        else if (value == -1.0)
+            self.float_neg_one
+        else if (value == 0.5)
+            self.float_half
+        else
+            null;
+
+        if (obj) |o| {
+            _ = ffi.Py_IncRef(o);
+            return o;
+        }
+        return null;
+    }
+
+    /// Get a cached common string (returns a new reference)
+    /// Supported strings: "", "None", "True", "False"
+    pub fn getCommonString(self: *const ObjectPool, str: []const u8) ?*ffi.PyObject {
+        const obj = if (std.mem.eql(u8, str, ""))
+            self.str_empty
+        else if (std.mem.eql(u8, str, "None"))
+            self.str_none
+        else if (std.mem.eql(u8, str, "True"))
+            self.str_true
+        else if (std.mem.eql(u8, str, "False"))
+            self.str_false
+        else
+            null;
+
+        if (obj) |o| {
+            _ = ffi.Py_IncRef(o);
+            return o;
+        }
+        return null;
+    }
 };
 
 /// Global object pool instance
 /// This is initialized when the first Python module loads
+/// Note: Python's GIL protects access to this, so no additional locking needed
+/// All Python extension calls happen under the GIL
 var global_pool: ObjectPool = .{};
 var pool_initialized: bool = false;
 
 /// Initialize the global object pool
+/// SAFETY: Must be called with GIL held (guaranteed during module initialization)
 pub fn initGlobalPool() void {
+    // Double-check to prevent re-initialization
+    // GIL ensures this check-then-act is atomic
     if (!pool_initialized) {
         global_pool.init();
         pool_initialized = true;
@@ -146,6 +243,7 @@ pub fn initGlobalPool() void {
 }
 
 /// Cleanup the global object pool
+/// SAFETY: Must be called with GIL held (guaranteed during module cleanup)
 pub fn deinitGlobalPool() void {
     if (pool_initialized) {
         global_pool.deinit();
@@ -154,7 +252,9 @@ pub fn deinitGlobalPool() void {
 }
 
 /// Get the global object pool
+/// SAFETY: Must be called with GIL held
 pub fn getGlobalPool() *const ObjectPool {
+    // GIL protects this check-then-act pattern
     if (!pool_initialized) {
         initGlobalPool();
     }
@@ -183,4 +283,16 @@ pub fn getCachedEmptyDict() ?*ffi.PyObject {
 pub fn getCachedEmptyList() ?*ffi.PyObject {
     const pool = getGlobalPool();
     return pool.getEmptyList();
+}
+
+/// Get a cached common float from the global pool
+pub fn getCachedFloat(value: f64) ?*ffi.PyObject {
+    const pool = getGlobalPool();
+    return pool.getCommonFloat(value);
+}
+
+/// Get a cached common string from the global pool
+pub fn getCachedString(str: []const u8) ?*ffi.PyObject {
+    const pool = getGlobalPool();
+    return pool.getCommonString(str);
 }
