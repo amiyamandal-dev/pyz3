@@ -79,6 +79,8 @@ We provide convenient `make` targets for common tasks:
 - `make clean` - Clean build artifacts
 - `make install` - Install in development mode
 - `make lock` - Update poetry.lock file
+- `make stubs` - Generate Python stub files (.pyi)
+- `make check-stubs` - Verify stub files are up to date
 
 ## Code Quality
 
@@ -95,10 +97,34 @@ We provide convenient `make` targets for common tasks:
    poetry run black --check .
    ```
 
-3. **Update lock file if needed**
+3. **Update lock file if dependencies changed**
    ```bash
    make lock
    ```
+
+4. **Update stub files if Zig modules changed**
+   ```bash
+   make stubs
+   ```
+
+### When to Update Stub Files
+
+Update stub files (`.pyi`) when you:
+- Add new Zig extension modules
+- Add/modify/remove public functions in Zig modules
+- Change function signatures in Zig modules
+
+**How to update:**
+```bash
+make stubs
+git add example/*.pyi
+git commit -m "Update stub files"
+```
+
+**Verify stubs are current:**
+```bash
+make check-stubs
+```
 
 ## Commit Message Convention
 

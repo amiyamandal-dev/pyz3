@@ -1,4 +1,4 @@
-.PHONY: help version bump-patch bump-minor bump-major test build clean install lock
+.PHONY: help version bump-patch bump-minor bump-major test build clean install lock stubs check-stubs
 
 # Default target - show help
 help:
@@ -24,6 +24,8 @@ help:
 	@echo "  make clean                Clean build artifacts"
 	@echo "  make install              Install package in development mode"
 	@echo "  make lock                 Update poetry.lock file"
+	@echo "  make stubs                Generate Python stub files (.pyi)"
+	@echo "  make check-stubs          Verify stub files are up to date"
 	@echo ""
 	@echo "For custom versions, use: ./bump_version.sh <version>"
 	@echo "Example: ./bump_version.sh 0.2.0-beta.1"
@@ -82,3 +84,14 @@ lock:
 	@poetry lock
 	@echo "✅ Lock file updated successfully"
 	@echo "💡 Remember to commit and push poetry.lock after this"
+
+stubs:
+	@echo "📝 Generating Python stub files..."
+	@poetry run python -m ziglang build --build-file ./pytest.build.zig generate-stubs
+	@echo "✅ Stub files generated successfully"
+	@echo "💡 Remember to commit the .pyi files after this"
+
+check-stubs:
+	@echo "🔍 Checking stub files are up to date..."
+	@poetry run python -m ziglang build --build-file ./pytest.build.zig generate-stubs -Dcheck-stubs=true
+	@echo "✅ All stub files are up to date"
