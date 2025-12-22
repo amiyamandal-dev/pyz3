@@ -1,4 +1,4 @@
-.PHONY: help version bump-patch bump-minor bump-major test build clean install
+.PHONY: help version bump-patch bump-minor bump-major test build clean install lock
 
 # Default target - show help
 help:
@@ -23,6 +23,7 @@ help:
 	@echo "  make build                Build package with poetry"
 	@echo "  make clean                Clean build artifacts"
 	@echo "  make install              Install package in development mode"
+	@echo "  make lock                 Update poetry.lock file"
 	@echo ""
 	@echo "For custom versions, use: ./bump_version.sh <version>"
 	@echo "Example: ./bump_version.sh 0.2.0-beta.1"
@@ -75,3 +76,9 @@ clean:
 
 install:
 	@poetry install
+
+lock:
+	@echo "🔒 Updating poetry.lock file..."
+	@poetry lock
+	@echo "✅ Lock file updated successfully"
+	@echo "💡 Remember to commit and push poetry.lock after this"
