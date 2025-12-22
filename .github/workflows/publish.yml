@@ -60,7 +60,7 @@ jobs:
         run: poetry build -v
 
       - name: Poetry Install
-        run: poetry install -v --only=docs
+        run: poetry lock && poetry install -v --only=docs
 
       - name: Zig Docs Build
         run: poetry run python -m ziglang build docs

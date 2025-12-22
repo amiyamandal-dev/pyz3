@@ -49,7 +49,7 @@ jobs:
           key: {% raw %}venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Poetry Install
-        run: poetry install -n -v
+        run: poetry lock && poetry install -n -v
       - name: Poetry Build
         run: poetry build -v
 
