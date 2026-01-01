@@ -1,4 +1,5 @@
 """Test cases for fast path optimization for primitive types."""
+
 import time
 
 import pytest
@@ -47,12 +48,7 @@ def test_mixed_types_fastpath(example_module):
     """Test mixed type conversions using fast paths."""
     from example import fastpath_bench
 
-    result = fastpath_bench.mixed_types(
-        int_val=21,
-        float_val=10.5,
-        bool_val=True,
-        str_val="test"
-    )
+    result = fastpath_bench.mixed_types(int_val=21, float_val=10.5, bool_val=True, str_val="test")
 
     assert isinstance(result, dict)
     assert result["int_result"] == 42
@@ -151,10 +147,11 @@ def test_fastpath_edge_cases(example_module):
     fastpath_bench.return_i64(min_i64 // 2)
 
     # Special float values
-    assert fastpath_bench.return_f64(float('inf')) == float('inf')
-    assert fastpath_bench.return_f64(float('-inf')) == float('-inf')
+    assert fastpath_bench.return_f64(float("inf")) == float("inf")
+    assert fastpath_bench.return_f64(float("-inf")) == float("-inf")
     import math
-    assert math.isnan(fastpath_bench.return_f64(float('nan')))
+
+    assert math.isnan(fastpath_bench.return_f64(float("nan")))
 
 
 def test_fastpath_vs_generic(example_module):
@@ -172,7 +169,7 @@ def test_fastpath_vs_generic(example_module):
     fastpath_time = time.perf_counter() - start
 
     print(f"\nFast path time for {iterations} i64 conversions: {fastpath_time:.4f}s")
-    print(f"Average per call: {(fastpath_time/iterations)*1e6:.3f} µs")
+    print(f"Average per call: {(fastpath_time / iterations) * 1e6:.3f} µs")
 
     # Fast paths should complete quickly
     assert fastpath_time < 1.0  # Should take less than 1 second for 50k calls

@@ -10,12 +10,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
+from collections import defaultdict, deque
+
 from example import new_container_types
-from collections import defaultdict, Counter, deque
-from fractions import Fraction
-from enum import Enum
-import asyncio
+
 
 def test_defaultdict_example():
     d = new_container_types.defaultdict_example()
@@ -23,12 +21,14 @@ def test_defaultdict_example():
     assert d["missing"] == 0
     assert d["count"] == 5
 
+
 def test_counter_example():
     common = new_container_types.counter_example()
     assert isinstance(common, list)
     assert len(common) == 2
-    assert common[0] == ('a', 5)
-    assert common[1] == ('b', 2)
+    assert common[0] == ("a", 5)
+    assert common[1] == ("b", 2)
+
 
 def test_deque_example():
     d = new_container_types.deque_example()
@@ -36,14 +36,17 @@ def test_deque_example():
     assert len(d) == 2
     assert list(d) == [1, 2]
 
+
 def test_fraction_example():
     result = new_container_types.fraction_example()
     assert result == 1.25
+
 
 def test_enum_example():
     name = new_container_types.enum_example()
     assert isinstance(name, str)
     assert name == "RED"
+
 
 # Disabled - PyAsyncGenerator has compilation issues
 # @pytest.mark.asyncio

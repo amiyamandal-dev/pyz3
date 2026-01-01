@@ -45,11 +45,7 @@ def test_generate_stubs_for_multiple_modules():
 
         # This will attempt to generate stubs
         # May not succeed for built-in modules but tests the flow
-        result = generate_stubs_for_modules(
-            modules,
-            tmpdir,
-            create_py_typed=False
-        )
+        result = generate_stubs_for_modules(modules, tmpdir, create_py_typed=False)
 
         # Result may be True or False depending on module structure
         assert isinstance(result, bool)

@@ -647,6 +647,7 @@ def generate_stubs(args):
                 print(f"[ERROR] {module_name}: {e}")
                 if args.verbose:
                     import traceback
+
                     traceback.print_exc()
                 sys.exit(1)
 

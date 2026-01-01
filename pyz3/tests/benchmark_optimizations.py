@@ -7,6 +7,7 @@ This module benchmarks all major optimizations:
 
 Run with: pytest benchmark_optimizations.py -v -s
 """
+
 import statistics
 import time
 from collections.abc import Callable
@@ -51,15 +52,15 @@ class Benchmark:
 
     def print_results(self, avg_us, min_us, max_us, stddev_us):
         """Print benchmark results."""
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Benchmark: {self.name}")
         print(f"Iterations: {self.iterations}, Warmup: {self.warmup}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"Average time: {avg_us:.3f} µs")
         print(f"Min time:     {min_us:.3f} µs")
         print(f"Max time:     {max_us:.3f} µs")
         print(f"Std dev:      {stddev_us:.3f} µs")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
 
 def test_benchmark_gil_caching(example_module):
@@ -132,7 +133,7 @@ def test_benchmark_object_pool_small_int(example_module):
     avg_not_pooled, min_t, max_t, std = bench2.run(fastpath_bench.return_i64, 10000)
     bench2.print_results(avg_not_pooled, min_t, max_t, std)
 
-    print(f"\nPooled vs Not Pooled: {avg_not_pooled/avg_pooled:.2f}x difference")
+    print(f"\nPooled vs Not Pooled: {avg_not_pooled / avg_pooled:.2f}x difference")
 
     # Both should be fast
     assert avg_pooled < 10
@@ -145,11 +146,7 @@ def test_benchmark_mixed_types(example_module):
 
     bench = Benchmark("Fast Path - Mixed Types", iterations=10000)
     avg, min_t, max_t, std = bench.run(
-        fastpath_bench.mixed_types,
-        int_val=42,
-        float_val=3.14,
-        bool_val=True,
-        str_val="test"
+        fastpath_bench.mixed_types, int_val=42, float_val=3.14, bool_val=True, str_val="test"
     )
     bench.print_results(avg, min_t, max_t, std)
 
@@ -173,9 +170,9 @@ def test_benchmark_comprehensive(example_module):
 
     from example import fastpath_bench
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("COMPREHENSIVE BENCHMARK - All Optimizations")
-    print("="*60)
+    print("=" * 60)
 
     total_iterations = 100000
     operations = []
@@ -203,8 +200,8 @@ def test_benchmark_comprehensive(example_module):
     print(f"\nTotal iterations: {total_iterations}")
     print(f"Total time: {total_time:.4f}s")
     print(f"Average time per iteration: {avg_time_us:.3f} µs")
-    print(f"Operations per second: {total_iterations/total_time:,.0f}")
-    print("="*60)
+    print(f"Operations per second: {total_iterations / total_time:,.0f}")
+    print("=" * 60)
 
     # Should handle 100k operations quickly
     assert total_time < 10.0  # Less than 10 seconds
@@ -212,9 +209,9 @@ def test_benchmark_comprehensive(example_module):
 
 def test_benchmark_summary(example_module):
     """Print summary of all optimizations."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("OPTIMIZATION SUMMARY")
-    print("="*60)
+    print("=" * 60)
     print("\nImplemented Optimizations:")
     print("1. ✅ GIL State Caching - Avoids redundant GIL acquire/release")
     print("2. ✅ Fast Path for Primitives - Direct FFI calls for i64, f64, bool, string")
@@ -223,7 +220,7 @@ def test_benchmark_summary(example_module):
     print("- GIL caching: 10-100x for nested allocations")
     print("- Fast paths: 2-5x for primitive conversions")
     print("- Object pooling: 1.5-3x for small integer operations")
-    print("="*60)
+    print("=" * 60)
 
 
 if __name__ == "__main__":

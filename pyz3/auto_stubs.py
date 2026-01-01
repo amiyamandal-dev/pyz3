@@ -75,7 +75,7 @@ class AutoStubGenerator:
             # Try to find the compiled module file
             try:
                 module = importlib.import_module(self.package_name)
-                if hasattr(module, '__file__') and module.__file__:
+                if hasattr(module, "__file__") and module.__file__:
                     module_path = Path(module.__file__)
                 else:
                     module_path = None
@@ -120,10 +120,10 @@ class AutoStubGenerator:
         if package_path is None:
             # Try to find the package path
             try:
-                module = importlib.import_module(self.package_name.split('.')[0])
-                if hasattr(module, '__path__'):
+                module = importlib.import_module(self.package_name.split(".")[0])
+                if hasattr(module, "__path__"):
                     package_path = Path(module.__path__[0])
-                elif hasattr(module, '__file__'):
+                elif hasattr(module, "__file__"):
                     package_path = Path(module.__file__).parent
                 else:
                     logger.warning("Could not determine package path for py.typed marker")
@@ -138,11 +138,7 @@ class AutoStubGenerator:
             logger.info(f"Created py.typed marker at {py_typed_file}")
 
 
-def generate_stubs_for_modules(
-    modules: list[str],
-    destination: str = ".",
-    create_py_typed: bool = True
-) -> bool:
+def generate_stubs_for_modules(modules: list[str], destination: str = ".", create_py_typed: bool = True) -> bool:
     """Generate stubs for multiple modules.
 
     Args:
@@ -169,10 +165,7 @@ def generate_stubs_for_modules(
     return success
 
 
-def integrate_stub_generation_into_build(
-    pyproject_path: Path,
-    destination: str = "."
-) -> bool:
+def integrate_stub_generation_into_build(pyproject_path: Path, destination: str = ".") -> bool:
     """Integrate stub generation into the build process.
 
     Reads pyproject.toml to find all ext_modules and generates stubs for them.
@@ -194,17 +187,17 @@ def integrate_stub_generation_into_build(
             return False
 
     try:
-        with open(pyproject_path, 'rb') as f:
+        with open(pyproject_path, "rb") as f:
             config = tomli.load(f)
 
         # Get list of extension modules
-        ext_modules = config.get('tool', {}).get('pyz3', {}).get('ext_module', [])
+        ext_modules = config.get("tool", {}).get("pyz3", {}).get("ext_module", [])
 
         if not ext_modules:
             logger.warning("No extension modules found in pyproject.toml")
             return True
 
-        module_names = [mod['name'] for mod in ext_modules if 'name' in mod]
+        module_names = [mod["name"] for mod in ext_modules if "name" in mod]
 
         logger.info(f"Found {len(module_names)} modules to generate stubs for")
 

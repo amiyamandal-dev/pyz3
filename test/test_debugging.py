@@ -10,7 +10,6 @@ Tests cover:
 """
 
 import os
-import sys
 from pathlib import Path
 
 import pytest
@@ -24,9 +23,9 @@ class TestDebugHelpers:
         from pyz3.debug import DebugHelper
 
         assert DebugHelper is not None
-        assert hasattr(DebugHelper, 'get_extension_path')
-        assert hasattr(DebugHelper, 'get_debug_symbols_info')
-        assert hasattr(DebugHelper, 'attach_debugger')
+        assert hasattr(DebugHelper, "get_extension_path")
+        assert hasattr(DebugHelper, "get_debug_symbols_info")
+        assert hasattr(DebugHelper, "attach_debugger")
 
     def test_breakpoint_context(self):
         """Test BreakpointContext (non-interactive)."""
@@ -59,37 +58,37 @@ class TestDebugHelpers:
         from pyz3.debug import DebugHelper
 
         # Test with sys (builtin module)
-        path = DebugHelper.get_extension_path('sys')
+        path = DebugHelper.get_extension_path("sys")
         assert path is None or isinstance(path, Path)
 
     def test_attach_debugger_lldb(self):
         """Test debugger attach command generation for LLDB."""
-        from pyz3.debug import DebugHelper
         # Import a real extension module first
         import example.hello  # noqa: F401
+        from pyz3.debug import DebugHelper
 
-        cmd = DebugHelper.attach_debugger('example.hello', debugger='lldb')
+        cmd = DebugHelper.attach_debugger("example.hello", debugger="lldb")
         assert isinstance(cmd, str)
-        assert 'lldb' in cmd.lower()
+        assert "lldb" in cmd.lower()
         assert str(os.getpid()) in cmd
 
     def test_attach_debugger_gdb(self):
         """Test debugger attach command generation for GDB."""
-        from pyz3.debug import DebugHelper
         # Import a real extension module first
         import example.hello  # noqa: F401
+        from pyz3.debug import DebugHelper
 
-        cmd = DebugHelper.attach_debugger('example.hello', debugger='gdb')
+        cmd = DebugHelper.attach_debugger("example.hello", debugger="gdb")
         assert isinstance(cmd, str)
-        assert 'gdb' in cmd.lower()
+        assert "gdb" in cmd.lower()
         assert str(os.getpid()) in cmd
 
     def test_attach_debugger_unknown(self):
         """Test debugger attach with unknown debugger."""
         from pyz3.debug import DebugHelper
 
-        cmd = DebugHelper.attach_debugger('sys', debugger='unknown')
-        assert 'Unknown debugger' in cmd or 'Error' in cmd
+        cmd = DebugHelper.attach_debugger("sys", debugger="unknown")
+        assert "Unknown debugger" in cmd or "Error" in cmd
 
     def test_print_mixed_traceback(self):
         """Test mixed traceback printing."""
@@ -100,18 +99,19 @@ class TestDebugHelpers:
 
     def test_create_debug_session_script(self):
         """Test debug session script creation."""
-        from pyz3.debug import create_debug_session_script
         import tempfile
 
+        from pyz3.debug import create_debug_session_script
+
         with tempfile.TemporaryDirectory() as tmpdir:
-            script_path = create_debug_session_script('sys', output_path=f'{tmpdir}/debug.py')
+            script_path = create_debug_session_script("sys", output_path=f"{tmpdir}/debug.py")
             assert script_path.exists()
-            assert script_path.suffix == '.py'
+            assert script_path.suffix == ".py"
 
             # Read and verify content
             content = script_path.read_text()
-            assert 'import sys' in content
-            assert 'DebugHelper' in content
+            assert "import sys" in content
+            assert "DebugHelper" in content
 
 
 class TestDebuggerConfiguration:
@@ -119,32 +119,33 @@ class TestDebuggerConfiguration:
 
     def test_vscode_launch_config_exists(self):
         """Verify VSCode launch.json exists."""
-        launch_json = Path('.vscode/launch.json')
+        launch_json = Path(".vscode/launch.json")
         assert launch_json.exists(), "VSCode launch.json should exist"
 
         # Verify it's valid JSON
         import json
+
         with open(launch_json) as f:
             config = json.load(f)
 
-        assert 'configurations' in config
-        assert len(config['configurations']) > 0
+        assert "configurations" in config
+        assert len(config["configurations"]) > 0
 
     def test_lldb_config_exists(self):
         """Verify .lldbinit exists."""
-        lldbinit = Path('.lldbinit')
+        lldbinit = Path(".lldbinit")
         assert lldbinit.exists(), ".lldbinit should exist"
 
         content = lldbinit.read_text()
-        assert 'pyz3' in content or 'pyz3' in content
+        assert "pyz3" in content or "pyz3" in content
 
     def test_gdb_config_exists(self):
         """Verify .gdbinit exists."""
-        gdbinit = Path('.gdbinit')
+        gdbinit = Path(".gdbinit")
         assert gdbinit.exists(), ".gdbinit should exist"
 
         content = gdbinit.read_text()
-        assert 'pyz3' in content or 'pyz3' in content
+        assert "pyz3" in content or "pyz3" in content
 
 
 class TestDebugConvenience:
@@ -152,7 +153,7 @@ class TestDebugConvenience:
 
     def test_dbg_break_alias(self):
         """Test dbg_break alias exists."""
-        from pyz3.debug import dbg_break, breakpoint_here
+        from pyz3.debug import breakpoint_here, dbg_break
 
         assert dbg_break is breakpoint_here
 
@@ -171,9 +172,9 @@ class TestDebugExamples:
         from pyz3 import debug as pyz3_debug
 
         # Should have debug utilities
-        assert hasattr(pyz3_debug, 'LogLevel')
-        assert hasattr(pyz3_debug, 'enableDebug')
-        assert hasattr(pyz3_debug, 'disableDebug')
+        assert hasattr(pyz3_debug, "LogLevel")
+        assert hasattr(pyz3_debug, "enableDebug")
+        assert hasattr(pyz3_debug, "disableDebug")
 
     def test_log_levels_defined(self):
         """Test that log levels are properly defined."""
@@ -190,19 +191,19 @@ class TestIntegration:
 
     def test_full_debugging_workflow(self):
         """Test a complete debugging workflow."""
-        from pyz3.debug import DebugHelper, inspect_extension
         # Import a real extension module first
         import example.hello  # noqa: F401
+        from pyz3.debug import DebugHelper
 
         # 1. Enable core dumps
         DebugHelper.enable_core_dumps()
 
         # 2. Get debugger commands
-        lldb_cmd = DebugHelper.attach_debugger('example.hello', debugger='lldb')
-        assert 'lldb' in lldb_cmd.lower()
+        lldb_cmd = DebugHelper.attach_debugger("example.hello", debugger="lldb")
+        assert "lldb" in lldb_cmd.lower()
 
-        gdb_cmd = DebugHelper.attach_debugger('example.hello', debugger='gdb')
-        assert 'gdb' in gdb_cmd.lower()
+        gdb_cmd = DebugHelper.attach_debugger("example.hello", debugger="gdb")
+        assert "gdb" in gdb_cmd.lower()
 
         # 3. Print mixed traceback
         DebugHelper.print_mixed_traceback()
@@ -212,21 +213,22 @@ class TestIntegration:
 
     def test_debug_script_generation(self):
         """Test that debug script can be generated and is valid."""
-        from pyz3.debug import create_debug_session_script
         import tempfile
 
+        from pyz3.debug import create_debug_session_script
+
         with tempfile.TemporaryDirectory() as tmpdir:
-            script = create_debug_session_script('sys', output_path=f'{tmpdir}/test.py')
+            script = create_debug_session_script("sys", output_path=f"{tmpdir}/test.py")
 
             # Script should be executable Python
             assert script.exists()
             content = script.read_text()
 
             # Should have shebang
-            assert content.startswith('#!/usr/bin/env python3')
+            assert content.startswith("#!/usr/bin/env python3")
 
             # Should import necessary modules
-            assert 'from pyz3.debug import' in content
+            assert "from pyz3.debug import" in content
 
 
 def test_debugging_feature_completeness():
@@ -234,16 +236,17 @@ def test_debugging_feature_completeness():
 
     # Zig-side debugging
     import pyz3
-    assert hasattr(pyz3, 'debug')
+
+    assert hasattr(pyz3, "debug")
 
     # Python-side debugging
     from pyz3 import debug as pyz3_debug
     from pyz3.debug import (
-        DebugHelper,
         BreakpointContext,
+        DebugHelper,
         breakpoint_here,
-        inspect_extension,
         create_debug_session_script,
+        inspect_extension,
     )
 
     assert DebugHelper is not None
@@ -254,9 +257,9 @@ def test_debugging_feature_completeness():
     assert pyz3_debug is not None
 
     # Configuration files
-    assert Path('.vscode/launch.json').exists()
-    assert Path('.lldbinit').exists()
-    assert Path('.gdbinit').exists()
+    assert Path(".vscode/launch.json").exists()
+    assert Path(".lldbinit").exists()
+    assert Path(".gdbinit").exists()
 
     print("✅ All debugging features are implemented!")
 

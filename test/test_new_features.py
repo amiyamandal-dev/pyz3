@@ -6,7 +6,6 @@ Test cases for new high-impact features:
 """
 
 import asyncio
-import sys
 import tempfile
 from pathlib import Path
 
@@ -193,16 +192,19 @@ def test_feature_completeness():
 
     # Memory Leak Detection
     from pyz3.pytest_plugin import MemoryLeakError
+
     assert MemoryLeakError is not None
 
     # Watch Mode
     from pyz3.watch import FileWatcher, watch_and_rebuild, watch_pytest
+
     assert FileWatcher is not None
     assert watch_and_rebuild is not None
     assert watch_pytest is not None
 
     # CLI Commands
     from pyz3.__main__ import parser
+
     args = parser.parse_args(["watch", "--optimize", "Debug"])
     assert args.command == "watch"
 

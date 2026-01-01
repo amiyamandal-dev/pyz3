@@ -58,7 +58,7 @@ def test_pool_performance_benefit(example_module):
     small_int_time = time.perf_counter() - start
 
     print(f"\nSmall int pooling time for {iterations} calls: {small_int_time:.4f}s")
-    print(f"Average per call: {(small_int_time/iterations)*1e6:.3f} µs")
+    print(f"Average per call: {(small_int_time / iterations) * 1e6:.3f} µs")
 
     # Pooling should make this very fast
     assert small_int_time < 2.0  # Should take less than 2 seconds
@@ -146,7 +146,7 @@ def test_pool_benchmark_comparison(example_module):
 
     print(f"\nPooled time: {pooled_time:.4f}s")
     print(f"Non-pooled time: {non_pooled_time:.4f}s")
-    print(f"Speedup: {non_pooled_time/pooled_time:.2f}x")
+    print(f"Speedup: {non_pooled_time / pooled_time:.2f}x")
 
     # Pooled should be faster or similar (CPython also caches small ints)
     # This test just verifies both work correctly

@@ -3,10 +3,11 @@ Comprehensive NumPy integration tests for pyz3
 Tests all NumPy functionality with zero-error guarantee
 """
 
-import pytest
-import numpy as np
 import sys
 from pathlib import Path
+
+import numpy as np
+import pytest
 
 # Add example to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "example"))
@@ -18,6 +19,7 @@ class TestNumPyBasics:
     def test_numpy_imports(self):
         """Verify NumPy can be imported"""
         import numpy
+
         assert numpy is not None
         assert hasattr(numpy, "array")
         assert hasattr(numpy, "ndarray")

@@ -125,6 +125,7 @@ def init_project_cookiecutter(
         logger.error(f"Failed to initialize project with cookiecutter: {e}")
         print(f"Error: Failed to initialize project: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 

@@ -159,9 +159,7 @@ def run_with_memcheck(
         top_allocations.append((tb, stat.size))
 
     # Find potential leaks (allocations that are significant)
-    potential_leaks = [
-        (tb, size) for tb, size in top_allocations if size > threshold
-    ]
+    potential_leaks = [(tb, size) for tb, size in top_allocations if size > threshold]
 
     tracemalloc.stop()
 
@@ -248,11 +246,7 @@ def memcheck_module(
     module = importlib.import_module(module_name)
 
     # Get all public callables
-    functions = [
-        (name, obj)
-        for name, obj in inspect.getmembers(module)
-        if callable(obj) and not name.startswith("_")
-    ]
+    functions = [(name, obj) for name, obj in inspect.getmembers(module) if callable(obj) and not name.startswith("_")]
 
     for name, func in functions:
         if verbose:
@@ -278,14 +272,15 @@ def memcheck_module(
     snapshot = tracemalloc.take_snapshot()
     top_stats = snapshot.statistics("traceback")
 
-    top_allocations = [(
-        "\n".join(stat.traceback.format()),
-        stat.size,
-    ) for stat in top_stats[:20]]
-
-    potential_leaks = [
-        (tb, size) for tb, size in top_allocations if size > threshold
+    top_allocations = [
+        (
+            "\n".join(stat.traceback.format()),
+            stat.size,
+        )
+        for stat in top_stats[:20]
     ]
+
+    potential_leaks = [(tb, size) for tb, size in top_allocations if size > threshold]
 
     tracemalloc.stop()
 
@@ -310,7 +305,4 @@ def get_traceback_memory() -> dict:
     snapshot = tracemalloc.take_snapshot()
     stats = snapshot.statistics("traceback")
 
-    return {
-        "\n".join(stat.traceback.format()): stat.size
-        for stat in stats
-    }
+    return {"\n".join(stat.traceback.format()): stat.size for stat in stats}

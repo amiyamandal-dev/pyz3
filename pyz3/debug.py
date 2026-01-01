@@ -24,6 +24,7 @@ from typing import Any
 
 class LogLevel(Enum):
     """Debug log levels matching Zig implementation."""
+
     DEBUG = 0
     INFO = 1
     WARN = 2
@@ -213,7 +214,7 @@ def inspect_extension(module_name: str):
     """Print detailed information about an extension module."""
     print(f"\n{'=' * 70}")
     print(f"Extension Module: {module_name}")
-    print('=' * 70)
+    print("=" * 70)
 
     # Module path
     path = DebugHelper.get_extension_path(module_name)

@@ -161,9 +161,7 @@ class DependencyManager:
 
         return dep
 
-    def _add_remote_dependency(
-        self, url: str, name: str | None, verbose: bool
-    ) -> Dependency:
+    def _add_remote_dependency(self, url: str, name: str | None, verbose: bool) -> Dependency:
         """Add a dependency from a remote URL with security validation."""
         logger.info(f"Adding remote dependency from: {url}")
 
@@ -209,12 +207,15 @@ class DependencyManager:
                 logger.debug(f"Cloning to: {dep_path}")
                 result = subprocess.run(
                     [
-                        "git", "clone",
+                        "git",
+                        "clone",
                         "--depth=1",  # Shallow clone
-                        "--config", "core.hooksPath=/dev/null",  # Disable hooks
-                        "--config", "core.fsmonitor=false",  # Disable fsmonitor
+                        "--config",
+                        "core.hooksPath=/dev/null",  # Disable hooks
+                        "--config",
+                        "core.fsmonitor=false",  # Disable fsmonitor
                         url,
-                        str(dep_path)
+                        str(dep_path),
                     ],
                     check=True,
                     capture_output=not verbose,
@@ -301,16 +302,12 @@ class DependencyManager:
 
         return dep
 
-    def _add_local_dependency(
-        self, path: str, name: str | None, verbose: bool
-    ) -> Dependency:
+    def _add_local_dependency(self, path: str, name: str | None, verbose: bool) -> Dependency:
         """Add a dependency from a local path with security validation."""
         logger.info(f"Adding local dependency from: {path}")
 
         # SECURITY: Validate local path
-        is_valid, error, local_path = SecurityValidator.validate_local_path(
-            path, self.project_root
-        )
+        is_valid, error, local_path = SecurityValidator.validate_local_path(path, self.project_root)
         if not is_valid:
             logger.error(f"Path validation failed: {error}")
             print(f"  ❌ Invalid path: {error}")
@@ -438,9 +435,9 @@ class DependencyManager:
                 f"// Bindings for {dep.name}\n"
                 f"// No headers were automatically discovered.\n"
                 f"// Add C imports manually:\n\n"
-                f'// const c = @cImport({{\n'
+                f"// const c = @cImport({{\n"
                 f'//     @cInclude("your_header.h");\n'
-                f'// }});\n\n'
+                f"// }});\n\n"
                 f"pub const c = struct {{}};\n"
             )
             try:

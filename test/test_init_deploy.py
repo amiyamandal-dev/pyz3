@@ -8,14 +8,14 @@ import pytest
 
 def _check_cookiecutter_available() -> bool:
     try:
-        import cookiecutter
+        import cookiecutter  # noqa: F401
+
         return True
     except ImportError:
         return False
 
 
 class TestInitCommand:
-
     def test_init_help(self):
         result = subprocess.run(
             [sys.executable, "-m", "pyz3", "init", "--help"],
@@ -25,10 +25,7 @@ class TestInitCommand:
         assert result.returncode == 0
         assert "init" in result.stdout
 
-    @pytest.mark.skipif(
-        not _check_cookiecutter_available(),
-        reason="cookiecutter required"
-    )
+    @pytest.mark.skipif(not _check_cookiecutter_available(), reason="cookiecutter required")
     def test_init_in_temp_dir(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmppath = Path(tmpdir)
@@ -64,10 +61,7 @@ class TestInitCommand:
 
                 assert found, f"pyproject.toml not created. Output: {result.stdout}\nError: {result.stderr}"
 
-    @pytest.mark.skipif(
-        not _check_cookiecutter_available(),
-        reason="cookiecutter required"
-    )
+    @pytest.mark.skipif(not _check_cookiecutter_available(), reason="cookiecutter required")
     def test_new_command(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmppath = Path(tmpdir)
@@ -102,7 +96,6 @@ class TestInitCommand:
 
 
 class TestDeployCommand:
-
     def test_deploy_help(self):
         result = subprocess.run(
             [sys.executable, "-m", "pyz3", "deploy", "--help"],
@@ -152,7 +145,6 @@ class TestDeployCommand:
 
 
 class TestCheckCommand:
-
     def test_check_help(self):
         result = subprocess.run(
             [sys.executable, "-m", "pyz3", "check", "--help"],
@@ -181,7 +173,6 @@ class TestCheckCommand:
 
 
 class TestTemplateIntegration:
-
     def test_template_exists(self):
         from pyz3 import init
 

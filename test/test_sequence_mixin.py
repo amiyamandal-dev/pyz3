@@ -198,6 +198,7 @@ def test_sequence_functional_operations():
 
     # Reduce (sum)
     from functools import reduce
+
     total = reduce(lambda acc, x: acc + x, test_list, 0)
     assert total == 15
 

@@ -159,11 +159,11 @@ class TestGenerateBuildZig:
         result = output.getvalue()
 
         # Check only libraries are set, others are empty
-        assert '.c_sources = &.{}' in result
-        assert '.c_include_dirs = &.{}' in result
+        assert ".c_sources = &.{}" in result
+        assert ".c_include_dirs = &.{}" in result
         assert '.c_libraries = &.{ "sqlite3" }' in result
-        assert '.c_flags = &.{}' in result
-        assert '.ld_flags = &.{}' in result
+        assert ".c_flags = &.{}" in result
+        assert ".ld_flags = &.{}" in result
 
     def test_generate_module_with_only_include_dirs(self):
         """Test module that only adds include directories."""
@@ -182,9 +182,9 @@ class TestGenerateBuildZig:
         result = output.getvalue()
 
         # Check only include_dirs are set
-        assert '.c_sources = &.{}' in result
+        assert ".c_sources = &.{}" in result
         assert '.c_include_dirs = &.{ "deps/mylib/include" }' in result
-        assert '.c_libraries = &.{}' in result
+        assert ".c_libraries = &.{}" in result
 
     def test_generate_preserves_formatting(self):
         """Test that generated build.zig is properly formatted."""

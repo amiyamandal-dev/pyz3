@@ -4,10 +4,10 @@ Tests the ExtModule and ToolPydust configuration models.
 """
 
 import tempfile
+import tomllib
 from pathlib import Path
 
 import pytest
-import tomllib
 from pydantic import ValidationError
 
 from pyz3.config import ExtModule, ToolPydust

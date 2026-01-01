@@ -192,12 +192,12 @@ class ZigItem(pytest.Item):
 
         if leak:
             leak_msg = (
-                f"\n{'='*70}\n"
+                f"\n{'=' * 70}\n"
                 f"MEMORY LEAK DETECTED in '{self.nodeid}'\n"
-                f"{'='*70}\n"
+                f"{'=' * 70}\n"
                 f"The test allocator detected unreleased memory.\n"
                 f"Please ensure all allocations are properly freed.\n"
-                f"{'='*70}\n"
+                f"{'=' * 70}\n"
             )
             self.add_report_section("call", "memory leaks", leak_msg)
 

@@ -13,13 +13,9 @@ Tests the following types:
 - PyUUID
 """
 
-import pytest
-import os
 import tempfile
-from pathlib import Path
-import uuid as py_uuid
-from decimal import Decimal
-from datetime import datetime, date, time, timedelta
+
+import pytest
 
 
 class TestPySet:
@@ -223,7 +219,7 @@ class TestPyPath:
 
     def test_path_exists(self):
         """Test checking path existence."""
-        with tempfile.TemporaryDirectory() as tmpdir:
+        with tempfile.TemporaryDirectory() as _:
             # Would test with Zig implementation
             pass
 
@@ -233,7 +229,7 @@ class TestPyPath:
 
     def test_path_read_write(self):
         """Test file read/write operations."""
-        with tempfile.TemporaryDirectory() as tmpdir:
+        with tempfile.TemporaryDirectory() as _:
             # Would test with Zig implementation
             pass
 

@@ -137,10 +137,7 @@ def benchmark_function(
                 func()
                 args = {}
             except Exception:
-                raise ValueError(
-                    f"Cannot auto-benchmark {func.__name__}: "
-                    "please provide explicit arguments"
-                )
+                raise ValueError(f"Cannot auto-benchmark {func.__name__}: please provide explicit arguments")
 
     # Collect timing samples
     times = []
@@ -202,9 +199,7 @@ def benchmark_module(
     else:
         # Get all public callable attributes
         functions = [
-            (name, obj)
-            for name, obj in inspect.getmembers(module)
-            if callable(obj) and not name.startswith("_")
+            (name, obj) for name, obj in inspect.getmembers(module) if callable(obj) and not name.startswith("_")
         ]
 
     for name, func in functions:

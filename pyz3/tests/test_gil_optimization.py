@@ -1,4 +1,5 @@
 """Test cases for GIL state caching optimization."""
+
 import time
 
 

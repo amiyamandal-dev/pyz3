@@ -12,6 +12,7 @@ def native_collections():
     """Import the native collections example module."""
     try:
         from example import native_collections_example
+
         return native_collections_example
     except ImportError as e:
         pytest.skip(f"Native collections example not available: {e}")
@@ -213,8 +214,8 @@ class TestNativeCollectionsIntegration:
         print(f"\nLarge-scale dict ({count:,} items):")
         print(f"  Insert time: {result['insert_time_ms']:.3f} ms")
         print(f"  Lookup time: {result['lookup_time_ms']:.3f} ms")
-        print(f"  Avg insert: {result['insert_time_ms']/count*1000:.3f} µs/op")
-        print(f"  Avg lookup: {result['lookup_time_ms']/count*1000:.3f} µs/op")
+        print(f"  Avg insert: {result['insert_time_ms'] / count * 1000:.3f} µs/op")
+        print(f"  Avg lookup: {result['lookup_time_ms'] / count * 1000:.3f} µs/op")
 
     def test_large_scale_array(self, native_collections):
         """Test native array with large scale data."""
@@ -226,8 +227,8 @@ class TestNativeCollectionsIntegration:
         print(f"\nLarge-scale array ({count:,} items):")
         print(f"  Push time: {result['push_time_ms']:.3f} ms")
         print(f"  Access time: {result['access_time_ms']:.3f} ms")
-        print(f"  Avg push: {result['push_time_ms']/count*1000:.3f} µs/op")
-        print(f"  Avg access: {result['access_time_ms']/count*1000:.3f} µs/op")
+        print(f"  Avg push: {result['push_time_ms'] / count * 1000:.3f} µs/op")
+        print(f"  Avg access: {result['access_time_ms'] / count * 1000:.3f} µs/op")
 
 
 class TestNativeCollectionsMemory:

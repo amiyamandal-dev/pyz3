@@ -10,7 +10,7 @@ def test_granular_error_types():
     from pyz3 import errors_enhanced
 
     # Check that error types exist
-    assert hasattr(errors_enhanced, 'PyError')
+    assert hasattr(errors_enhanced, "PyError")
 
 
 def test_error_with_stack_trace():
@@ -128,7 +128,7 @@ def test_error_traceback_information():
     try:
         error_function()
     except ValueError:
-        tb_lines = traceback.format_exc().split('\n')
+        tb_lines = traceback.format_exc().split("\n")
 
         # Should contain file name
         assert any("test_error_handling.py" in line for line in tb_lines)
@@ -165,7 +165,7 @@ def test_unicode_error():
     """Test UnicodeError handling."""
     with pytest.raises(UnicodeDecodeError):
         # Invalid UTF-8 sequence
-        b'\xff\xfe'.decode('utf-8')
+        b"\xff\xfe".decode("utf-8")
 
 
 def test_import_error():
@@ -248,10 +248,10 @@ def test_permission_error():
     """Test PermissionError (on Unix-like systems)."""
     import os
 
-    if os.name != 'nt':  # Skip on Windows
+    if os.name != "nt":  # Skip on Windows
         with pytest.raises((PermissionError, OSError)):
             # Try to write to root (requires permissions)
-            with open("/root/test_file.txt", 'w'):
+            with open("/root/test_file.txt", "w"):
                 pass
 
 
