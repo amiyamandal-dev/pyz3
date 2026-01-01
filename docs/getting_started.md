@@ -1,134 +1,337 @@
-# Getting Started
+# Getting Started with pyz3
 
-pyZ3 is currently designed to be embedded within a Python [Poetry](https://python-poetry.org/) project. [Reach out](https://github.com/fulcrum-so/pyZ3/issues) if you'd like help integrating pyZ3 with other build setups.
+pyz3 is a framework for building high-performance Python extension modules in Zig. This guide will help you create your first extension.
 
-See also the [generated Zig documentation](https://pyz3.fulcrum.so/zig).
+## Prerequisites
 
-## GitHub Template
+- **Python**: 3.11, 3.12, or 3.13
+- **Zig**: 0.15.x (automatically installed with pyz3)
+- **pip/uv**: For package management
 
-By far the easiest way to get started is by creating a project from our GitHub template: [github.com/fulcrum-so/pyZ3-template/](https://github.com/fulcrum-so/pyZ3-template/)
-
-This template includes:
-
-- A Python Poetry project
-- A `src/` directory containing a pyZ3 Python module
-- Pytest setup for running both Python and Zig unit tests.
-- GitHub Actions workflows for building and publishing the package.
-- VSCode settings for recommended extensions, debugger configurations, etc.
-
-## Poetry Setup
-
-Assuming you have an existing Poetry project, these are the changes you need to make to
-your `pyproject.toml` to setup Ziggy pyZ3. But first, add pyZ3 as a dev dependency:
+## Installation
 
 ```bash
-poetry add -G dev pyZ3
+# Using pip
+pip install pyz3
+
+# Using uv (recommended)
+uv pip install pyz3
 ```
 
-```diff title="pyproject.toml"
-[tool.poetry]
-name = "your-package"
-packages = [ { include = "your-module" } ]
-+ include = [ { path = "src/", format = "sdist" }, { path = "your-module/*.so", format = "wheel" } ]
+## Quick Start
 
-+ [tool.poetry.build]
-+ script = "build.py"
+### 1. Create a New Project
 
+```bash
+# Create a new directory and initialize
+mkdir my-extension && cd my-extension
+pyz3 init -n my_extension --no-interactive
+
+# Or with full options
+pyz3 init \
+  -n my_extension \
+  -a "Your Name" \
+  --email "you@example.com" \
+  --description "My awesome Zig extension"
+```
+
+This creates a project structure:
+
+```
+my-extension/
+├── src/
+│   └── my_extension.zig    # Your Zig code
+├── my_extension/
+│   ├── __init__.py         # Python package
+│   └── _lib.pyi            # Type stubs
+├── test/
+│   └── test_my_extension.py
+├── pyproject.toml
+├── build.py
+└── README.md
+```
+
+### 2. Write Your First Function
+
+Edit `src/my_extension.zig`:
+
+```zig
+const py = @import("pyz3");
+
+/// A simple function that adds two numbers
+pub fn add(args: struct { a: i64, b: i64 }) i64 {
+    return args.a + args.b;
+}
+
+/// Fibonacci sequence
+pub fn fibonacci(args: struct { n: u64 }) u64 {
+    if (args.n < 2) return args.n;
+    var a: u64 = 0;
+    var b: u64 = 1;
+    for (1..args.n) |_| {
+        const tmp = a + b;
+        a = b;
+        b = tmp;
+    }
+    return b;
+}
+
+comptime {
+    py.rootmodule(@This());
+}
+```
+
+### 3. Build and Test
+
+```bash
+# Install in development mode
+pip install -e .
+
+# Or using uv
+uv pip install -e .
+
+# Run tests
+pytest
+```
+
+### 4. Use in Python
+
+```python
+from my_extension import _lib
+
+print(_lib.add(a=5, b=3))      # Output: 8
+print(_lib.fibonacci(n=10))    # Output: 55
+```
+
+## Project Configuration
+
+Your `pyproject.toml` defines the extension modules:
+
+```toml
 [build-system]
-- requires = ["poetry-core"]
-+ requires = ["poetry-core", "pyZ3==TODO_SET_VERSION"]
+requires = ["poetry-core", "pyz3>=0.9.0"]
 build-backend = "poetry.core.masonry.api"
-```
 
-As well as creating the `build.py` for Poetry to invoke the pyZ3 build.
-
-```python title="build.py"
-from pyz3.build import build
-
-build()
-```
-
-## My First Module
-
-Once Poetry is configured, add a pyZ3 module to your `pyproject.toml` and start writing some Zig!
-
-```toml title="pyproject.toml"
 [[tool.pyz3.ext_module]]
-name = "example.hello"
-root = "src/hello.zig"
+name = "my_extension._lib"      # Python import path
+root = "src/my_extension.zig"   # Zig source file
+limited_api = true              # Use stable ABI (recommended)
 ```
 
-```zig title="src/hello.zig"
---8<-- "example/hello.zig:ex"
+### Multiple Modules
+
+```toml
+[[tool.pyz3.ext_module]]
+name = "mypackage.core"
+root = "src/core.zig"
+
+[[tool.pyz3.ext_module]]
+name = "mypackage.utils"
+root = "src/utils.zig"
 ```
 
-Running `poetry install` will build your modules. After this, you will be
-able to import your module from within `poetry shell` or `poetry run pytest`.
+## Type Mappings
 
-```python title="test/test_hello.py"
---8<-- "test/test_hello.py:ex"
-```
+pyz3 automatically converts between Python and Zig types:
 
-## Zig Language Server
+| Zig Type | Python Type | Notes |
+|----------|-------------|-------|
+| `void` | `None` | |
+| `bool` | `bool` | |
+| `i8` - `i64` | `int` | Checked overflow |
+| `u8` - `u64` | `int` | Checked overflow |
+| `f32`, `f64` | `float` | |
+| `[]const u8` | `str` | UTF-8 encoded |
+| `?T` | `T \| None` | Optional types |
+| `struct {...}` | Keyword args | For function parameters |
+| `py.PyObject` | `object` | Any Python object |
+| `py.PyList` | `list` | |
+| `py.PyDict` | `dict` | |
+| `py.PyTuple` | `tuple` | |
+| `py.PyArray` | `numpy.ndarray` | Zero-copy access |
 
-!!! warning
+## Classes
 
-    Currently ZLS (at least when running in VSCode) requires a small amount of manual setup.
+Define Python classes with Zig structs:
 
-In the root of your project, create a `zls.build.json` file containing the path to your python executable.
-This can be obtained by running `poetry env info -e`.
+```zig
+const py = @import("pyz3");
+const root = @This();
 
-```json title="zls.build.json"
-{
-    "build_options": [
-        {
-            "name": "python-exe",
-            "value": "/path/to/your/poetry/venv/bin/python",
-        }
-    ]
+pub const Point = py.class(struct {
+    pub const __doc__ = "A 2D point";
+    const Self = @This();
+
+    x: f64,
+    y: f64,
+
+    pub fn __init__(self: *Self, args: struct { x: f64, y: f64 }) void {
+        self.x = args.x;
+        self.y = args.y;
+    }
+
+    pub fn distance(self: *const Self) f64 {
+        return @sqrt(self.x * self.x + self.y * self.y);
+    }
+
+    pub fn move(self: *Self, args: struct { dx: f64, dy: f64 }) void {
+        self.x += args.dx;
+        self.y += args.dy;
+    }
+});
+
+comptime {
+    py.rootmodule(root);
 }
 ```
 
-## Self-managed Mode
+Usage in Python:
 
-pyZ3 makes it easy to get started building a Zig extension for Python. But when your use-case becomes sufficiently
-complex, you may wish to have full control of your `build.zig` file.
+```python
+from my_extension import _lib
 
-By default, pyZ3 will generated two files:
-
-* `pyz3.build.zig` - a Zig file used for bootstrapping pyZ3 and configuring Python modules.
-* `build.zig` - a valid Zig build configuration based on the `tool.pyz3.ext_module` entries in your `pyproject.toml`.
-
-In self-managed mode, pyZ3 will only generate the `pyz3.build.zig` file and your are free to manage your own `build.zig`.
-To enable this mode, set the flag in your `pyproject.toml` and remove any `ext_module` entries.
-
-```diff title="pyproject.toml"
-[tool.pyz3]
-+ self_managed = true
-
-- [[tool.pyz3.ext_module]]
-- name = "example.hello"
-- root = "example/hello.zig"
+p = _lib.Point(x=3.0, y=4.0)
+print(p.distance())  # 5.0
+p.move(dx=1.0, dy=0.0)
+print(p.x)  # 4.0
 ```
 
-You can then configure Python modules from a custom `build.zig` file:
+## Exception Handling
 
-```zig title="build.zig"
+Raise Python exceptions from Zig:
+
+```zig
+const py = @import("pyz3");
+const root = @This();
+
+pub fn divide(args: struct { a: i64, b: i64 }) !i64 {
+    if (args.b == 0) {
+        return py.ZeroDivisionError(root).raise("division by zero");
+    }
+    return @divTrunc(args.a, args.b);
+}
+
+pub fn validate_age(args: struct { age: i64 }) !void {
+    if (args.age < 0) {
+        return py.ValueError(root).raise("age cannot be negative");
+    }
+    if (args.age > 150) {
+        return py.ValueError(root).raise("age seems unrealistic");
+    }
+}
+```
+
+Available exception types:
+- `py.ValueError`
+- `py.TypeError`
+- `py.RuntimeError`
+- `py.ZeroDivisionError`
+- `py.IndexError`
+- `py.KeyError`
+- `py.AttributeError`
+- `py.ImportError`
+- `py.OSError`
+- `py.MemoryError`
+
+## NumPy Integration
+
+Zero-copy access to NumPy arrays:
+
+```zig
+const py = @import("pyz3");
+const root = @This();
+
+pub fn sum_array(args: struct { arr: py.PyArray(root) }) !f64 {
+    const data = try args.arr.asSlice(f64);
+    var sum: f64 = 0;
+    for (data) |val| {
+        sum += val;
+    }
+    return sum;
+}
+
+pub fn double_inplace(args: struct { arr: py.PyArray(root) }) !void {
+    const data = try args.arr.asSliceMut(f64);
+    for (data) |*val| {
+        val.* *= 2.0;
+    }
+}
+
+pub fn create_range(args: struct { n: usize }) !py.PyArray(root) {
+    var arr = try py.PyArray(root).create(.{ args.n }, f64);
+    const data = try arr.asSliceMut(f64);
+    for (data, 0..) |*val, i| {
+        val.* = @floatFromInt(i);
+    }
+    return arr;
+}
+```
+
+## Testing
+
+### Zig Tests
+
+Add tests directly in your Zig file:
+
+```zig
 const std = @import("std");
-const py = @import("./pyz3.build.zig");
+const py = @import("pyz3");
 
-pub fn build(b: *std.Build) void {
-    const target = b.standardTargetOptions(.{});
-    const optimize = b.standardOptimizeOption(.{});
+pub fn add(args: struct { a: i64, b: i64 }) i64 {
+    return args.a + args.b;
+}
 
-    // Each Python module consists of a library_step and a test_step
-    const module = pyz3.addPythonModule(.{
-        .name = "example.hello",
-        .root_source_file = .{ .path = "example/hello.zig" },
-        .target = target,
-        .optimize = optimize,
-    });
-    module.library_step.addModule(..., ...);
-    module.test_step.addModule(..., ...);
+test "add works" {
+    py.initialize();
+    defer py.finalize();
+
+    try std.testing.expectEqual(@as(i64, 5), add(.{ .a = 2, .b = 3 }));
 }
 ```
+
+Run Zig tests:
+
+```bash
+zig build test
+```
+
+### Python Tests
+
+```python
+# test/test_my_extension.py
+from my_extension import _lib
+
+def test_add():
+    assert _lib.add(a=2, b=3) == 5
+
+def test_fibonacci():
+    assert _lib.fibonacci(n=10) == 55
+```
+
+Run all tests (Zig + Python):
+
+```bash
+pytest
+```
+
+## CLI Reference
+
+```bash
+pyz3 init [OPTIONS]      # Create new project
+pyz3 build [OPTIONS]     # Build extension
+pyz3 develop             # Install in development mode
+pyz3 watch               # Watch mode with auto-rebuild
+pyz3 test                # Run tests
+pyz3 clean               # Clean build artifacts
+pyz3 build-wheel         # Build distribution wheel
+pyz3 deploy              # Publish to PyPI
+```
+
+## Next Steps
+
+- [Classes Guide](guide/classes.md) - Advanced class features
+- [NumPy Guide](guide/numpy.md) - NumPy integration details
+- [Memory-Mapped Files](guide/mmap.md) - Zero-copy I/O and shared memory
+- [Memory Management](guide/_5_memory.md) - Memory safety
+- [GIL Management](guide/gil.md) - Thread safety
+- [Debugging](guide/debugging.md) - Debug your extensions

@@ -1,5 +1,6 @@
 """Test cases for fast path optimization for primitive types."""
 import time
+
 import pytest
 
 
@@ -95,7 +96,7 @@ def test_fastpath_performance(example_module):
     iterations = 100000
     start = time.perf_counter()
     for i in range(iterations):
-        result = fastpath_bench.return_i64(i)
+        _result = fastpath_bench.return_i64(i)
     elapsed = time.perf_counter() - start
 
     # With fast paths, this should be significantly faster than generic trampolines
@@ -142,7 +143,6 @@ def test_fastpath_edge_cases(example_module):
     from example import fastpath_bench
 
     # Max/min values for i64
-    import sys
     max_i64 = 2**63 - 1
     min_i64 = -(2**63)
 
@@ -159,8 +159,9 @@ def test_fastpath_edge_cases(example_module):
 
 def test_fastpath_vs_generic(example_module):
     """Compare fast path vs generic trampoline performance."""
-    from example import fastpath_bench
     import time
+
+    from example import fastpath_bench
 
     # Test i64 fast path
     iterations = 50000

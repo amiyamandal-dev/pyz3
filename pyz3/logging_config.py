@@ -19,7 +19,6 @@ limitations under the License.
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
 
 
 class ColoredFormatter(logging.Formatter):
@@ -44,7 +43,7 @@ class ColoredFormatter(logging.Formatter):
         return super().format(record)
 
 
-def setup_logging(verbose: bool = False, log_file: Optional[Path] = None) -> None:
+def setup_logging(verbose: bool = False, log_file: Path | None = None) -> None:
     """
     Setup logging configuration for pyz3.
 

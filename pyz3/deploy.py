@@ -20,7 +20,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional
 
 from pyz3.logging_config import get_logger
 
@@ -29,12 +28,8 @@ logger = get_logger(__name__)
 
 def check_twine_available() -> bool:
     """Check if twine is installed."""
-    try:
-        import twine
-
-        return True
-    except ImportError:
-        return False
+    import importlib.util
+    return importlib.util.find_spec("twine") is not None
 
 
 def _get_python_cmd() -> list[str]:
@@ -46,9 +41,9 @@ def _get_python_cmd() -> list[str]:
 
 def deploy_to_pypi(
     dist_dir: str = "dist",
-    repository: Optional[str] = None,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
+    repository: str | None = None,
+    username: str | None = None,
+    password: str | None = None,
     skip_existing: bool = True,
     verbose: bool = False,
 ) -> None:

@@ -13,7 +13,6 @@ import sys
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional
 
 
 class Platform(Enum):
@@ -78,7 +77,7 @@ class BuildConfig:
 
     target_platform: Platform
     optimize: str = "ReleaseFast"  # Debug, ReleaseSafe, ReleaseFast, ReleaseSmall
-    python_version: Optional[str] = None  # e.g., "3.11", if None uses current
+    python_version: str | None = None  # e.g., "3.11", if None uses current
     output_dir: Path = Path("dist")
 
     def __post_init__(self):
@@ -164,9 +163,9 @@ class WheelBuilder:
 
     def build_all_platforms(
         self,
-        platforms: Optional[List[Platform]] = None,
+        platforms: list[Platform] | None = None,
         **kwargs,
-    ) -> List[Path]:
+    ) -> list[Path]:
         """
         Build wheels for multiple platforms.
 
@@ -204,7 +203,7 @@ class WheelBuilder:
 
 
 def build_wheel(
-    platform: Optional[str] = None,
+    platform: str | None = None,
     optimize: str = "ReleaseFast",
     output_dir: str = "dist",
     clean: bool = True,

@@ -18,19 +18,15 @@ limitations under the License.
 """
 
 import json
-import logging
-import os
-import re
 import shutil
 import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 from urllib.parse import urlparse
 
 from pyz3.logging_config import get_logger
-from pyz3.security import SecurityValidator, SecurityError
+from pyz3.security import SecurityError, SecurityValidator
 
 # Setup logging
 logger = get_logger(__name__)
@@ -42,7 +38,7 @@ class Dependency:
 
     name: str
     source: str  # URL or path
-    version: Optional[str] = None
+    version: str | None = None
     include_dirs: list[str] = field(default_factory=list)
     lib_dirs: list[str] = field(default_factory=list)
     libraries: list[str] = field(default_factory=list)  # Library names to link
@@ -88,7 +84,7 @@ class DependencyManager:
         if not self.deps_file.exists():
             return {}
 
-        with open(self.deps_file, "r") as f:
+        with open(self.deps_file) as f:
             data = json.load(f)
 
         return {name: Dependency.from_dict(dep_data) for name, dep_data in data.items()}
@@ -105,8 +101,8 @@ class DependencyManager:
     def add_dependency(
         self,
         source: str,
-        name: Optional[str] = None,
-        headers: Optional[list[str]] = None,
+        name: str | None = None,
+        headers: list[str] | None = None,
         verbose: bool = False,
     ) -> Dependency:
         """
@@ -146,27 +142,27 @@ class DependencyManager:
         self.save_dependencies(dependencies)
 
         # Generate Zig bindings
-        print(f"\n[2/4] Generating Zig bindings...")
+        print("\n[2/4] Generating Zig bindings...")
         self._generate_bindings(dep, verbose)
 
         # Update build system
-        print(f"\n[3/4] Updating build system...")
+        print("\n[3/4] Updating build system...")
         self._update_build_system(dependencies)
 
         # Generate Python wrapper template
-        print(f"\n[4/4] Generating Python wrapper template...")
+        print("\n[4/4] Generating Python wrapper template...")
         self._generate_python_wrapper(dep)
 
         print(f"\n✅ Successfully added dependency: {dep.name}")
-        print(f"\nNext steps:")
+        print("\nNext steps:")
         print(f"  1. Review generated bindings in: bindings/{dep.name}.zig")
         print(f"  2. Review Python wrapper in: src/{dep.name}_wrapper.zig")
-        print(f"  3. Run: pyz3 develop")
+        print("  3. Run: pyz3 develop")
 
         return dep
 
     def _add_remote_dependency(
-        self, url: str, name: Optional[str], verbose: bool
+        self, url: str, name: str | None, verbose: bool
     ) -> Dependency:
         """Add a dependency from a remote URL with security validation."""
         logger.info(f"Adding remote dependency from: {url}")
@@ -242,7 +238,7 @@ class DependencyManager:
 
             except subprocess.TimeoutExpired:
                 logger.error("Git clone timeout after 5 minutes")
-                print(f"  ❌ Clone timeout after 5 minutes")
+                print("  ❌ Clone timeout after 5 minutes")
                 # Clean up partial clone
                 if dep_path.exists():
                     try:
@@ -254,7 +250,7 @@ class DependencyManager:
 
             except subprocess.CalledProcessError as e:
                 logger.error(f"Git clone failed: {e}")
-                print(f"  ❌ Failed to clone repository")
+                print("  ❌ Failed to clone repository")
                 if e.stderr and verbose:
                     logger.debug(f"Git stderr: {e.stderr}")
                     print(f"     {e.stderr}")
@@ -281,7 +277,7 @@ class DependencyManager:
                 # Sanitize version string
                 if len(version) > 50:
                     version = version[:50]
-                    logger.warning(f"Version string truncated to 50 chars")
+                    logger.warning("Version string truncated to 50 chars")
                 logger.debug(f"Detected version: {version}")
         except subprocess.TimeoutExpired:
             logger.debug("Git version detection timed out")
@@ -306,7 +302,7 @@ class DependencyManager:
         return dep
 
     def _add_local_dependency(
-        self, path: str, name: Optional[str], verbose: bool
+        self, path: str, name: str | None, verbose: bool
     ) -> Dependency:
         """Add a dependency from a local path with security validation."""
         logger.info(f"Adding local dependency from: {path}")
@@ -437,7 +433,7 @@ class DependencyManager:
 
         if not dep.headers:
             logger.warning(f"No headers found for {dep.name}")
-            print(f"  ⚠️  No headers found, creating minimal binding file...")
+            print("  ⚠️  No headers found, creating minimal binding file...")
             content = (
                 f"// Bindings for {dep.name}\n"
                 f"// No headers were automatically discovered.\n"
@@ -449,7 +445,7 @@ class DependencyManager:
             )
             try:
                 SecurityValidator.safe_write_text(binding_file, content, force=True)
-            except (SecurityError, IOError) as e:
+            except (OSError, SecurityError) as e:
                 logger.error(f"Failed to write binding file: {e}")
                 print(f"  ❌ Failed to write binding file: {e}")
                 raise
@@ -514,7 +510,7 @@ pub const c = @cImport({{
             SecurityValidator.safe_write_text(binding_file, binding_content, force=True)
             logger.info(f"Generated bindings: {dep.name}.zig")
             print(f"  ✓ Generated bindings: {binding_file.relative_to(self.project_root)}")
-        except (SecurityError, IOError) as e:
+        except (OSError, SecurityError) as e:
             logger.error(f"Failed to write binding file: {e}")
             print(f"  ❌ Failed to write binding file: {e}")
             raise
@@ -524,7 +520,7 @@ pub const c = @cImport({{
         build_zig = self.project_root / "build.zig"
 
         if not build_zig.exists():
-            print(f"  ⚠️  build.zig not found, skipping build system update")
+            print("  ⚠️  build.zig not found, skipping build system update")
             return
 
         # Create a deps.zig file with build configuration
@@ -547,7 +543,7 @@ pub fn addDependencies(b: *std.Build, target: std.Build.ResolvedTarget, lib: any
 
             # Add source files if not header-only
             if not dep.is_header_only and dep.source_files:
-                deps_content += f"\n    // Add source files\n"
+                deps_content += "\n    // Add source files\n"
                 for src_file in dep.source_files[:10]:  # Limit to avoid too many
                     deps_content += f'    lib.addCSourceFile(.{{ .file = b.path("{src_file}"), .flags = &.{{}} }});\n'
 
@@ -555,7 +551,7 @@ pub fn addDependencies(b: *std.Build, target: std.Build.ResolvedTarget, lib: any
             for lib_name in dep.libraries:
                 deps_content += f'    lib.linkSystemLibrary("{lib_name}");\n'
 
-            deps_content += f"    lib.linkLibC();\n"
+            deps_content += "    lib.linkLibC();\n"
 
         deps_content += """
 }
@@ -563,9 +559,9 @@ pub fn addDependencies(b: *std.Build, target: std.Build.ResolvedTarget, lib: any
 
         deps_zig.write_text(deps_content)
         print(f"  ✓ Generated build config: {deps_zig.relative_to(self.project_root)}")
-        print(f"\n  📝 To use in build.zig, add:")
-        print(f'     const deps = @import("bindings/deps.zig.inc");')
-        print(f"     deps.addDependencies(b, target, lib);")
+        print("\n  📝 To use in build.zig, add:")
+        print('     const deps = @import("bindings/deps.zig.inc");')
+        print("     deps.addDependencies(b, target, lib);")
 
     def _generate_python_wrapper(self, dep: Dependency) -> None:
         """Generate a Python wrapper template."""
@@ -642,8 +638,6 @@ comptime {{
             print(f"❌ Dependency not found: {name}")
             sys.exit(1)
 
-        dep = dependencies[name]
-
         # Remove from tracking
         del dependencies[name]
         self.save_dependencies(dependencies)
@@ -657,7 +651,7 @@ comptime {{
         wrapper_file = self.project_root / "src" / f"{name}_wrapper.zig"
         if wrapper_file.exists():
             print(f"  ⚠️  Wrapper file exists: {wrapper_file.relative_to(self.project_root)}")
-            print(f"     Delete manually if no longer needed")
+            print("     Delete manually if no longer needed")
 
         # Update build system
         self._update_build_system(dependencies)
@@ -667,8 +661,8 @@ comptime {{
 
 def add_dependency(
     source: str,
-    name: Optional[str] = None,
-    headers: Optional[list[str]] = None,
+    name: str | None = None,
+    headers: list[str] | None = None,
     verbose: bool = False,
 ) -> None:
     """Add a C/C++ dependency to the current project."""

@@ -2,9 +2,9 @@
 Tests for native high-performance collections using uthash and utarray.
 """
 
-import pytest
-import sys
 import time
+
+import pytest
 
 
 @pytest.fixture(scope="module")
@@ -48,7 +48,7 @@ class TestNativeDict:
         assert result["insert_time_ms"] >= 0
         assert result["lookup_time_ms"] >= 0
 
-        print(f"\nSmall dict (100 items):")
+        print("\nSmall dict (100 items):")
         print(f"  Insert time: {result['insert_time_ms']:.3f} ms")
         print(f"  Lookup time: {result['lookup_time_ms']:.3f} ms")
 
@@ -59,7 +59,7 @@ class TestNativeDict:
         assert isinstance(result, dict)
         assert result["size"] == 1000
 
-        print(f"\nMedium dict (1,000 items):")
+        print("\nMedium dict (1,000 items):")
         print(f"  Insert time: {result['insert_time_ms']:.3f} ms")
         print(f"  Lookup time: {result['lookup_time_ms']:.3f} ms")
 
@@ -70,7 +70,7 @@ class TestNativeDict:
         assert isinstance(result, dict)
         assert result["size"] == 10000
 
-        print(f"\nLarge dict (10,000 items):")
+        print("\nLarge dict (10,000 items):")
         print(f"  Insert time: {result['insert_time_ms']:.3f} ms")
         print(f"  Lookup time: {result['lookup_time_ms']:.3f} ms")
 
@@ -133,7 +133,7 @@ class TestNativeArray:
         assert result["push_time_ms"] >= 0
         assert result["access_time_ms"] >= 0
 
-        print(f"\nSmall array (100 items):")
+        print("\nSmall array (100 items):")
         print(f"  Push time: {result['push_time_ms']:.3f} ms")
         print(f"  Access time: {result['access_time_ms']:.3f} ms")
 
@@ -144,7 +144,7 @@ class TestNativeArray:
         assert isinstance(result, dict)
         assert result["size"] == 1000
 
-        print(f"\nMedium array (1,000 items):")
+        print("\nMedium array (1,000 items):")
         print(f"  Push time: {result['push_time_ms']:.3f} ms")
         print(f"  Access time: {result['access_time_ms']:.3f} ms")
 
@@ -155,7 +155,7 @@ class TestNativeArray:
         assert isinstance(result, dict)
         assert result["size"] == 10000
 
-        print(f"\nLarge array (10,000 items):")
+        print("\nLarge array (10,000 items):")
         print(f"  Push time: {result['push_time_ms']:.3f} ms")
         print(f"  Access time: {result['access_time_ms']:.3f} ms")
 
@@ -239,7 +239,7 @@ class TestNativeCollectionsMemory:
         result = native_collections.benchmark_dict(100000)
 
         assert result["size"] == 100000
-        print(f"\nDict stress test (100,000 items):")
+        print("\nDict stress test (100,000 items):")
         print(f"  Total time: {result['insert_time_ms'] + result['lookup_time_ms']:.3f} ms")
 
     def test_array_stress(self, native_collections):
@@ -248,7 +248,7 @@ class TestNativeCollectionsMemory:
         result = native_collections.benchmark_array(100000)
 
         assert result["size"] == 100000
-        print(f"\nArray stress test (100,000 items):")
+        print("\nArray stress test (100,000 items):")
         print(f"  Total time: {result['push_time_ms'] + result['access_time_ms']:.3f} ms")
 
 

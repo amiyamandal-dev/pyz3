@@ -136,9 +136,6 @@ def generate_build_zig(fileobj: TextIO, conf=None):
         )
 
         for ext_module in conf.ext_modules:
-            if not ext_module.limited_api:
-                raise NotImplementedError("Only limited_api modules are supported currently")
-
             # Convert Windows backslashes to forward slashes for Zig compatibility
             root_path = str(ext_module.root).replace("\\", "/")
 

@@ -1,6 +1,4 @@
 """Test cases for object pooling optimization."""
-import sys
-import pytest
 
 
 def test_small_int_pooling(example_module):
@@ -45,8 +43,9 @@ def test_pool_initialization(example_module):
 
 def test_pool_performance_benefit(example_module):
     """Benchmark showing pooling improves performance for small ints."""
-    from example import fastpath_bench
     import time
+
+    from example import fastpath_bench
 
     # Test with small integers (should use pool)
     iterations = 50000
@@ -55,7 +54,7 @@ def test_pool_performance_benefit(example_module):
     for i in range(iterations):
         # Use small int that should be pooled
         small_val = i % 256
-        result = fastpath_bench.return_i64(small_val)
+        _result = fastpath_bench.return_i64(small_val)
     small_int_time = time.perf_counter() - start
 
     print(f"\nSmall int pooling time for {iterations} calls: {small_int_time:.4f}s")
@@ -79,6 +78,7 @@ def test_pool_edge_cases(example_module):
 def test_pool_thread_safety(example_module):
     """Test that object pooling is thread-safe."""
     import threading
+
     from example import fastpath_bench
 
     results = []
@@ -126,21 +126,22 @@ def test_pool_memory_efficiency(example_module):
 
 def test_pool_benchmark_comparison(example_module):
     """Compare performance with and without pooling."""
-    from example import fastpath_bench
     import time
+
+    from example import fastpath_bench
 
     iterations = 100000
 
     # Test with small integers (uses pooling)
     start = time.perf_counter()
     for i in range(iterations):
-        result = fastpath_bench.return_i64(i % 100)  # Small int, pooled
+        _result = fastpath_bench.return_i64(i % 100)  # Small int, pooled
     pooled_time = time.perf_counter() - start
 
     # Test with large integers (no pooling)
     start = time.perf_counter()
     for i in range(iterations):
-        result = fastpath_bench.return_i64(1000 + i)  # Large int, not pooled
+        _result = fastpath_bench.return_i64(1000 + i)  # Large int, not pooled
     non_pooled_time = time.perf_counter() - start
 
     print(f"\nPooled time: {pooled_time:.4f}s")

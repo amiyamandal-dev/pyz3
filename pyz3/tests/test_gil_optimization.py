@@ -1,6 +1,5 @@
 """Test cases for GIL state caching optimization."""
 import time
-import pytest
 
 
 def test_gil_nested_allocations(example_module):
@@ -51,6 +50,7 @@ def test_gil_with_containers(example_module):
 def test_gil_multithreaded_safety(example_module):
     """Verify GIL caching is thread-safe with threadlocal storage."""
     import threading
+
     from example import helloworld
 
     results = []

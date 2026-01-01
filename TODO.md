@@ -42,8 +42,8 @@ List and tuple types work correctly with their native implementations.
 ## Build System
 
 ### Build Configuration
-- [ ] `pyz3/buildzig.py:127` - Fix output filename for non-limited modules
-- [ ] `pyz3/config.py:44` - Fix configuration for non-limited API
+- [x] `pyz3/buildzig.py:127` - Removed NotImplementedError, non-limited API now supported
+- [x] `pyz3/config.py:44` - Uses platform-specific EXT_SUFFIX for non-limited API
 
 ## Testing Infrastructure
 
@@ -73,10 +73,10 @@ These are design decision notes, not action items:
 
 ## Statistics
 
-- **Total TODOs**: 12 (15 completed in v0.9.1)
+- **Total TODOs**: 12 (17 completed in v0.9.1)
 - **Blocking Issues**: 0
 - **Known Limitations**: 1 (PySequenceMixin - Zig 0.15 language change)
-- **Enhancement Requests**: 8
+- **Enhancement Requests**: 6
 - **Issue #193 Status**: Fully resolved
 
 ## Recent Fixes (v0.9.1)
@@ -101,6 +101,11 @@ These are design decision notes, not action items:
 - ✅ buffer.zig: Added support for bool, pointer, and array types in getFormat()
 - ✅ slice.zig: Added toPyOrNull() and decrefIfNotNull() helper functions
 - ✅ str.zig: Fixed FIXME comment in appendObj() - clarified PyUnicode_Append semantics
+
+### Build System
+- ✅ Non-limited API support: Modules can now use `limited_api = false`
+- ✅ config.py: Uses sysconfig.get_config_var('EXT_SUFFIX') for platform-specific suffix
+- ✅ pyz3.build.zig: Added ext_suffix field, removed NotImplementedError
 
 ## Recent Fixes (v0.9.0)
 

@@ -6,13 +6,10 @@ ensuring type stubs are always up-to-date with the compiled modules.
 """
 
 import hashlib
-import os
-import sys
 import importlib
-import subprocess
-from pathlib import Path
-from typing import Optional, List
 import logging
+import sys
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -114,7 +111,7 @@ class AutoStubGenerator:
             logger.error(f"Failed to generate stubs: {e}")
             return False
 
-    def create_py_typed_marker(self, package_path: Optional[Path] = None) -> None:
+    def create_py_typed_marker(self, package_path: Path | None = None) -> None:
         """Create py.typed marker file for PEP 561 compliance.
 
         Args:
@@ -142,7 +139,7 @@ class AutoStubGenerator:
 
 
 def generate_stubs_for_modules(
-    modules: List[str],
+    modules: list[str],
     destination: str = ".",
     create_py_typed: bool = True
 ) -> bool:
@@ -218,7 +215,7 @@ def integrate_stub_generation_into_build(
         return False
 
 
-def post_build_hook(build_lib: str, pyproject_path: Optional[Path] = None) -> None:
+def post_build_hook(build_lib: str, pyproject_path: Path | None = None) -> None:
     """Post-build hook to automatically generate stubs.
 
     This function should be called after building extension modules.

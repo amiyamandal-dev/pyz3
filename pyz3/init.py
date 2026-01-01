@@ -17,25 +17,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional
 
 from pyz3.logging_config import get_logger
-from pyz3.security import SecurityError, SecurityValidator
+from pyz3.security import SecurityValidator
 
 logger = get_logger(__name__)
 
 
 def init_project_cookiecutter(
     path: Path,
-    package_name: Optional[str] = None,
-    author_name: Optional[str] = None,
-    author_email: Optional[str] = None,
-    description: Optional[str] = None,
+    package_name: str | None = None,
+    author_name: str | None = None,
+    author_email: str | None = None,
+    description: str | None = None,
     use_interactive: bool = True,
 ) -> None:
     """
@@ -166,7 +163,7 @@ def get_git_user_info() -> tuple[str, str]:
     return name, name
 
 
-def new_project(name: str, path: Optional[Path] = None) -> None:
+def new_project(name: str, path: Path | None = None) -> None:
     """
     Create a new Pydust project in a new directory.
 

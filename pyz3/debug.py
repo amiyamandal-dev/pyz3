@@ -236,11 +236,11 @@ def inspect_extension(module_name: str):
 
     # File info
     if "file_info" in symbols:
-        print(f"\n📄 File Info:")
+        print("\n📄 File Info:")
         print(f"   {symbols['file_info']}")
 
     # Debugger commands
-    print(f"\n🐛 Debugger Commands:")
+    print("\n🐛 Debugger Commands:")
     print("   LLDB:")
     print(f"   $ lldb -p {os.getpid()}")
     print(f"   (lldb) image add {path}")

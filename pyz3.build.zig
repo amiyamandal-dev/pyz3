@@ -65,6 +65,7 @@ pub const PyZ3Step = struct {
     python_exe: []const u8,
     libpython: []const u8,
     hexversion: []const u8,
+    ext_suffix: []const u8,
 
     pyz3_source_file: []const u8,
     ffi_header_file: []const u8,
@@ -131,6 +132,7 @@ pub const PyZ3Step = struct {
             .python_exe = python_exe,
             .libpython = libpython,
             .hexversion = hexversion,
+            .ext_suffix = "",
             .pyz3_source_file = "",
             .ffi_header_file = "",
             .python_include_dir = "",
@@ -170,6 +172,14 @@ pub const PyZ3Step = struct {
             std.debug.print("   Error: {}\n", .{err});
             std.debug.print("   Ensure pyz3 package is installed: pip install pyz3\n", .{});
             std.debug.print("   Or install in development mode: pip install -e .\n", .{});
+            std.process.exit(1);
+        };
+        self.ext_suffix = self.pythonOutput(
+            "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX') or '.so', end='')",
+        ) catch |err| {
+            std.debug.print("\n❌ Failed to get Python extension suffix\n", .{});
+            std.debug.print("   Error: {}\n", .{err});
+            std.debug.print("   Python executable: {s}\n", .{python_exe});
             std.process.exit(1);
         };
 
@@ -286,7 +296,7 @@ pub const PyZ3Step = struct {
         const install = b.addInstallFileWithDir(
             lib.getEmittedBin(),
             .{ .custom = ".." }, // Escape zig-out/ to install in project root
-            libraryDestRelPath(self.allocator, options) catch |err| {
+            libraryDestRelPath(self.allocator, options, self.ext_suffix) catch |err| {
                 std.debug.print("\n❌ Out of memory computing library destination path\n", .{});
                 std.debug.print("   Error: {}\n", .{err});
                 std.process.exit(1);
@@ -380,17 +390,11 @@ pub const PyZ3Step = struct {
         };
     }
 
-    fn libraryDestRelPath(allocator: std.mem.Allocator, options: PythonModuleOptions) ![]const u8 {
+    fn libraryDestRelPath(allocator: std.mem.Allocator, options: PythonModuleOptions, ext_suffix: []const u8) ![]const u8 {
         const name = options.name;
 
-        if (!options.limited_api) {
-            std.debug.print("\n❌ pyz3 currently only supports limited API (PEP 384)\n", .{});
-            std.debug.print("   Please set 'limited_api: true' in PythonModuleOptions\n", .{});
-            std.debug.print("   Module: {s}\n", .{name});
-            std.process.exit(1);
-        }
-
-        const suffix = ".abi3.so";
+        // Use .abi3.so for limited API, platform-specific suffix otherwise
+        const suffix = if (options.limited_api) ".abi3.so" else ext_suffix;
         const destPath = try allocator.alloc(u8, name.len + suffix.len);
 
         // Take the module name, replace dots for slashes.

@@ -208,6 +208,9 @@ pub const testing = @import("testing.zig");
 // Debugging utilities
 pub const debug = @import("debug.zig");
 
+// Memory-mapped file utilities
+pub const mmap = @import("mmap.zig");
+
 const Self = @This();
 
 /// Initialize Python interpreter state

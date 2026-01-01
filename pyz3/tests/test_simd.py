@@ -1,7 +1,6 @@
 """Test cases for SIMD datatype support."""
 
 import pytest
-import math
 
 
 def test_vec4_add(example_module):
@@ -221,8 +220,9 @@ def test_vec4_negative_values(example_module):
 
 def test_vec4_performance(example_module):
     """Benchmark SIMD performance."""
-    from example import simd_example
     import time
+
+    from example import simd_example
 
     vec1 = [1.0, 2.0, 3.0, 4.0]
     vec2 = [5.0, 6.0, 7.0, 8.0]

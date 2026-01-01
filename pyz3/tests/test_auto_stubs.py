@@ -1,10 +1,7 @@
 """Test cases for automatic stub generation."""
 
-import os
 import tempfile
-import shutil
 from pathlib import Path
-import pytest
 
 
 def test_auto_stub_generator_basic():
@@ -72,10 +69,10 @@ def test_stub_file_structure():
         init_file.write_text("def test_func(x: int) -> int:\n    return x * 2\n")
 
         # Try to generate stubs
-        generator = AutoStubGenerator("test_mod", tmpdir)
+        _generator = AutoStubGenerator("test_mod", tmpdir)
 
         # The stub file should be created at test_mod/__init__.pyi
-        expected_stub = test_module_dir / "__init__.pyi"
+        _expected_stub = test_module_dir / "__init__.pyi"
 
         # Note: Actual generation depends on the module being importable
 
@@ -168,7 +165,7 @@ def test_stub_generator_destination_creation():
         tmppath = Path(tmpdir)
         nested_dest = tmppath / "nested" / "stubs"
 
-        generator = AutoStubGenerator("sys", str(nested_dest))
+        _generator = AutoStubGenerator("sys", str(nested_dest))
 
         # Destination should be created
         assert nested_dest.exists()

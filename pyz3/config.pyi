@@ -1,7 +1,6 @@
 """Type stubs for pyz3.config module."""
 
 from pathlib import Path
-from typing import Literal
 
 class ExtModule:
     """Configuration for an extension module."""

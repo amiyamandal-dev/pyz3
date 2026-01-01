@@ -1,7 +1,8 @@
 """Test cases for enhanced error handling with stack traces."""
 
-import pytest
 import sys
+
+import pytest
 
 
 def test_granular_error_types():
@@ -153,9 +154,11 @@ def test_zero_division_error():
 
 def test_overflow_error():
     """Test OverflowError."""
-    with pytest.raises((OverflowError, ValueError)):
-        # Try to create a number too large
-        _ = float('1e309') * float('1e309')
+    import math
+
+    with pytest.raises(OverflowError):
+        # math.exp with very large argument causes OverflowError
+        _ = math.exp(1000)
 
 
 def test_unicode_error():
@@ -168,7 +171,7 @@ def test_unicode_error():
 def test_import_error():
     """Test ImportError."""
     with pytest.raises(ImportError):
-        import nonexistent_module_xyz_12345
+        import nonexistent_module_that_does_not_exist_12345  # noqa: F401
 
 
 def test_attribute_error_detailed():

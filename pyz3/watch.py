@@ -48,7 +48,7 @@ class FileWatcher:
                 for chunk in iter(lambda: f.read(4096), b""):
                     hasher.update(chunk)
             return hasher.hexdigest()
-        except (OSError, IOError):
+        except OSError:
             return ""
 
     def check_changes(self) -> list[Path]:

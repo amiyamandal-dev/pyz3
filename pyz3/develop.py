@@ -22,7 +22,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional
 
 from pyz3.logging_config import get_logger
 
@@ -45,7 +44,7 @@ def _find_installer() -> tuple[list[str], str]:
 def develop_install(
     optimize: str = "Debug",
     verbose: bool = False,
-    extras: Optional[list[str]] = None,
+    extras: list[str] | None = None,
 ) -> None:
     """
     Build the extension and install the package in development mode.
@@ -148,7 +147,7 @@ def develop_install(
 
     try:
         logger.debug(f"Running: {' '.join(pip_cmd)}")
-        result = subprocess.run(
+        subprocess.run(
             pip_cmd,
             cwd=project_root,
             check=True,

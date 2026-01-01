@@ -7,9 +7,9 @@ This module benchmarks all major optimizations:
 
 Run with: pytest benchmark_optimizations.py -v -s
 """
-import time
 import statistics
-from typing import Callable, List
+import time
+from collections.abc import Callable
 
 
 class Benchmark:
@@ -169,8 +169,9 @@ def test_benchmark_deep_nesting(example_module):
 
 def test_benchmark_comprehensive(example_module):
     """Comprehensive benchmark of all optimizations together."""
-    from example import fastpath_bench
     import time
+
+    from example import fastpath_bench
 
     print("\n" + "="*60)
     print("COMPREHENSIVE BENCHMARK - All Optimizations")

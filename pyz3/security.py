@@ -19,9 +19,7 @@ limitations under the License.
 import keyword
 import os
 import platform
-import re
 from pathlib import Path
-from typing import Optional
 from urllib.parse import urlparse
 
 
@@ -51,7 +49,7 @@ class SecurityValidator:
     MAX_HEADERS = 20
 
     @staticmethod
-    def validate_git_url(url: str) -> tuple[bool, Optional[str]]:
+    def validate_git_url(url: str) -> tuple[bool, str | None]:
         """
         Validate a Git URL for security.
 
@@ -89,7 +87,7 @@ class SecurityValidator:
         return True, None
 
     @staticmethod
-    def validate_local_path(path: str, project_root: Path) -> tuple[bool, Optional[str], Optional[Path]]:
+    def validate_local_path(path: str, project_root: Path) -> tuple[bool, str | None, Path | None]:
         """
         Validate a local filesystem path for security.
 
@@ -136,7 +134,7 @@ class SecurityValidator:
         return True, None, local_path
 
     @staticmethod
-    def sanitize_package_name(name: str) -> tuple[bool, Optional[str], Optional[str]]:
+    def sanitize_package_name(name: str) -> tuple[bool, str | None, str | None]:
         """
         Sanitize and validate a package name.
 
@@ -176,7 +174,7 @@ class SecurityValidator:
         return True, None, sanitized
 
     @staticmethod
-    def validate_file_write(path: Path, force: bool = False) -> tuple[bool, Optional[str]]:
+    def validate_file_write(path: Path, force: bool = False) -> tuple[bool, str | None]:
         """
         Validate that a file can be safely written.
 
@@ -249,7 +247,7 @@ class SecurityValidator:
                     temp_path.unlink()
                 except Exception:
                     pass
-            raise IOError(f"Failed to write file: {e}")
+            raise OSError(f"Failed to write file: {e}")
 
     @staticmethod
     def check_directory_size(path: Path, max_size: int = MAX_REPO_SIZE) -> tuple[bool, int]:

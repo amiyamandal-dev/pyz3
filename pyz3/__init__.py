@@ -22,3 +22,6 @@ __author__ = "amiya mandal"
 __email__ = "amiya19mandal@pm.me"
 __url__ = "https://github.com/pyz3-project/pyz3"
 __description__ = "Build high-performance Python extensions in Zig with automatic memory management"
+
+# Enhanced error handling
+from pyz3 import errors_enhanced as errors_enhanced

@@ -13,9 +13,10 @@ limitations under the License.
 """
 
 import functools
+import sysconfig
+import tomllib
 from pathlib import Path
 
-import tomllib
 from pydantic import BaseModel, Field, model_validator
 
 
@@ -40,9 +41,12 @@ class ExtModule(BaseModel):
 
     @property
     def install_path(self) -> Path:
-        if not self.limited_api:
-            raise NotImplementedError("Only limited API modules are supported currently")
-        return Path(*self.name.split(".")).with_suffix(".abi3.so")
+        if self.limited_api:
+            suffix = ".abi3.so"
+        else:
+            # Use platform-specific suffix (e.g., .cpython-314-darwin.so)
+            suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
+        return Path(*self.name.split(".")).with_suffix(suffix)
 
     @property
     def test_bin(self) -> Path:

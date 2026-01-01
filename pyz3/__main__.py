@@ -16,8 +16,11 @@ import argparse
 import sys
 from pathlib import Path
 
-from pyz3 import buildzig, config, deps, deploy, develop, init, watch
+from pyz3 import benchmark as benchmark_module
+from pyz3 import buildzig, config, deploy, deps, develop, init, watch
+from pyz3 import memcheck as memcheck_module
 from pyz3 import wheel as wheel_module
+from pyz3.auto_stubs import AutoStubGenerator
 from pyz3.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -289,6 +292,98 @@ check_sp.add_argument(
     help="enable strict checking",
 )
 
+# Stub generation command
+stubs_sp = sub.add_parser(
+    "stubs",
+    help="Generate Python type stub files (.pyi) from compiled extension modules",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+stubs_sp.add_argument(
+    "module",
+    nargs="?",
+    help="specific module to generate stubs for (default: all modules from pyproject.toml)",
+)
+stubs_sp.add_argument(
+    "-o",
+    "--output",
+    default=".",
+    help="output directory for stub files",
+)
+stubs_sp.add_argument(
+    "--check",
+    action="store_true",
+    help="check if stubs are up-to-date instead of generating",
+)
+stubs_sp.add_argument(
+    "-v",
+    "--verbose",
+    action="store_true",
+    help="verbose output",
+)
+
+# Benchmark command
+bench_sp = sub.add_parser(
+    "bench",
+    help="Run benchmarks on extension module functions",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+bench_sp.add_argument(
+    "module",
+    help="module to benchmark (e.g., 'mypackage._lib')",
+)
+bench_sp.add_argument(
+    "-f",
+    "--function",
+    help="specific function to benchmark (default: all public functions)",
+)
+bench_sp.add_argument(
+    "-n",
+    "--iterations",
+    type=int,
+    default=10000,
+    help="number of iterations per function",
+)
+bench_sp.add_argument(
+    "-w",
+    "--warmup",
+    type=int,
+    default=100,
+    help="warmup iterations",
+)
+bench_sp.add_argument(
+    "--json",
+    action="store_true",
+    help="output results as JSON",
+)
+bench_sp.add_argument(
+    "-o",
+    "--output",
+    help="save results to file",
+)
+
+# Memory leak detection command
+memcheck_sp = sub.add_parser(
+    "memcheck",
+    help="Run extension with memory leak detection enabled",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+memcheck_sp.add_argument(
+    "script",
+    help="Python script to run with memory checking",
+)
+memcheck_sp.add_argument(
+    "--threshold",
+    type=int,
+    default=1024,
+    help="minimum leak size to report (bytes)",
+)
+memcheck_sp.add_argument(
+    "-v",
+    "--verbose",
+    action="store_true",
+    help="verbose output",
+)
+
 
 def main():
     args = parser.parse_args()
@@ -328,6 +423,15 @@ def main():
 
     elif args.command == "check":
         check_packages(args)
+
+    elif args.command == "stubs":
+        generate_stubs(args)
+
+    elif args.command == "bench":
+        run_benchmark(args)
+
+    elif args.command == "memcheck":
+        run_memcheck(args)
 
 
 def _parse_exts(exts: list[str], limited_api: bool = True, prefix: str = "") -> list[config.ExtModule]:
@@ -496,6 +600,84 @@ def check_packages(args):
         dist_dir=args.dist_dir,
         strict=args.strict,
     ):
+        sys.exit(1)
+
+
+def generate_stubs(args):
+    """Generate Python type stub files from compiled extension modules."""
+    from pyz3.generate_stubs import StubGenerator
+
+    generator = StubGenerator()
+
+    if args.module:
+        # Generate stubs for a specific module
+        modules = [args.module]
+    else:
+        # Get modules from pyproject.toml
+        conf = config.load_pyproject()
+        if conf and conf.ext_module:
+            modules = [ext.name for ext in conf.ext_module]
+        else:
+            print("No extension modules found in pyproject.toml")
+            print("Specify a module with: pyz3 stubs <module_name>")
+            sys.exit(1)
+
+    output_dir = Path(args.output)
+
+    if args.check:
+        # Check mode - verify stubs are up to date
+        all_ok = True
+        for module_name in modules:
+            stub_gen = AutoStubGenerator(module_name)
+            if not stub_gen.is_up_to_date():
+                print(f"[OUTDATED] {module_name}")
+                all_ok = False
+            else:
+                print(f"[OK] {module_name}")
+        sys.exit(0 if all_ok else 1)
+    else:
+        # Generate stubs
+        for module_name in modules:
+            if args.verbose:
+                print(f"Generating stubs for: {module_name}")
+            try:
+                stub_path = generator.generate_stub_file(module_name, output_dir)
+                print(f"[OK] {stub_path}")
+            except Exception as e:
+                print(f"[ERROR] {module_name}: {e}")
+                if args.verbose:
+                    import traceback
+                    traceback.print_exc()
+                sys.exit(1)
+
+
+def run_benchmark(args):
+    """Run benchmarks on extension module functions."""
+    suite = benchmark_module.run_benchmark(
+        module_name=args.module,
+        function_name=args.function,
+        iterations=args.iterations,
+        warmup=args.warmup,
+        output_json=args.json,
+        output_file=args.output,
+    )
+
+    if not suite.results:
+        print("No functions were benchmarked.")
+        sys.exit(1)
+
+
+def run_memcheck(args):
+    """Run extension with memory leak detection enabled."""
+    report = memcheck_module.run_with_memcheck(
+        script_path=args.script,
+        threshold=args.threshold,
+        verbose=args.verbose,
+    )
+
+    report.print_report()
+
+    if report.is_leak_suspected(args.threshold):
         sys.exit(1)
 
 
