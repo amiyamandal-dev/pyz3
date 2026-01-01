@@ -1,6 +1,6 @@
 [project]
 name = "pyz3"
-version = "0.9.0"
+version = "0.9.1"
 description = "Build high-performance Python extensions in Zig with automatic memory management."
 authors = [{ name = "amiya mandal", email = "amiya19mandal@pm.me" }]
 license = { text = "Apache-2.0" }
@@ -76,6 +76,7 @@ dev = [
 
 [tool.ruff]
 line-length = 120
+exclude = ["pyz3/pyZ3-template"]
 
 [tool.ruff.lint]
 select = ["F", "E", "W", "UP", "I"]

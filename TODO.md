@@ -1,6 +1,6 @@
 # TODO List for pyz3
 
-This document tracks all TODO, FIXME, and NOTE comments in the codebase as of version 0.9.0.
+This document tracks all TODO, FIXME, and NOTE comments in the codebase as of version 0.9.1.
 
 **Project Status**: ✅ Production-ready. All TODOs are enhancement requests, not bugs or critical issues.
 
@@ -107,7 +107,7 @@ These are design decision notes, not action items:
 - ✅ config.py: Uses sysconfig.get_config_var('EXT_SUFFIX') for platform-specific suffix
 - ✅ pyz3.build.zig: Added ext_suffix field, removed NotImplementedError
 
-## Recent Fixes (v0.9.0)
+## Recent Fixes (v0.9.1)
 
 ### Memory Management
 - ✅ Fixed `PyMemAllocator` struct definition (removed `{}` creating instance)

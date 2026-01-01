@@ -7,7 +7,7 @@
   "description": "A Python extension module written in Zig using pyZ3",
   "author_name": "Your Name",
   "author_email": "you@example.com",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "python_version": "3.11",
   "include_c_example": ["no", "yes"],
   "c_helper_name": "helper"

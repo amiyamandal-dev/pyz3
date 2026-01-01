@@ -107,7 +107,7 @@ print(result)  # Output: [2.0, 4.0, 6.0]
 - **Zig**: 0.15.x (tested with 0.15.1)
 - **Python**: 3.11, 3.12, 3.13 (CPython)
 - **Platforms**: Linux (x86_64, aarch64), macOS (x86_64, arm64), Windows (x64)
-- **pyz3 Version**: 0.9.0
+- **pyz3 Version**: 0.9.1
 
 ## Installation
 
