@@ -137,6 +137,48 @@ This means you must access the attribute in Zig using `.value`.
 
 Class attributes are not currently supported by pyZ3.
 
+## Class Methods
+
+Class methods receive the class type as their first argument instead of an instance. They're useful for factory methods, alternative constructors, or methods that need access to class-level information.
+
+Define a class method by taking `py.PyType` as the first parameter:
+
+```zig
+const py = @import("pyz3");
+
+pub const Point = py.class(struct {
+    const Self = @This();
+
+    x: f64,
+    y: f64,
+
+    /// Alternative constructor - creates a point at the origin
+    pub fn origin(cls: py.PyType) !Self {
+        _ = cls; // cls is the Point class type
+        return Self{ .x = 0.0, .y = 0.0 };
+    }
+
+    /// Factory method - creates a point from polar coordinates
+    pub fn from_polar(cls: py.PyType, args: struct { r: f64, theta: f64 }) !Self {
+        _ = cls;
+        return Self{
+            .x = args.r * @cos(args.theta),
+            .y = args.r * @sin(args.theta),
+        };
+    }
+});
+```
+
+Usage in Python:
+
+```python
+from my_extension import Point
+
+# Call class methods on the class itself
+p1 = Point.origin()  # Point at (0, 0)
+p2 = Point.from_polar(r=5.0, theta=0.785)  # Point from polar coords
+```
+
 ## Static Methods
 
 Static methods are similar to class methods but do not have access to the class itself. You can define static methods by simply not taking a `self` argument.

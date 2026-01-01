@@ -74,10 +74,7 @@ pub const PyComplex = types.PyComplex;
 pub const PyCounter = types.PyCounter;
 pub const PyCoroutine = types.PyCoroutine;
 pub const PyAwaitable = types.PyAwaitable;
-// PyAsyncGenerator disabled: Causes cyclic reference during compile-time type resolution.
-// The type imports py.pyz3, which tries to resolve all types including this one.
-// TODO: Refactor to break the cycle by moving to a separate compilation unit.
-// pub const PyAsyncGenerator = types.PyAsyncGenerator;
+pub const PyAsyncGenerator = types.PyAsyncGenerator;
 pub const PyDate = types.PyDate;
 pub const PyDateTime = types.PyDateTime;
 pub const PyDecimal = types.PyDecimal;

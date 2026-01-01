@@ -302,6 +302,81 @@ pub const PyAwaitable = extern struct {
 };
 ```
 
+#### PyAsyncGenerator
+
+For working with Python's async generators (`async def` with `yield`):
+
+```zig
+pub const PyAsyncGenerator = extern struct {
+    obj: py.PyObject,
+
+    /// Check if a Python object is an async generator
+    pub fn check(obj: py.PyObject) !bool
+
+    /// Get the next value from the async generator (returns awaitable)
+    pub fn anext(self: Self) !PyAwaitable
+
+    /// Send a value into the async generator
+    pub fn asend(self: Self, value: py.PyObject) !PyAwaitable
+
+    /// Throw an exception into the async generator
+    pub fn athrow(self: Self, exc_type: py.PyObject, value: ?py.PyObject, traceback: ?py.PyObject) !PyAwaitable
+};
+```
+
+Example usage:
+
+```zig
+const py = @import("pyz3");
+
+pub fn consume_async_generator(args: struct { agen: py.PyObject }) !py.PyList {
+    const root = @This();
+
+    // Check if it's actually an async generator
+    if (!try py.PyAsyncGenerator(root).check(args.agen)) {
+        return py.TypeError(root).raise("Expected an async generator");
+    }
+
+    const agen = py.PyAsyncGenerator(root).from.unchecked(args.agen);
+    var results = try py.PyList(root).new(0);
+
+    // Consume all values from the async generator
+    while (true) {
+        const awaitable = try agen.anext();
+        const result = awaitable.await_() catch |err| {
+            // StopAsyncIteration means the generator is exhausted
+            if (py.ffi.PyErr_ExceptionMatches(py.ffi.PyExc_StopAsyncIteration) != 0) {
+                py.ffi.PyErr_Clear();
+                break;
+            }
+            return err;
+        };
+        try results.append(result);
+    }
+
+    return results;
+}
+```
+
+Python usage:
+
+```python
+import asyncio
+from my_extension import consume_async_generator
+
+async def my_async_gen():
+    for i in range(5):
+        await asyncio.sleep(0.01)
+        yield i * 2
+
+async def main():
+    agen = my_async_gen()
+    results = consume_async_generator(agen)
+    print(results)  # [0, 2, 4, 6, 8]
+
+asyncio.run(main())
+```
+
 ---
 
 ## Best Practices

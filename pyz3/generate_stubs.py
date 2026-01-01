@@ -202,9 +202,13 @@ def pyi_file(obj, name: str, indent: str = "") -> str:
         result_content += function(obj, indent)
 
     elif inspect.isgetsetdescriptor(obj):
-        # TODO it would be interesing to add the setter maybe ?
+        # Generate property getter
         result_content += f"{indent}@property\n"
         result_content += function(obj, indent, text_signature="(self, /)")
+        # Add setter if the descriptor is writable (has fset)
+        if hasattr(obj, "fset") and obj.fset is not None:
+            result_content += f"\n{indent}@{obj.__name__}.setter\n"
+            result_content += f"{indent}def {obj.__name__}(self, value, /): ..."
 
     elif inspect.ismemberdescriptor(obj):
         result_content += f"{indent}{obj.__name__}: ..."

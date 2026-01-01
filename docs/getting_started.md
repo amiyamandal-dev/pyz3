@@ -329,9 +329,10 @@ pyz3 deploy              # Publish to PyPI
 
 ## Next Steps
 
-- [Classes Guide](guide/classes.md) - Advanced class features
+- [Classes Guide](guide/classes.md) - Class features including @classmethod and @staticmethod
 - [NumPy Guide](guide/numpy.md) - NumPy integration details
 - [Memory-Mapped Files](guide/mmap.md) - Zero-copy I/O and shared memory
+- [New Features](guide/new_features.md) - Memory leak detection, watch mode, async/await
 - [Memory Management](guide/_5_memory.md) - Memory safety
 - [GIL Management](guide/gil.md) - Thread safety
 - [Debugging](guide/debugging.md) - Debug your extensions

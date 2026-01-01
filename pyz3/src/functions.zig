@@ -30,6 +30,7 @@ pub fn Signature(comptime root: type) type {
         nkwargs: usize = 0,
         varargsIdx: ?usize = null,
         varkwargsIdx: ?usize = null,
+        methodType: MethodType = .INSTANCE,
 
         pub fn supportsKwargs(comptime self: @This()) bool {
             return self.nkwargs > 0 or self.varkwargsIdx != null;
@@ -40,6 +41,14 @@ pub fn Signature(comptime root: type) type {
                 return State.getDefinition(root, @typeInfo(Self).pointer.child).type == .module;
             }
             return false;
+        }
+
+        pub fn isClassMethod(comptime self: @This()) bool {
+            return self.methodType == .CLASS;
+        }
+
+        pub fn isStaticMethod(comptime self: @This()) bool {
+            return self.methodType == .STATIC;
         }
     };
 }
@@ -120,19 +129,35 @@ pub fn parseSignature(comptime root: type, comptime name: []const u8, comptime f
 
     switch (func.params.len) {
         2 => {
-            sig.selfParam = func.params[0].type.?;
-            sig.argsParam = func.params[1].type.?;
+            const first_param = func.params[0].type.?;
+            // Check if first param is PyType (classmethod)
+            if (isClassMethodParam(first_param)) {
+                sig.selfParam = first_param;
+                sig.argsParam = func.params[1].type.?;
+                sig.methodType = .CLASS;
+            } else {
+                sig.selfParam = first_param;
+                sig.argsParam = func.params[1].type.?;
+            }
         },
         1 => {
             const param = func.params[0];
-            if (isSelfArg(param, SelfTypes)) {
-                sig.selfParam = param.type.?;
+            const param_type = param.type.?;
+            if (isClassMethodParam(param_type)) {
+                // Classmethod with no additional args
+                sig.selfParam = param_type;
+                sig.methodType = .CLASS;
+            } else if (isSelfArg(param, SelfTypes)) {
+                sig.selfParam = param_type;
             } else {
-                sig.argsParam = param.type.?;
+                sig.argsParam = param_type;
                 checkArgsParam(sig.argsParam.?);
+                // No self param means static method (will be set in wrap())
             }
         },
-        0 => {},
+        0 => {
+            // No params means static method (will be set in wrap())
+        },
         else => @compileError("Pydust function can have at most 2 parameters. A self ptr and a parameters struct."),
     }
 
@@ -145,6 +170,12 @@ pub fn parseSignature(comptime root: type, comptime name: []const u8, comptime f
     }
 
     return sig;
+}
+
+/// Check if a parameter type indicates a classmethod (receives class type)
+fn isClassMethodParam(comptime T: type) bool {
+    // Check if T is py.PyType
+    return T == py.PyType;
 }
 
 pub fn argCount(comptime ArgsParam: type) usize {
@@ -239,13 +270,15 @@ pub fn wrap(comptime root: type, comptime definition: type, comptime func: anyty
                     var ml_flags: c_int = ffi.METH_FASTCALL | flags;
 
                     // We can only set METH_STATIC and METH_CLASS on class methods, not module methods.
-                    if (State.getDefinition(root, definition).type == .class and sig.selfParam == null) {
-                        ml_flags |= ffi.METH_STATIC;
+                    if (State.getDefinition(root, definition).type == .class) {
+                        if (sig.isClassMethod()) {
+                            // Classmethod: receives the class type as first argument
+                            ml_flags |= ffi.METH_CLASS;
+                        } else if (sig.selfParam == null) {
+                            // Static method: no self parameter
+                            ml_flags |= ffi.METH_STATIC;
+                        }
                     }
-                    // TODO(ngates): Add METH_CLASS support for @classmethod-like functions
-                    // Would require: 1) A way to mark functions as classmethods in Zig
-                    //                2) Detection in signature analysis
-                    //                3) Passing class type as first argument
 
                     if (sig.supportsKwargs()) {
                         ml_flags |= ffi.METH_KEYWORDS;
