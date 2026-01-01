@@ -26,11 +26,8 @@ const ScopedGIL = struct {
     acquired: bool,
 
     fn acquire() ScopedGIL {
-        if (gil_depth == 0) {
-            gil_state = ffi.PyGILState_Ensure();
-            gil_depth = 1;
-            return .{ .acquired = true };
-        } else {
+        // Fast path: Most common case is GIL already held
+        if (gil_depth > 0) {
             // Protect against overflow - saturate at max instead of panicking
             // This is defensive; overflow would indicate a bug (infinite recursion)
             if (gil_depth < std.math.maxInt(u32)) {
@@ -38,6 +35,11 @@ const ScopedGIL = struct {
             }
             return .{ .acquired = false };
         }
+
+        // Slow path: Actually acquire the GIL
+        gil_state = ffi.PyGILState_Ensure();
+        gil_depth = 1;
+        return .{ .acquired = true };
     }
 
     fn release(self: ScopedGIL) void {

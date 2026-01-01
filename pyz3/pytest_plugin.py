@@ -14,6 +14,7 @@ limitations under the License.
 
 import enum
 import io
+import os
 import struct
 import subprocess
 import sys
@@ -24,7 +25,11 @@ from pydantic import BaseModel
 
 from pyz3 import buildzig, config
 
+# Cache configuration and environment to avoid repeated lookups
 pyz3_conf = config.load()
+# Cache base environment dict with PYTHONHOME - reused across test runs
+_base_env = dict(os.environ)
+_base_env["PYTHONHOME"] = sys.base_prefix
 
 
 class MemoryLeakError(Exception):
@@ -52,7 +57,7 @@ def pytest_collection(session):
     """
     optimize = session.config.getoption("zig_optimize")
     buildzig.zig_build(["install", f"-Doptimize={optimize}", f"-Dpython-exe={sys.executable}"])
-    if config.load().zig_tests:
+    if pyz3_conf.zig_tests:
         buildzig.zig_build(
             [
                 "pyz3-test-build",
@@ -64,12 +69,14 @@ def pytest_collection(session):
 
 def pytest_collect_file(file_path, path, parent):
     """Grab any Zig roots for PyTest collection."""
-    if not config.load().zig_tests:
+    if not pyz3_conf.zig_tests:
         return None
 
     if file_path.suffix == ".zig":
+        # Cache absolute path to avoid repeated calls
+        abs_path = file_path.absolute()
         for ext_module in pyz3_conf.ext_modules:
-            if ext_module.root.absolute() == file_path.absolute():
+            if ext_module.root.absolute() == abs_path:
                 return ZigFile.from_parent(parent, path=file_path)
 
 
@@ -80,13 +87,19 @@ class ZigFile(pytest.File):
         First compile using 'zig test'
         Then spin up the test server and query it for the test metadata.
         """
-        ext_module = [e for e in pyz3_conf.ext_modules if e.root.absolute() == self.path][0]
+        # Cache absolute path to avoid repeated calls
+        abs_path = self.path.absolute()
+        ext_module = next(e for e in pyz3_conf.ext_modules if e.root.absolute() == abs_path)
+
+        # Use cached environment dict (already has PYTHONHOME set)
+        env = _base_env.copy()
 
         # Then query the test metadata
         proc = subprocess.Popen(
             [ext_module.test_bin, "--listen=-"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
+            env=env,
         )
         try:
             # Zig first sends us its version.
@@ -102,9 +115,13 @@ class ZigFile(pytest.File):
             assert h.tag == TestProtocol.ResponseTag.test_metadata.value
             test_metas = self._read_test_metadata(proc.stdout.read(h.bytes_len))
         finally:
-            proc.stdin.close()
-            proc.stdout.close()
-            proc.kill()
+            # Ensure clean shutdown
+            if proc.stdin:
+                proc.stdin.close()
+            if proc.stdout:
+                proc.stdout.close()
+            if proc.poll() is None:
+                proc.kill()
             proc.wait()
 
         for test in test_metas:
@@ -126,15 +143,24 @@ class ZigFile(pytest.File):
         # We use the original buffer to extract string data since it's easier to find the next null terminator
         data = buffer[-string_bytes_len:]
         tests = []
+        # Pre-compute test. prefix length to avoid repeated len() calls
+        test_prefix_len = len("test.")
         for i, (name, ep) in enumerate(zip(names, expected_panic_msgs)):
-            test_name = data[name : data.index(b"\0", name)].decode("utf-8")
+            # Find null terminator once
+            null_idx = data.index(b"\0", name)
+            test_name = data[name:null_idx].decode("utf-8")
             if test_name.startswith("test."):
-                test_name = test_name[len("test.") :]
+                test_name = test_name[test_prefix_len:]
+            # Find null terminator for expected_panics if present
+            expected_panics = None
+            if ep:
+                ep_null_idx = data.index(b"\0", ep)
+                expected_panics = data[ep:ep_null_idx].decode("utf-8")
             tests.append(
                 {
                     "idx": i,
                     "name": test_name,
-                    "expected_panics": (data[ep : data.index(b"\0", ep)].decode("utf-8") if ep else None),
+                    "expected_panics": expected_panics,
                 }
             )
 
@@ -147,45 +173,59 @@ class ZigItem(pytest.Item):
         self.ext_module = ext_module
         self.test_meta = test_meta
 
-        self._stderr = None
-
     def runtest(self):
-        stderr = tempfile.NamedTemporaryFile()
-        proc = subprocess.Popen(
-            [self.ext_module.test_bin, "--listen=-"],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=stderr,
-        )
-        try:
-            # Zig first sends us its version.
-            h = TestProtocol.Header.unpack(proc.stdout)
-            assert h.tag == TestProtocol.ResponseTag.zig_version.value
-            _zig_version = proc.stdout.read(h.bytes_len).decode("utf-8")
-            # Then we can request the test to run
-            proc.stdin.write(TestProtocol.Header(tag=TestProtocol.RequestTag.run_test.value, bytes_len=4).pack())
-            proc.stdin.write(struct.pack("<I", self.test_meta["idx"]))
-            proc.stdin.flush()
+        fail = skip = leak = False
+        with tempfile.NamedTemporaryFile() as stderr:
+            # Use cached environment dict (already has PYTHONHOME set)
+            env = _base_env.copy()
 
-            h = TestProtocol.Header.unpack(proc.stdout)
-            assert h.tag == TestProtocol.ResponseTag.test_results.value
+            proc = subprocess.Popen(
+                [self.ext_module.test_bin, "--listen=-"],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=stderr,
+                env=env,
+            )
+            try:
+                # Zig first sends us its version.
+                h = TestProtocol.Header.unpack(proc.stdout)
+                assert h.tag == TestProtocol.ResponseTag.zig_version.value
+                _zig_version = proc.stdout.read(h.bytes_len).decode("utf-8")
+                # Then we can request the test to run
+                proc.stdin.write(TestProtocol.Header(tag=TestProtocol.RequestTag.run_test.value, bytes_len=4).pack())
+                proc.stdin.write(struct.pack("<I", self.test_meta["idx"]))
+                proc.stdin.flush()
 
-            _test_idx, flags = struct.unpack("<II", proc.stdout.read(8))
-            fail = bool(flags & 0x01)
-            skip = bool(flags & 0x02)
-            leak = bool(flags & 0x04)
-            # TODO(ngates): log_error_count: u29 isn't currently passed back but should be
+                h = TestProtocol.Header.unpack(proc.stdout)
+                assert h.tag == TestProtocol.ResponseTag.test_results.value
 
-            with open(stderr.name) as f:
-                self.add_report_section("call", "stderr", f.read())
-        except Exception as e:
-            raise Exception("Zig test crashed. Exited " + str(proc.wait())) from e
-        finally:
-            proc.stdin.close()
-            proc.stdout.close()
-            proc.kill()
-            proc.wait()
-            stderr.close()
+                _test_idx, flags = struct.unpack("<II", proc.stdout.read(8))
+                fail = bool(flags & 0x01)
+                skip = bool(flags & 0x02)
+                leak = bool(flags & 0x04)
+                # TODO(ngates): log_error_count: u29 isn't currently passed back but should be
+
+                # Read stderr content before closing
+                stderr.seek(0)
+                stderr_content = stderr.read().decode("utf-8", errors="replace")
+                self.add_report_section("call", "stderr", stderr_content)
+            except Exception as e:
+                # Try to get exit code, but don't block if process already terminated
+                exit_code = proc.poll()
+                if exit_code is None:
+                    proc.kill()
+                    proc.wait()
+                    exit_code = proc.returncode
+                raise Exception(f"Zig test crashed. Exited with code {exit_code}") from e
+            finally:
+                # Ensure clean shutdown
+                if proc.stdin:
+                    proc.stdin.close()
+                if proc.stdout:
+                    proc.stdout.close()
+                if proc.poll() is None:
+                    proc.kill()
+                    proc.wait()
 
         if skip:
             self.add_marker(pytest.mark.skip)

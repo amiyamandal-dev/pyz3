@@ -1,6 +1,6 @@
 # TODO List for pyz3
 
-This document tracks all TODO, FIXME, and NOTE comments in the codebase as of version 0.9.1.
+This document tracks all TODO, FIXME, and NOTE comments in the codebase as of version 0.9.2.
 
 **Project Status**: ✅ Production-ready. All TODOs are enhancement requests, not bugs or critical issues.
 
@@ -73,13 +73,13 @@ These are design decision notes, not action items:
 
 ## Statistics
 
-- **Total TODOs**: 12 (17 completed in v0.9.1)
+- **Total TODOs**: 12 (17 completed in v0.9.2)
 - **Blocking Issues**: 0
 - **Known Limitations**: 1 (PySequenceMixin - Zig 0.15 language change)
 - **Enhancement Requests**: 6
 - **Issue #193 Status**: Fully resolved
 
-## Recent Fixes (v0.9.1)
+## Recent Fixes (v0.9.2)
 
 ### Documentation & Cleanup
 - ✅ Documented PySequenceMixin Zig 0.15 limitation with explicit composition pattern
@@ -107,7 +107,7 @@ These are design decision notes, not action items:
 - ✅ config.py: Uses sysconfig.get_config_var('EXT_SUFFIX') for platform-specific suffix
 - ✅ pyz3.build.zig: Added ext_suffix field, removed NotImplementedError
 
-## Recent Fixes (v0.9.1)
+## Recent Fixes (v0.9.2)
 
 ### Memory Management
 - ✅ Fixed `PyMemAllocator` struct definition (removed `{}` creating instance)
@@ -149,4 +149,4 @@ When adding new TODOs:
 ---
 
 *Last updated: 2026-01-01*
-*Version: 0.9.1*
+*Version: 0.9.2*

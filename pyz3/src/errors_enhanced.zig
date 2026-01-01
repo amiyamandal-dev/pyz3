@@ -231,9 +231,12 @@ pub fn getErrorInfo(allocator: std.mem.Allocator) !?ErrorInfo {
     const type_obj = py.PyObject{ .py = exc_type.? };
     const type_name_cstr = try type_obj.getTypeName();
     const error_type = try allocator.dupe(u8, std.mem.span(type_name_cstr));
+    errdefer allocator.free(error_type);
 
     // Get message
     var message: []const u8 = "";
+    errdefer if (message.len > 0) allocator.free(message);
+    
     if (exc_value) |val| {
         const val_obj = py.PyObject{ .py = val };
         const str_obj = py.str(@TypeOf(val_obj), val_obj) catch val_obj;

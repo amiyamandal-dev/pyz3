@@ -614,9 +614,9 @@ def generate_stubs(args):
         modules = [args.module]
     else:
         # Get modules from pyproject.toml
-        conf = config.load_pyproject()
-        if conf and conf.ext_module:
-            modules = [ext.name for ext in conf.ext_module]
+        conf = config.load()
+        if conf and conf.ext_modules:
+            modules = [ext.name for ext in conf.ext_modules]
         else:
             print("No extension modules found in pyproject.toml")
             print("Specify a module with: pyz3 stubs <module_name>")

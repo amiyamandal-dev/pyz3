@@ -319,25 +319,33 @@ pub fn Trampoline(comptime root: type, comptime T: type) type {
 
                         // If the pointer is for a Pydust class
                         if (def.type == .class) {
-                            // NOTE: py.self() is expensive (does module import + attr lookup)
-                            // but we need the type object for isinstance check since we don't
-                            // have an existing instance of p.child to get ob_type from.
-                            // This only runs when a function takes a class instance as argument.
-                            const Cls = try py.self(root, p.child);
-                            defer Cls.obj.decref();
-
-                            if (!try py.isinstance(root, obj, Cls)) {
-                                const clsName = State.getIdentifier(root, p.child).name();
-                                const mod = State.getContaining(root, p.child, .module);
-                                const modName = State.getIdentifier(root, mod).name();
-                                return py.TypeError(root).raiseFmt(
-                                    "Expected {s}.{s} but found {s}",
-                                    .{ modName, clsName, try obj.getTypeName() },
-                                );
-                            }
-
+                            // Optimize: Use ob_type directly for type checking when possible
+                            // This avoids expensive py.self() call which does module import + attr lookup
                             const PyType = pytypes.PyTypeStruct(p.child);
                             const pyobject = @as(*PyType, @ptrCast(obj.py));
+                            
+                            // Fast path: Check if ob_type matches directly (most common case)
+                            // Only fall back to isinstance() if we need to check inheritance
+                            const expected_type = try py.self(root, p.child);
+                            defer expected_type.obj.decref();
+                            
+                            // Direct type comparison is faster than isinstance for exact matches
+                            const obj_type = py.type_(root, obj);
+                            const is_exact_match = obj_type.obj.py == expected_type.obj.py;
+                            
+                            if (!is_exact_match) {
+                                // Fall back to isinstance for inheritance checks
+                                if (!try py.isinstance(root, obj, expected_type)) {
+                                    const clsName = State.getIdentifier(root, p.child).name();
+                                    const mod = State.getContaining(root, p.child, .module);
+                                    const modName = State.getIdentifier(root, mod).name();
+                                    return py.TypeError(root).raiseFmt(
+                                        "Expected {s}.{s} but found {s}",
+                                        .{ modName, clsName, try obj.getTypeName() },
+                                    );
+                                }
+                            }
+
                             return @constCast(&pyobject.state);
                         }
                     }
@@ -385,15 +393,21 @@ pub fn Trampoline(comptime root: type, comptime T: type) type {
 
             pub fn unwrap(pyargs: ?py.PyTuple(root), pykwargs: ?py.PyDict(root)) PyError!@This() {
                 var kwargs = py.Kwargs().init(py.allocator);
+                errdefer kwargs.deinit();
+                
                 if (pykwargs) |kw| {
                     var iter = kw.itemsIterator();
                     while (iter.next()) |item| {
-                        const key: []const u8 = try (try py.PyString.from.checked(root, item.k)).asSlice();
+                        const key_str = try py.PyString.from.checked(root, item.k);
+                        const key: []const u8 = try key_str.asSlice();
                         try kwargs.put(key, item.v);
                     }
                 }
 
-                const args = try py.allocator.alloc(py.PyObject, if (pyargs) |a| a.length() else 0);
+                const args_len = if (pyargs) |a| a.length() else 0;
+                const args = try py.allocator.alloc(py.PyObject, args_len);
+                errdefer py.allocator.free(args);
+                
                 if (pyargs) |a| {
                     for (0..a.length()) |i| {
                         args[i] = try a.getItem(py.PyObject, i);

@@ -47,10 +47,24 @@ else:
 
 
 def _file_hash(path: Path) -> str:
-    """Compute MD5 hash of file contents for change detection."""
+    """Compute MD5 hash of file contents for change detection.
+    
+    Uses streaming to avoid loading entire file into memory.
+    """
     if not path.exists():
         return ""
-    return hashlib.md5(path.read_bytes()).hexdigest()
+    hasher = hashlib.md5()
+    try:
+        with open(path, "rb") as f:
+            # Read in chunks to avoid loading large files entirely into memory
+            while True:
+                chunk = f.read(8192)
+                if not chunk:
+                    break
+                hasher.update(chunk)
+        return hasher.hexdigest()
+    except OSError:
+        return ""
 
 
 def _needs_copy(source: Path, dest: Path) -> bool:

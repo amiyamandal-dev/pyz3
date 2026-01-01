@@ -19,6 +19,9 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field, model_validator
 
+# Cache expensive sysconfig calls
+_EXT_SUFFIX = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
+
 
 class ExtModule(BaseModel):
     """Config for a single Zig extension module."""
@@ -44,8 +47,8 @@ class ExtModule(BaseModel):
         if self.limited_api:
             suffix = ".abi3.so"
         else:
-            # Use platform-specific suffix (e.g., .cpython-314-darwin.so)
-            suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
+            # Use cached platform-specific suffix (e.g., .cpython-314-darwin.so)
+            suffix = _EXT_SUFFIX
         return Path(*self.name.split(".")).with_suffix(suffix)
 
     @property

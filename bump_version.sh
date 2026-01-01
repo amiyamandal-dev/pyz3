@@ -14,7 +14,7 @@ show_usage() {
   echo -e "${BLUE}Usage:${NC} $0 <version>"
   echo ""
   echo -e "${YELLOW}Examples:${NC}"
-  echo "  $0 0.9.1        # Set version to 0.9.1"
+  echo "  $0 0.9.2        # Set version to 0.9.2"
   echo "  $0 1.0.0        # Set version to 1.0.0"
   echo "  $0 1.0.0-beta.1 # Set version to 1.0.0-beta.1"
   echo ""

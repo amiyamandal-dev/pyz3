@@ -45,7 +45,10 @@ class FileWatcher:
         hasher = hashlib.md5()
         try:
             with open(path, "rb") as f:
-                for chunk in iter(lambda: f.read(4096), b""):
+                while True:
+                    chunk = f.read(4096)
+                    if not chunk:
+                        break
                     hasher.update(chunk)
             return hasher.hexdigest()
         except OSError:

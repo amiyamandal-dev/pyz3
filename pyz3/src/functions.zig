@@ -344,7 +344,8 @@ pub fn wrap(comptime root: type, comptime definition: type, comptime func: anyty
 
             // Bounds check: ensure we don't read past the available arguments
             // This is a defensive check - CPython should never send more kwargs
-            if (nkwargs > 100000) {
+            // Use usize max to avoid arbitrary limits while preventing overflow
+            if (nkwargs > std.math.maxInt(usize) - args.len) {
                 py.SystemError(root).raise("pyz3: too many keyword arguments") catch {};
                 return null;
             }
@@ -353,13 +354,23 @@ pub fn wrap(comptime root: type, comptime definition: type, comptime func: anyty
 
             // Construct a StringHashMap of keyword arguments.
             var kwargsMap = py.Kwargs().init(py.allocator);
-            defer kwargsMap.deinit();
+            errdefer kwargsMap.deinit();
             if (kwnames) |rawnames| {
                 const names = py.PyTuple(root).from.unchecked(.{ .py = rawnames });
                 std.debug.assert(names.length() == kwargs.len);
                 for (0..names.length(), kwargs) |i, v| {
-                    const k = names.getItem(py.PyString, i) catch return null;
-                    kwargsMap.put(k.asSlice() catch return null, v) catch return null;
+                    const k = names.getItem(py.PyString, i) catch {
+                        kwargsMap.deinit();
+                        return null;
+                    };
+                    const key_slice = k.asSlice() catch {
+                        kwargsMap.deinit();
+                        return null;
+                    };
+                    kwargsMap.put(key_slice, v) catch {
+                        kwargsMap.deinit();
+                        return null;
+                    };
                 }
             }
 
