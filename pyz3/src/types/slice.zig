@@ -25,14 +25,26 @@ pub fn PySlice(comptime root: type) type {
         const Self = @This();
         pub const from = PyObjectMixin("slice", "PySlice", Self);
 
+        /// Helper to convert value to PyObject or null if value is null type
+        inline fn toPyOrNull(value: anytype) !?*ffi.PyObject {
+            if (@typeInfo(@TypeOf(value)) == .null) return null;
+            return (try py.create(root, value)).py;
+        }
+
+        /// Helper to decref only if value is not null type
+        inline fn decrefIfNotNull(comptime T: type, ptr: ?*ffi.PyObject) void {
+            if (@typeInfo(T) != .null) {
+                if (ptr) |p| py.decref(root, p);
+            }
+        }
+
         pub fn create(start: anytype, stop: anytype, step: anytype) !Self {
-            // TODO(ngates): think about how to improve comptime optional handling?
-            const pystart = if (@typeInfo(@TypeOf(start)) == .null) null else (try py.create(root, start)).py;
-            defer if (@typeInfo(@TypeOf(start)) != .null) py.decref(root, pystart);
-            const pystop = if (@typeInfo(@TypeOf(stop)) == .null) null else (try py.create(root, stop)).py;
-            defer if (@typeInfo(@TypeOf(stop)) != .null) py.decref(root, pystop);
-            const pystep = if (@typeInfo(@TypeOf(step)) == .null) null else (try py.create(root, step)).py;
-            defer if (@typeInfo(@TypeOf(step)) != .null) py.decref(root, pystep);
+            const pystart = try toPyOrNull(start);
+            defer decrefIfNotNull(@TypeOf(start), pystart);
+            const pystop = try toPyOrNull(stop);
+            defer decrefIfNotNull(@TypeOf(stop), pystop);
+            const pystep = try toPyOrNull(step);
+            defer decrefIfNotNull(@TypeOf(step), pystep);
 
             const pyslice = ffi.PySlice_New(pystart, pystop, pystep) orelse return PyError.PyRaised;
             return .{ .obj = .{ .py = pyslice } };

@@ -74,7 +74,10 @@ pub const PyComplex = types.PyComplex;
 pub const PyCounter = types.PyCounter;
 pub const PyCoroutine = types.PyCoroutine;
 pub const PyAwaitable = types.PyAwaitable;
-// pub const PyAsyncGenerator = types.PyAsyncGenerator; // Disabled - compilation issues
+// PyAsyncGenerator disabled: Causes cyclic reference during compile-time type resolution.
+// The type imports py.pyz3, which tries to resolve all types including this one.
+// TODO: Refactor to break the cycle by moving to a separate compilation unit.
+// pub const PyAsyncGenerator = types.PyAsyncGenerator;
 pub const PyDate = types.PyDate;
 pub const PyDateTime = types.PyDateTime;
 pub const PyDecimal = types.PyDecimal;
@@ -93,9 +96,13 @@ pub const PyList = types.PyList;
 pub const PyLong = types.PyLong;
 pub const PyMemoryView = types.PyMemoryView;
 pub const PyModule = types.PyModule;
-// pub const numpy = types.numpy; // Disabled - compilation issues
-// pub const PyArray = types.numpy.PyArray; // Disabled - compilation issues
-// pub const DType = types.numpy.DType; // Disabled - compilation issues
+// NumPy integration disabled: Requires NumPy C API headers at compile time.
+// The numpy module uses ffi bindings to NumPy's C API (PyArray_API).
+// To enable: ensure numpy-dev headers are available and update ffi.zig.
+// See docs/numpy.md for setup instructions.
+// pub const numpy = types.numpy;
+// pub const PyArray = types.numpy.PyArray;
+// pub const DType = types.numpy.DType;
 pub const PyObject = types.PyObject;
 pub const PyPath = types.PyPath;
 pub const PyRange = types.PyRange;
@@ -190,9 +197,10 @@ pub const errors_enhanced = @import("errors_enhanced.zig");
 // Native high-performance collections using uthash/utarray
 pub const native_collections = @import("native_collections.zig");
 
-// NumPy integration - full C API access
+// NumPy integration - basic module access (full C API not yet implemented)
 pub const numpy = @import("numpy.zig");
-pub const PyArray = numpy.PyArray;
+// TODO: Implement PyArray type for direct NumPy array access
+// pub const PyArray = numpy.PyArray;
 
 // Testing utilities
 pub const testing = @import("testing.zig");

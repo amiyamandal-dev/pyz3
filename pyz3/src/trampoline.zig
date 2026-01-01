@@ -319,7 +319,10 @@ pub fn Trampoline(comptime root: type, comptime T: type) type {
 
                         // If the pointer is for a Pydust class
                         if (def.type == .class) {
-                            // TODO(ngates): #193
+                            // NOTE: py.self() is expensive (does module import + attr lookup)
+                            // but we need the type object for isinstance check since we don't
+                            // have an existing instance of p.child to get ob_type from.
+                            // This only runs when a function takes a class instance as argument.
                             const Cls = try py.self(root, p.child);
                             defer Cls.obj.decref();
 

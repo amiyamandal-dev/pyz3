@@ -74,7 +74,7 @@ pub inline fn incref(comptime root: type, value: anytype) void {
 
 /// Checks whether a given object is callable. Equivalent to Python's callable(o).
 pub fn callable(comptime root: type, object: anytype) bool {
-    const obj = try py.object(root, object);
+    const obj = py.object(root, object);
     return ffi.PyCallable_Check(obj.py) == 1;
 }
 
@@ -161,16 +161,14 @@ pub const PyNoGIL = struct {
 
 /// Release the GIL from the current thread.
 /// Must be accompanied by a call to acquire().
-/// Note: This can fail in edge cases like embedded Python or subinterpreters.
-/// The caller should handle this gracefully.
-pub fn nogil() PyNoGIL {
+/// Returns null if the GIL cannot be released (e.g., embedded Python, subinterpreters).
+pub fn nogil() ?PyNoGIL {
     // PyEval_SaveThread can return null in some edge cases:
     // - Embedded Python that hasn't initialized threading
     // - Subinterpreters with unusual configurations
     // - During interpreter shutdown
-    // In these cases, we return null and the caller should check before calling acquire()
-    const state = ffi.PyEval_SaveThread();
-    return .{ .state = state orelse unreachable }; // Should not fail in normal Python usage
+    const state = ffi.PyEval_SaveThread() orelse return null;
+    return .{ .state = state };
 }
 
 /// Checks whether a given object is None. Avoids incref'ing None to do the check.

@@ -1,16 +1,15 @@
-name: Publish pyZ3
+name: Publish pyz3
 
 on:
   push:
-    tags: ['*']
+    tags: ["v*"]
 
 permissions:
   id-token: write
   contents: write
 
 env:
-  POETRY_VERSION: "1.6.1"
-  PYTHON_VERSION: "3.11"
+  PYTHON_VERSION: "3.13"
 
 jobs:
   publish:
@@ -19,63 +18,43 @@ jobs:
       url: https://pypi.org/p/pyz3
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+      - uses: actions/checkout@v4
         with:
-          # Needed for docs to discover gh-pages branch
           fetch-depth: 0
 
-      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6
-        id: setup-python
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          version: "latest"
 
-      - name: Load cached Poetry installation
-        id: cached-poetry
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        with:
-          path: ~/.local
-          key: poetry-${{ runner.os }}-${{ env.POETRY_VERSION  }}-${{ steps.setup-python.outputs.python-version }}
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
 
-      - name: Install Poetry
-        id: install-poetry
-        if: steps.cached-poetry.outputs.cache-hit != 'true'
-        uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a # v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
+      - name: Build package
+        run: uv build
 
-      - name: Poetry git plugin
-        run: poetry self add poetry-git-version-plugin
+      - name: Install docs dependencies
+        run: uv sync --group docs
 
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Build Zig docs
+        run: uv run python -m ziglang build docs
 
-      - name: Poetry Build
-        run: poetry build -v
-
-      - name: Poetry Install
-        run: poetry lock && poetry install -v --only=docs
-
-      - name: Zig Docs Build
-        run: poetry run python -m ziglang build docs
-
-      - name: Setup doc deploy
+      - name: Setup git for docs
         run: |
-          git config --global user.name Docs Deploy
-          git config --global user.email docs@dummy.bot.com
+          git config --global user.name "Docs Deploy"
+          git config --global user.email "docs@dummy.bot.com"
 
-      - name: Get Version
+      - name: Get version
         id: get_version
-        uses: battila7/get-version-action@v2
+        run: |
+          VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          MINOR=$(echo $VERSION | cut -d. -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "major_minor=$MAJOR.$MINOR" >> $GITHUB_OUTPUT
 
-      - name: MKDocs Build
-        run: poetry run mike deploy ${{ steps.get_version.outputs.major }}.${{ steps.get_version.outputs.minor }} latest --push --update-aliases
+      - name: Deploy docs
+        run: uv run mike deploy ${{ steps.get_version.outputs.major_minor }} latest --push --update-aliases
 
-      - name: Publish package distributions to PyPI
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

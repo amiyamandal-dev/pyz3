@@ -444,7 +444,7 @@ def build_wheel(args):
             clean=not args.no_clean,
             verbose=args.verbose,
         )
-        print(f"\n✓ Built {len(wheels)} wheels:")
+        print(f"\n[DONE] Built {len(wheels)} wheels:")
         for wheel in wheels:
             print(f"  - {wheel.name}")
     else:
@@ -455,7 +455,7 @@ def build_wheel(args):
             clean=not args.no_clean,
             verbose=args.verbose,
         )
-        print(f"\n✓ Wheel built: {wheel_path}")
+        print(f"\n[DONE] Wheel built: {wheel_path}")
 
 
 def add_dependency(args):

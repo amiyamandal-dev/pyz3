@@ -1,5 +1,5 @@
 """
-Logging configuration for Pydust.
+Logging configuration for pyz3.
 
 Provides consistent logging setup across all modules.
 
@@ -46,7 +46,7 @@ class ColoredFormatter(logging.Formatter):
 
 def setup_logging(verbose: bool = False, log_file: Optional[Path] = None) -> None:
     """
-    Setup logging configuration for Pydust.
+    Setup logging configuration for pyz3.
 
     Args:
         verbose: Enable verbose (DEBUG) logging

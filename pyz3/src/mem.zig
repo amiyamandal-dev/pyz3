@@ -31,11 +31,11 @@ const ScopedGIL = struct {
             gil_depth = 1;
             return .{ .acquired = true };
         } else {
-            // Protect against overflow - this would be a bug but let's be defensive
-            if (gil_depth == std.math.maxInt(u32)) {
-                std.debug.panic("GIL depth counter overflow - possible infinite recursion", .{});
+            // Protect against overflow - saturate at max instead of panicking
+            // This is defensive; overflow would indicate a bug (infinite recursion)
+            if (gil_depth < std.math.maxInt(u32)) {
+                gil_depth += 1;
             }
-            gil_depth += 1;
             return .{ .acquired = false };
         }
     }
@@ -252,8 +252,11 @@ pub const PyMemAllocator = struct {
         const alignment_bytes = buf_align.toByteUnits();
 
         // Safety check: alignment must be reasonable
+        // Use debug assert - this is a programming error, not a runtime condition
+        std.debug.assert(alignment_bytes <= 255);
         if (alignment_bytes > 255) {
-            std.debug.panic("free() called with invalid alignment {d} bytes", .{alignment_bytes});
+            // In release builds, just return without freeing - memory leak is better than crash
+            return;
         }
 
         const alignment: u8 = @intCast(alignment_bytes);
@@ -265,9 +268,11 @@ pub const PyMemAllocator = struct {
         // Validate the shift value is reasonable
         // shift must be > 0 (we always shift at least 1 byte for header)
         // and <= alignment (within our padding region)
+        // Use debug assert for corruption detection
+        std.debug.assert(shift > 0 and shift <= alignment);
         if (shift == 0 or shift > alignment) {
-            // Corrupted header or pointer not allocated by this allocator
-            std.debug.panic("free() detected corrupted memory header: shift={d}, alignment={d}", .{ shift, alignment });
+            // In release builds, don't free corrupted memory - could crash
+            return;
         }
 
         const raw_ptr: *anyopaque = @ptrFromInt(aligned_ptr - shift);

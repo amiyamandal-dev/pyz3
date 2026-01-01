@@ -6,22 +6,22 @@ Thank you for your interest in contributing to pyz3!
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/amiyamandal-dev/pyz3.git
+   git clone https://github.com/pyz3-project/pyz3.git
    cd pyz3
    ```
 
-2. **Install dependencies**
+2. **Install dependencies** (using [uv](https://docs.astral.sh/uv/))
    ```bash
+   uv sync
+   # or using make
    make install
-   # or
-   poetry install
    ```
 
 3. **Run tests**
    ```bash
    make test-all
    # or
-   ./run_all_tests.sh
+   uv run pytest test/
    ```
 
 ### Important: Generated Files
@@ -39,7 +39,7 @@ error: unable to load 'pyz3.build.zig': FileNotFound
 ```
 **Solution:** Just run any build command:
 ```bash
-poetry install
+uv sync
 # or
 make install
 ```
@@ -51,44 +51,25 @@ The file will be auto-generated and the error will disappear.
 
 When adding new dependencies to `pyproject.toml`:
 
-1. **Add the dependency to pyproject.toml**
+1. **Add the dependency**
    ```bash
-   poetry add <package-name>
+   uv add <package-name>
    ```
 
-2. **Update the lock file**
+2. **Sync the environment**
    ```bash
-   make lock
-   # or
-   poetry lock
+   uv sync
    ```
 
-3. **Commit both files**
+3. **Commit changes**
    ```bash
-   git add pyproject.toml poetry.lock
+   git add pyproject.toml uv.lock
    git commit -m "Add <package-name> dependency"
    ```
-
-### Important: Always Commit poetry.lock
-
-**⚠️ Critical:** Whenever you modify `pyproject.toml`, you **must** run `make lock` or `poetry lock` and commit the updated `poetry.lock` file.
-
-**Why?** This ensures:
-- Consistent dependency versions across all environments
-- CI/CD pipelines work correctly
-- Other developers get the exact same dependency versions
-
-**CI Check:** Our CI pipeline will fail if `poetry.lock` is out of sync with `pyproject.toml`.
 
 ## Makefile Commands
 
 We provide convenient `make` targets for common tasks:
-
-### Version Management
-- `make version` - Show current version
-- `make bump-patch` - Bump patch version (0.1.0 → 0.1.1)
-- `make bump-minor` - Bump minor version (0.1.0 → 0.2.0)
-- `make bump-major` - Bump major version (0.1.0 → 1.0.0)
 
 ### Testing
 - `make test` - Run Python tests
@@ -99,9 +80,13 @@ We provide convenient `make` targets for common tasks:
 - `make build` - Build package
 - `make clean` - Clean build artifacts
 - `make install` - Install in development mode
-- `make lock` - Update poetry.lock file
+- `make sync` - Sync dependencies
 - `make stubs` - Generate Python stub files (.pyi)
 - `make check-stubs` - Verify stub files are up to date
+
+### Code Quality
+- `make lint` - Run ruff linter
+- `make format` - Format code with ruff
 
 ## Code Quality
 
@@ -114,19 +99,26 @@ We provide convenient `make` targets for common tasks:
 
 2. **Check code formatting**
    ```bash
-   poetry run ruff check .
-   poetry run black --check .
+   make lint
    ```
 
-3. **Update lock file if dependencies changed**
+3. **Format code if needed**
    ```bash
-   make lock
+   make format
    ```
 
 4. **Update stub files if Zig modules changed**
    ```bash
    make stubs
    ```
+
+### Pre-commit Hooks
+
+Install pre-commit hooks for automatic checks:
+```bash
+uv pip install pre-commit
+pre-commit install
+```
 
 ### When to Update Stub Files
 
@@ -195,40 +187,46 @@ Closes #123
    make test-all
    ```
 
-4. **Update poetry.lock if dependencies changed**
-   ```bash
-   make lock
-   ```
-
-5. **Push to your fork** and create a Pull Request
+4. **Push to your fork** and create a Pull Request
    ```bash
    git push origin feature/my-new-feature
    ```
 
-6. **Wait for CI to pass** - All tests must pass before merge
+5. **Wait for CI to pass** - All tests must pass before merge
 
 ## CI/CD Pipeline
 
 Our CI pipeline automatically:
-- ✅ Checks poetry.lock is in sync
-- ✅ Runs all tests
-- ✅ Builds the package
-- ✅ Validates code quality
-- ✅ Generates documentation
+- Runs all tests on Python 3.11, 3.12, 3.13
+- Tests on Ubuntu and macOS
+- Checks code formatting with ruff
+- Builds the package
+- Generates documentation
 
-**If CI fails with "poetry.lock out of sync":**
-```bash
-make lock
-git add poetry.lock
-git commit -m "chore: Update poetry.lock"
-git push
+## Project Structure
+
+```
+pyz3/
+├── pyz3/                    # Python package
+│   ├── src/                 # Zig source code
+│   │   ├── pyz3.zig        # Main module exports
+│   │   ├── types/          # Python type wrappers
+│   │   └── ...
+│   ├── __init__.py         # Package metadata
+│   ├── config.py           # Configuration loader
+│   ├── buildzig.py         # Build system
+│   └── ...
+├── example/                 # Example Zig modules
+├── test/                    # Python tests
+├── docs/                    # Documentation
+└── pyproject.toml          # Project configuration
 ```
 
 ## Getting Help
 
-- 📝 Check [TODO.md](TODO.md) for known issues and planned features
-- 💬 Open an issue for bugs or feature requests
-- 📖 Read the documentation at the repository
+- Check [TODO.md](TODO.md) for known issues and planned features
+- Open an issue for bugs or feature requests
+- Read the documentation at the repository
 
 ## License
 

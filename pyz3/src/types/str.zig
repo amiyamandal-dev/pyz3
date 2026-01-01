@@ -52,9 +52,9 @@ pub const PyString = extern struct {
     }
 
     fn appendObj(self: Self, other: PyObject) !Self {
-        // This function effectively decref's the left-hand side.
-        // The semantics therefore sort of imply mutation, and so we expose the same in our API.
-        // FIXME(ngates): this comment
+        // PyUnicode_Append steals the reference to self (decrefs it internally).
+        // On success, returns a new reference (may be same object or reallocated).
+        // On failure, self is still consumed and the pointer is set to null.
         var self_ptr: ?*ffi.PyObject = self.obj.py;
         ffi.PyUnicode_Append(&self_ptr, other.py);
         if (self_ptr) |ptr| {

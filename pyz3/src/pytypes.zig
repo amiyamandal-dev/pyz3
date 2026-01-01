@@ -64,8 +64,11 @@ pub fn Type(comptime root: type, comptime name: [:0]const u8, comptime definitio
             }
 
             const spec = ffi.PyType_Spec{
-                // TODO(ngates): according to the docs, since we're a heap allocated type I think we
-                // should be manually setting a __module__ attribute and not using a qualified name here?
+                // NOTE: For heap-allocated types (Py_TPFLAGS_HEAPTYPE), Python docs suggest:
+                // 1. Using unqualified name (e.g., "MyClass" not "module.MyClass")
+                // 2. Manually setting __module__ via tp_members or PyObject_SetAttrString
+                // Current approach uses qualified name which works but may have edge cases.
+                // See: https://docs.python.org/3/c-api/type.html#c.PyType_FromModuleAndSpec
                 .name = qualifiedName.ptr,
                 .basicsize = @sizeOf(PyTypeStruct(definition)),
                 .itemsize = 0,
@@ -328,9 +331,9 @@ fn Slots(comptime root: type, comptime definition: type, comptime name: [:0]cons
             // The finalize slot shouldn't alter any exception that is currently set.
             // So it's recommended we save the existing one (if any) and restore it afterwards.
             // NOTE(ngates): we may want to move this logic to PyErr if it happens more?
-            var error_type: ?*ffi.PyObject = undefined;
-            var error_value: ?*ffi.PyObject = undefined;
-            var error_tb: ?*ffi.PyObject = undefined;
+            var error_type: ?*ffi.PyObject = null;
+            var error_value: ?*ffi.PyObject = null;
+            var error_tb: ?*ffi.PyObject = null;
             ffi.PyErr_Fetch(&error_type, &error_value, &error_tb);
 
             const instance: *PyTypeStruct(definition) = @ptrCast(pyself);
@@ -803,7 +806,8 @@ fn BinaryOperator(
 
             if (typeInfo.params.len != 2) @compileError(op ++ " must take exactly two parameters");
 
-            // TODO(ngates): do we want to trampoline the self argument?
+            // Direct cast for self: Python guarantees correct type in dunder methods.
+            // Trampolining would add overhead with no safety benefit.
             const self: *PyTypeStruct(definition) = @ptrCast(pyself);
             const other = tramp.Trampoline(root, typeInfo.params[1].type.?).unwrap(.{ .py = pyother }) catch return null;
 
@@ -825,7 +829,7 @@ fn UnaryOperator(
 
             if (typeInfo.params.len != 1) @compileError(op ++ " must take exactly one parameter");
 
-            // TODO(ngates): do we want to trampoline the self argument?
+            // Direct cast for self: Python guarantees correct type in dunder methods.
             const self: *PyTypeStruct(definition) = @ptrCast(pyself);
 
             const result = tramp.coerceError(root, func(&self.state)) catch return null;
@@ -851,12 +855,12 @@ fn EqualsOperator(
             // If Other arg type is the same as Self, and Other is not a subclass of Self,
             // then we can short-cut and return not-equal.
             if (Other == *const definition) {
-                // TODO(ngates): #193
-                const selfType = py.self(root, definition) catch return null;
-                defer selfType.obj.decref();
-
-                const isSubclass = py.isinstance(root, pyother, selfType) catch return null;
-                if (!isSubclass) {
+                // Get self's type directly from ob_type (borrowed ref, no decref needed)
+                // This is much faster than py.self() which does module imports
+                const selfType = py.type_(root, py.PyObject{ .py = pyself });
+                const isSubclass = ffi.PyObject_IsInstance(pyother, selfType.obj.py);
+                if (isSubclass < 0) return null;
+                if (isSubclass == 0) {
                     return if (equals) py.False().obj.py else py.True().obj.py;
                 }
             }

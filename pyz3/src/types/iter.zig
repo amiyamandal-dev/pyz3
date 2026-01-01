@@ -39,7 +39,8 @@ pub fn PyIter(comptime root: type) type {
             return PyError.PyRaised;
         }
 
-        // TODO(ngates): implement PyIter_Send when required
+        // NOTE: PyIter_Send (PEP 380, PEP 525) for coroutine.send() not yet implemented
+        // Add when async generator support is needed
     };
 }
 

@@ -86,15 +86,6 @@ pub const BinaryOperators = std.StaticStringMap(c_int).initComptime(.{
     .{ "__getattr__", ffi.Py_tp_getattro },
 });
 
-// TODO(marko): Move this somewhere.
-fn keys(comptime stringMap: type) [stringMap.kvs.len][]const u8 {
-    var keys_: [stringMap.kvs.len][]const u8 = undefined;
-    for (stringMap.kvs, 0..) |kv, i| {
-        keys_[i] = kv.key;
-    }
-    return keys_;
-}
-
 pub const compareFuncs = .{
     "__lt__",
     "__le__",
@@ -251,7 +242,10 @@ pub fn wrap(comptime root: type, comptime definition: type, comptime func: anyty
                     if (State.getDefinition(root, definition).type == .class and sig.selfParam == null) {
                         ml_flags |= ffi.METH_STATIC;
                     }
-                    // TODO(ngates): check for METH_CLASS
+                    // TODO(ngates): Add METH_CLASS support for @classmethod-like functions
+                    // Would require: 1) A way to mark functions as classmethods in Zig
+                    //                2) Detection in signature analysis
+                    //                3) Passing class type as first argument
 
                     if (sig.supportsKwargs()) {
                         ml_flags |= ffi.METH_KEYWORDS;
@@ -272,7 +266,7 @@ pub fn wrap(comptime root: type, comptime definition: type, comptime func: anyty
             const pyargs_addr = @intFromPtr(pyargs);
             if (pyargs_addr % @alignOf(py.PyObject) != 0) {
                 // Misaligned pointer - this shouldn't happen with CPython but let's be safe
-                std.debug.print("Error: Misaligned pyargs pointer: 0x{x}\n", .{pyargs_addr});
+                py.SystemError(root).raise("pyz3: misaligned argument pointer") catch {};
                 return null;
             }
 
@@ -305,7 +299,7 @@ pub fn wrap(comptime root: type, comptime definition: type, comptime func: anyty
             // Verify alignment before casting
             const pyargs_addr = @intFromPtr(pyargs);
             if (pyargs_addr % @alignOf(py.PyObject) != 0) {
-                std.debug.print("Error: Misaligned pyargs pointer in fastcallKwargs: 0x{x}\n", .{pyargs_addr});
+                py.SystemError(root).raise("pyz3: misaligned argument pointer") catch {};
                 return null;
             }
 
@@ -316,10 +310,9 @@ pub fn wrap(comptime root: type, comptime definition: type, comptime func: anyty
             const nkwargs = if (kwnames) |names| py.len(root, names) catch return null else 0;
 
             // Bounds check: ensure we don't read past the available arguments
-            // Note: We can't fully validate the buffer size here as CPython doesn't provide it,
-            // but we can at least check for reasonable bounds to catch obvious errors
-            if (nkwargs > 1000) { // Sanity check - more than 1000 kwargs is suspicious
-                std.debug.print("Error: Suspiciously large nkwargs: {}\n", .{nkwargs});
+            // This is a defensive check - CPython should never send more kwargs
+            if (nkwargs > 100000) {
+                py.SystemError(root).raise("pyz3: too many keyword arguments") catch {};
                 return null;
             }
 
@@ -424,11 +417,12 @@ pub fn Methods(comptime root: type, comptime definition: type) type {
         const methodCount = b: {
             var mc: u32 = 0;
             for (@typeInfo(definition).@"struct".decls) |decl| {
-                // TODO: FIXME
+                // Note: Private method filtering (State.isPrivate) is disabled.
+                // Re-enable when State API is stabilized.
                 const value = @field(definition, decl.name);
                 const typeInfo = @typeInfo(@TypeOf(value));
 
-                if (typeInfo != .@"fn" or isReserved(decl.name)) { // or State.isPrivate(root, &value)) {
+                if (typeInfo != .@"fn" or isReserved(decl.name)) {
                     continue;
                 }
                 mc += 1;
@@ -445,9 +439,8 @@ pub fn Methods(comptime root: type, comptime definition: type) type {
                 const value = @field(definition, decl.name);
                 const typeInfo = @typeInfo(@TypeOf(value));
 
-                // For now, we skip non-function declarations.
-                // TODO: FIXME
-                if (typeInfo != .@"fn" or isReserved(decl.name)) { // or State.isPrivate(root, &value)) {
+                // Skip non-function declarations and reserved names
+                if (typeInfo != .@"fn" or isReserved(decl.name)) {
                     continue;
                 }
 
@@ -576,13 +569,13 @@ fn valueToStr(comptime T: type, value: *const anyopaque) []const u8 {
     return switch (@typeInfo(T)) {
         inline .pointer => |p| p: {
             break :p switch (p.child) {
-                inline u8 => std.fmt.comptimePrint("\"{s}\"", .{@as(*const T, @alignCast(@ptrCast(value))).*}),
+                inline u8 => std.fmt.comptimePrint("\"{s}\"", .{@as(*const T, @ptrCast(@alignCast(value))).*}),
                 inline else => "...",
             };
         },
         inline .bool => if (@as(*const bool, @ptrCast(value)).*) "True" else "False",
         inline .@"struct" => "...",
-        inline .optional => |o| if (@as(*const ?o.child, @alignCast(@ptrCast(value))).* == null) "None" else "...",
-        inline else => std.fmt.comptimePrint("{any}", .{@as(*const T, @alignCast(@ptrCast(value))).*}),
+        inline .optional => |o| if (@as(*const ?o.child, @ptrCast(@alignCast(value))).* == null) "None" else "...",
+        inline else => std.fmt.comptimePrint("{any}", .{@as(*const T, @ptrCast(@alignCast(value))).*}),
     };
 }

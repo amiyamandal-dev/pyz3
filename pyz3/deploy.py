@@ -1,5 +1,5 @@
 """
-Deploy/publish module for Pydust projects.
+Deploy/publish module for pyz3 projects.
 
 Handles uploading wheels to PyPI and other package repositories.
 
@@ -16,6 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -30,9 +31,17 @@ def check_twine_available() -> bool:
     """Check if twine is installed."""
     try:
         import twine
+
         return True
     except ImportError:
         return False
+
+
+def _get_python_cmd() -> list[str]:
+    """Get the best Python command (prefer uv if available)."""
+    if shutil.which("uv"):
+        return ["uv", "run", "python"]
+    return [sys.executable]
 
 
 def deploy_to_pypi(
@@ -62,8 +71,10 @@ def deploy_to_pypi(
     # Check if twine is installed
     if not check_twine_available():
         logger.error("twine is not installed")
-        print("❌ Error: twine is required for publishing to PyPI.")
+        print("Error: twine is required for publishing to PyPI.")
         print("\nTo install twine:")
+        print("  uv pip install twine")
+        print("  # or")
         print("  pip install twine")
         sys.exit(1)
 
@@ -71,7 +82,7 @@ def deploy_to_pypi(
     dist_path = Path(dist_dir)
     if not dist_path.exists():
         logger.error(f"Distribution directory not found: {dist_dir}")
-        print(f"❌ Error: Distribution directory '{dist_dir}' does not exist.")
+        print(f"Error: Distribution directory '{dist_dir}' does not exist.")
         print("\nBuild wheels first using:")
         print("  pyz3 build-wheel")
         sys.exit(1)
@@ -82,7 +93,7 @@ def deploy_to_pypi(
 
     if not all_files:
         logger.error(f"No distribution files found in {dist_dir}")
-        print(f"❌ Error: No wheel (.whl) or source (.tar.gz) files found in '{dist_dir}'.")
+        print(f"Error: No wheel (.whl) or source (.tar.gz) files found in '{dist_dir}'.")
         print("\nBuild wheels first using:")
         print("  pyz3 build-wheel")
         sys.exit(1)
@@ -92,7 +103,8 @@ def deploy_to_pypi(
         print(f"  - {f.name}")
 
     # Build twine command
-    cmd = ["python", "-m", "twine", "upload"]
+    python_cmd = _get_python_cmd()
+    cmd = python_cmd + ["-m", "twine", "upload"]
 
     if repository:
         cmd.extend(["--repository-url", repository])
@@ -128,12 +140,12 @@ def deploy_to_pypi(
         if verbose and result.stdout:
             print(result.stdout)
 
-        print("\n✅ Successfully uploaded packages to PyPI!")
+        print("\n[DONE] Successfully uploaded packages to PyPI!")
         logger.info("Successfully deployed packages")
 
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to upload packages: {e}")
-        print(f"\n❌ Error: Failed to upload packages.")
+        print("\n[FAIL] Error: Failed to upload packages.")
 
         if e.stderr:
             print("\nError details:")
@@ -168,25 +180,26 @@ def check_package(
 
     if not check_twine_available():
         logger.warning("twine is not installed, skipping package check")
-        print("⚠️  Warning: twine is not installed. Install with: pip install twine")
+        print("[WARN] Warning: twine is not installed. Install with: uv pip install twine")
         return True
 
     dist_path = Path(dist_dir)
     if not dist_path.exists():
         logger.error(f"Distribution directory not found: {dist_dir}")
-        print(f"❌ Error: Distribution directory '{dist_dir}' does not exist.")
+        print(f"[FAIL] Error: Distribution directory '{dist_dir}' does not exist.")
         return False
 
     all_files = list(dist_path.glob("*.whl")) + list(dist_path.glob("*.tar.gz"))
 
     if not all_files:
         logger.error(f"No distribution files found in {dist_dir}")
-        print(f"❌ Error: No distribution files found in '{dist_dir}'.")
+        print(f"[FAIL] Error: No distribution files found in '{dist_dir}'.")
         return False
 
     print(f"\nChecking {len(all_files)} package(s)...")
 
-    cmd = ["python", "-m", "twine", "check"]
+    python_cmd = _get_python_cmd()
+    cmd = python_cmd + ["-m", "twine", "check"]
     if strict:
         cmd.append("--strict")
     cmd.extend([str(f) for f in all_files])
@@ -197,13 +210,13 @@ def check_package(
         if result.stdout:
             print(result.stdout)
 
-        print("✅ All packages passed validation!")
+        print("[OK] All packages passed validation!")
         logger.info("Package check passed")
         return True
 
     except subprocess.CalledProcessError as e:
         logger.error(f"Package check failed: {e}")
-        print("❌ Package check failed!")
+        print("[FAIL] Package check failed!")
 
         if e.stdout:
             print(e.stdout)

@@ -104,7 +104,8 @@ pub const PyBuffer = extern struct {
     }
 
     pub fn getFormat(comptime value_type: type) [:0]const u8 {
-        // TODO(ngates): support more complex composite types.
+        // Python struct format characters:
+        // https://docs.python.org/3/library/struct.html#format-characters
         switch (@typeInfo(value_type)) {
             .int => |i| {
                 switch (i.signedness) {
@@ -131,6 +132,21 @@ pub const PyBuffer = extern struct {
                     64 => return "d",
                     else => {},
                 }
+            },
+            .bool => return "?",
+            .pointer => return "P",
+            .array => |arr| {
+                // For arrays like [3]i32, generate format like "iii" (repeated element format)
+                const elem_format = getFormat(arr.child);
+                // Generate repeated format at comptime
+                var result: [arr.len * elem_format.len + 1]u8 = undefined;
+                for (0..arr.len) |i| {
+                    for (elem_format, 0..) |c, j| {
+                        result[i * elem_format.len + j] = c;
+                    }
+                }
+                result[arr.len * elem_format.len] = 0;
+                return result[0 .. arr.len * elem_format.len :0];
             },
             else => {},
         }

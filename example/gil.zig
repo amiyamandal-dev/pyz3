@@ -21,8 +21,9 @@ pub fn sleep(args: struct { millis: u64 }) void {
 }
 
 pub fn sleep_release(args: struct { millis: u64 }) void {
-    const nogil = py.nogil();
-    defer nogil.acquire();
+    // Release the GIL while sleeping to allow other Python threads to run
+    const maybe_nogil = py.nogil();
+    defer if (maybe_nogil) |nogil| nogil.acquire();
     std.Thread.sleep(args.millis * 1_000_000);
 }
 // --8<-- [end:gil]

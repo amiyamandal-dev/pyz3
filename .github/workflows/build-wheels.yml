@@ -1,11 +1,11 @@
-name: Build and Test pyZ3
+name: Build and Test pyz3
 
 on:
   push:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
-  workflow_dispatch: # Allow manual triggering
+  workflow_dispatch:
 
 jobs:
   build_and_test:
@@ -20,29 +20,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          version: "latest"
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 2.2.1
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: poetry lock && poetry install --with test
+        run: uv sync --python ${{ matrix.python-version }}
 
       # macOS-only workaround for Zig's "-lPython" library name
-      # Must run BEFORE building test binaries
       - name: "macOS: create libPython symlink for Zig"
         if: runner.os == 'macOS'
         shell: bash
         run: |
           set -eux
-          poetry run python - << 'PY'
+          uv run python - << 'PY'
           import sysconfig, pathlib, os
 
           libdir = sysconfig.get_config_var("LIBDIR") or sysconfig.get_config_var("LIBPL")
@@ -56,25 +51,17 @@ jobs:
 
           libdir_path = pathlib.Path(libdir)
 
-          # Handle macOS Framework Python where LDLIBRARY is like:
-          # "Python.framework/Versions/3.11/Python" or just "Python"
           if "framework" in ldlibrary.lower():
-              # Extract just the library name from the framework path
-              # Python.framework/Versions/3.11/Python -> Python
               libname = pathlib.Path(ldlibrary).name
-              # Framework Python library is in a different location
-              # Go up from lib directory to framework root, then down to the library
               framework_root = libdir_path.parent.parent
               target = framework_root / ldlibrary.split("/", 1)[-1] if "/" in ldlibrary else framework_root / libname
           else:
-              # Standard library name
               libname = ldlibrary
               target = libdir_path / libname
 
           print(f"Looking for library at: {target}")
 
           if not target.exists():
-              # Try alternative paths for framework Python
               alt_target = libdir_path.parent / "Python"
               print(f"Trying alternative path: {alt_target}")
               if alt_target.exists():
@@ -83,12 +70,10 @@ jobs:
               else:
                   raise SystemExit(f"Python shared lib not found at {target} or {alt_target}")
 
-          # Zig is looking for 'libPython.dylib'
           link = libdir_path / "libPython.dylib"
           if link.exists():
               print(f"libPython.dylib already exists: {link}")
           else:
-              # Create symlink using relative path if in same parent directory
               if target.parent == link.parent:
                   os.symlink(target.name, link)
               else:
@@ -97,14 +82,10 @@ jobs:
           PY
 
       - name: Build test binaries
-        shell: bash
-        run: |
-          poetry run python -m ziglang build pyz3-test-build --build-file pytest.build.zig
+        run: uv run python -m ziglang build pyz3-test-build --build-file pytest.build.zig
 
       - name: Run tests
-        shell: bash
-        run: |
-          poetry run pytest test/ -v
+        run: uv run pytest test/ -v
 
   build_wheel:
     name: Build Pure Python Wheel
@@ -114,23 +95,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
       - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 2.2.1
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      - name: Install dependencies
-        run: poetry install
+        run: uv python install 3.13
 
       - name: Build wheel
-        run: poetry build --format wheel
+        run: uv build
 
       - name: Verify wheel
         run: |

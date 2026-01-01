@@ -41,7 +41,9 @@ pub const PyLong = extern struct {
     }
 
     pub fn as(self: Self, comptime T: type) !T {
-        // TODO(ngates): support non-int conversions
+        // NOTE: Currently only supports integer types. For float conversion, use:
+        //   const f: f64 = try py.as(root, f64, pylong.obj);
+        // Direct float support could be added via PyLong_AsDouble
         const typeInfo = @typeInfo(T).int;
         return switch (typeInfo.signedness) {
             .signed => {

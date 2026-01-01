@@ -13,7 +13,6 @@ limitations under the License.
 """
 
 import functools
-import importlib.metadata
 from pathlib import Path
 
 import tomllib
@@ -41,8 +40,8 @@ class ExtModule(BaseModel):
 
     @property
     def install_path(self) -> Path:
-        # FIXME(ngates): for non-limited API
-        assert self.limited_api, "Only limited API modules are supported right now"
+        if not self.limited_api:
+            raise NotImplementedError("Only limited API modules are supported currently")
         return Path(*self.name.split(".")).with_suffix(".abi3.so")
 
     @property
@@ -73,29 +72,19 @@ class ToolPydust(BaseModel):
     @model_validator(mode="after")
     def validate_atts(self):
         if self.self_managed and self.ext_modules:
-            raise ValueError("ext_modules cannot be defined when using Pydust in self-managed mode.")
+            raise ValueError("ext_modules cannot be defined when using pyz3 in self-managed mode.")
         return self
 
 
 @functools.cache
 def load() -> ToolPydust:
-    with open("pyproject.toml", "rb") as f:
+    """Load pyz3 configuration from pyproject.toml."""
+    pyproject_path = Path("pyproject.toml")
+    if not pyproject_path.exists():
+        raise FileNotFoundError("pyproject.toml not found in current directory")
+
+    with open(pyproject_path, "rb") as f:
         pyproject = tomllib.load(f)
 
-    # Since Poetry doesn't support locking the build-system.requires dependencies,
-    # we perform a check here to prevent the versions from diverging.
-    pyz3_version = importlib.metadata.version("pyZ3")
-
-    # Skip 0.1.0 as it's the development version when installed locally.
-    if pyz3_version != "0.1.0":
-        for req in pyproject["build-system"]["requires"]:
-            if not req.startswith("pyZ3"):
-                continue
-            expected = f"pyZ3=={pyz3_version}"
-            if req != expected:
-                raise ValueError(
-                    "Detected misconfigured pyZ3. "
-                    f'You must include "{expected}" in build-system.requires in pyproject.toml'
-                )
-
-    return ToolPydust(**pyproject["tool"].get("pyz3", {}))
+    tool_config = pyproject.get("tool", {}).get("pyz3", {})
+    return ToolPydust(**tool_config)

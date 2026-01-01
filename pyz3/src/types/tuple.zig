@@ -28,9 +28,9 @@ pub fn PyTuple(comptime root: type) type {
         const Self = @This();
         pub const from = PyObjectMixin("tuple", "PyTuple", Self);
 
-        // Include all sequence protocol operations
-        // TODO: Fix PySequenceMixin integration - currently conflicts with existing methods
-        // pub usingnamespace PySequenceMixin(Self);
+        // TODO: PySequenceMixin integration blocked by Zig 0.15 usingnamespace limitation
+        // In Zig 0.15, usingnamespace doesn't work in extern structs.
+        // For now, sequence operations are available as standalone functions in sequence.zig
 
         /// Construct a PyTuple from the given Zig tuple.
         pub fn create(values: anytype) !Self {

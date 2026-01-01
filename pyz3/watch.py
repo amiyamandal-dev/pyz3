@@ -1,4 +1,6 @@
 """
+Watch mode for pyz3 - automatically rebuild on file changes.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -65,7 +67,7 @@ class FileWatcher:
 
     def watch(self):
         """Start watching files and trigger callback on changes."""
-        print(f"👀 Watching {len(self.paths)} files for changes...")
+        print(f"Watching {len(self.paths)} files for changes...")
         print("   Press Ctrl+C to stop")
         print()
 
@@ -79,7 +81,7 @@ class FileWatcher:
                     now = time.time() * 1000
                     if now - last_trigger > self.debounce_ms:
                         last_trigger = now
-                        print(f"\n🔄 Changes detected in {len(changed)} file(s):")
+                        print(f"\n[CHANGE] Changes detected in {len(changed)} file(s):")
                         for path in changed:
                             print(f"   - {path}")
                         print()
@@ -87,7 +89,7 @@ class FileWatcher:
 
                 time.sleep(0.5)  # Check every 500ms
         except KeyboardInterrupt:
-            print("\n👋 Stopping file watcher")
+            print("\n[STOP] Stopping file watcher")
 
 
 def watch_and_rebuild(optimize: str = "Debug", test_mode: bool = False):
@@ -114,17 +116,17 @@ def watch_and_rebuild(optimize: str = "Debug", test_mode: bool = False):
             watch_paths.append(zig_file)
 
     if not watch_paths:
-        print("❌ No Zig files found to watch")
+        print("[FAIL] No Zig files found to watch")
         sys.exit(1)
 
-    print(f"🚀 pyz3 Watch Mode")
+    print("pyz3 Watch Mode")
     print(f"   Optimize: {optimize}")
     print(f"   Test mode: {test_mode}")
     print()
 
     def rebuild():
         """Rebuild the project."""
-        print("🔨 Rebuilding...")
+        print("[BUILD] Rebuilding...")
         start = time.time()
 
         try:
@@ -138,7 +140,7 @@ def watch_and_rebuild(optimize: str = "Debug", test_mode: bool = False):
             )
 
             if test_mode:
-                print("🧪 Running tests...")
+                print("[TEST] Running tests...")
                 buildzig.zig_build(
                     [
                         "test",
@@ -149,9 +151,9 @@ def watch_and_rebuild(optimize: str = "Debug", test_mode: bool = False):
                 )
 
             elapsed = time.time() - start
-            print(f"✅ Build completed in {elapsed:.2f}s")
+            print(f"[OK] Build completed in {elapsed:.2f}s")
         except Exception as e:
-            print(f"❌ Build failed: {e}")
+            print(f"[FAIL] Build failed: {e}")
 
     # Initial build
     rebuild()
@@ -187,16 +189,16 @@ def watch_pytest(optimize: str = "Debug", pytest_args: list[str] | None = None):
             watch_paths.append(py_file)
 
     if not watch_paths:
-        print("❌ No files found to watch")
+        print("[FAIL] No files found to watch")
         sys.exit(1)
 
-    print(f"🚀 pyz3 Pytest Watch Mode")
+    print("pyz3 Pytest Watch Mode")
     print(f"   Optimize: {optimize}")
     print()
 
     def run_tests():
         """Run pytest."""
-        print("🧪 Running pytest...")
+        print("[TEST] Running pytest...")
         start = time.time()
 
         try:
@@ -208,11 +210,11 @@ def watch_pytest(optimize: str = "Debug", pytest_args: list[str] | None = None):
 
             elapsed = time.time() - start
             if result.returncode == 0:
-                print(f"✅ Tests passed in {elapsed:.2f}s")
+                print(f"[OK] Tests passed in {elapsed:.2f}s")
             else:
-                print(f"❌ Tests failed in {elapsed:.2f}s")
+                print(f"[FAIL] Tests failed in {elapsed:.2f}s")
         except Exception as e:
-            print(f"❌ Test run failed: {e}")
+            print(f"[FAIL] Test run failed: {e}")
 
     # Initial test run
     run_tests()

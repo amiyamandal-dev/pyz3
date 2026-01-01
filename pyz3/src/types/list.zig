@@ -32,9 +32,10 @@ pub fn PyList(comptime root: type) type {
         const Self = @This();
         pub const from = PyObjectMixin("list", "PyList", Self);
 
-        // Include all sequence protocol operations
-        // TODO: Fix PySequenceMixin integration - currently conflicts with existing methods
-        // pub usingnamespace PySequenceMixin(Self);
+        // TODO: PySequenceMixin integration blocked by Zig 0.15 usingnamespace limitation
+        // In Zig 0.15, usingnamespace doesn't work in extern structs.
+        // Options: 1) Switch to non-extern struct, 2) Create wrapper functions manually
+        // For now, sequence operations are available as standalone functions in sequence.zig
 
         pub fn new(size: usize) !Self {
             // Check for integer overflow before casting to isize

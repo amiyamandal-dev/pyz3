@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Wheel building and cross-compilation support for Pydust.
+Wheel building and cross-compilation support for pyz3.
 
 This module provides utilities for building Python wheels for multiple platforms,
 including cross-compilation support.
@@ -87,7 +87,7 @@ class BuildConfig:
 
 
 class WheelBuilder:
-    """Build wheels for Pydust projects."""
+    """Build wheels for pyz3 projects."""
 
     def __init__(self, project_root: Path = Path.cwd()):
         self.project_root = project_root
@@ -158,7 +158,7 @@ class WheelBuilder:
             raise RuntimeError("No wheel file found after build")
 
         wheel_path = max(wheels, key=lambda p: p.stat().st_mtime)
-        print(f"✓ Built wheel: {wheel_path.name}")
+        print(f"[OK] Built wheel: {wheel_path.name}")
 
         return wheel_path
 
@@ -187,7 +187,7 @@ class WheelBuilder:
                 wheel_path = self.build(config, **kwargs)
                 wheels.append(wheel_path)
             except Exception as e:
-                print(f"✗ Failed to build for {platform_enum.value}: {e}")
+                print(f"[FAIL] Failed to build for {platform_enum.value}: {e}")
 
         return wheels
 
@@ -241,7 +241,7 @@ def build_wheel(
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Build Python wheels for Pydust projects")
+    parser = argparse.ArgumentParser(description="Build Python wheels for pyz3 projects")
     parser.add_argument(
         "--platform",
         choices=[p.value for p in Platform],
@@ -284,7 +284,7 @@ if __name__ == "__main__":
             clean=not args.no_clean,
             verbose=args.verbose,
         )
-        print(f"\n✓ Built {len(wheels)} wheels:")
+        print(f"\n[DONE] Built {len(wheels)} wheels:")
         for wheel in wheels:
             print(f"  - {wheel.name}")
     else:
@@ -295,4 +295,4 @@ if __name__ == "__main__":
             clean=not args.no_clean,
             verbose=args.verbose,
         )
-        print(f"\n✓ Wheel built: {wheel_path}")
+        print(f"\n[DONE] Wheel built: {wheel_path}")

@@ -1,18 +1,12 @@
-.PHONY: help version bump-patch bump-minor bump-major test build clean install lock stubs check-stubs
+.PHONY: help version test build clean install sync stubs check-stubs lint format
 
 # Default target - show help
 help:
-	@echo "pyz3 - Development Makefile"
+	@echo "pyz3 - Development Makefile (uv-based)"
 	@echo ""
-	@echo "Version Management:"
-	@echo "  make version              Show current version"
-	@echo "  make bump-patch           Bump patch version (0.1.0 → 0.1.1)"
-	@echo "  make bump-minor           Bump minor version (0.1.0 → 0.2.0)"
-	@echo "  make bump-major           Bump major version (0.1.0 → 1.0.0)"
-	@echo "  make bump-prepatch        Bump to pre-patch (0.1.0 → 0.1.1-alpha.0)"
-	@echo "  make bump-preminor        Bump to pre-minor (0.1.0 → 0.2.0-alpha.0)"
-	@echo "  make bump-premajor        Bump to pre-major (0.1.0 → 1.0.0-alpha.0)"
-	@echo "  make bump-prerelease      Bump prerelease (0.1.1-alpha.0 → 0.1.1-alpha.1)"
+	@echo "Setup:"
+	@echo "  make install              Install package in development mode"
+	@echo "  make sync                 Sync dependencies with uv"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test                 Run Python tests with pytest"
@@ -20,78 +14,60 @@ help:
 	@echo "  make test-all             Run all tests"
 	@echo ""
 	@echo "Building:"
-	@echo "  make build                Build package with poetry"
+	@echo "  make build                Build package"
 	@echo "  make clean                Clean build artifacts"
-	@echo "  make install              Install package in development mode"
-	@echo "  make lock                 Update poetry.lock file"
 	@echo "  make stubs                Generate Python stub files (.pyi)"
 	@echo "  make check-stubs          Verify stub files are up to date"
 	@echo ""
-	@echo "For custom versions, use: ./bump_version.sh <version>"
-	@echo "Example: ./bump_version.sh 0.2.0-beta.1"
+	@echo "Code Quality:"
+	@echo "  make lint                 Run ruff linter"
+	@echo "  make format               Format code with ruff"
+	@echo ""
 
 # Version commands
 version:
-	@poetry version
-
-bump-patch:
-	@./bump_version.sh patch
-
-bump-minor:
-	@./bump_version.sh minor
-
-bump-major:
-	@./bump_version.sh major
-
-bump-prepatch:
-	@./bump_version.sh prepatch
-
-bump-preminor:
-	@./bump_version.sh preminor
-
-bump-premajor:
-	@./bump_version.sh premajor
-
-bump-prerelease:
-	@./bump_version.sh prerelease
+	@python -c "import pyz3; print(pyz3.__version__)"
 
 # Testing
 test:
-	@poetry run pytest test/
+	@uv run pytest test/
 
 test-zig:
-	@poetry run python -m ziglang build test
+	@uv run python -m ziglang build test
 
 test-all: test test-zig
-	@echo "✅ All tests passed!"
+	@echo "All tests passed!"
 
 # Building
 build:
-	@poetry build
+	@uv build
 
 clean:
 	@rm -rf dist/ build/ .eggs/ *.egg-info
 	@rm -rf .zig-cache zig-out
 	@rm -rf .pytest_cache .ruff_cache
 	@find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-	@echo "✅ Clean complete"
+	@echo "Clean complete"
 
 install:
-	@poetry install
+	@uv pip install -e ".[dev,numpy]"
 
-lock:
-	@echo "🔒 Updating poetry.lock file..."
-	@poetry lock
-	@echo "✅ Lock file updated successfully"
-	@echo "💡 Remember to commit and push poetry.lock after this"
+sync:
+	@uv sync
 
 stubs:
-	@echo "📝 Generating Python stub files..."
-	@poetry run python -m ziglang build --build-file ./pytest.build.zig generate-stubs
-	@echo "✅ Stub files generated successfully"
-	@echo "💡 Remember to commit the .pyi files after this"
+	@echo "Generating Python stub files..."
+	@uv run python -m ziglang build --build-file ./pytest.build.zig generate-stubs
+	@echo "Stub files generated successfully"
 
 check-stubs:
-	@echo "🔍 Checking stub files are up to date..."
-	@poetry run python -m ziglang build --build-file ./pytest.build.zig generate-stubs -Dcheck-stubs=true
-	@echo "✅ All stub files are up to date"
+	@echo "Checking stub files are up to date..."
+	@uv run python -m ziglang build --build-file ./pytest.build.zig generate-stubs -Dcheck-stubs=true
+	@echo "All stub files are up to date"
+
+# Code quality
+lint:
+	@uv run ruff check .
+
+format:
+	@uv run ruff format .

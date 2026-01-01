@@ -1,0 +1,47 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: check-merge-conflict
+      - id: debug-statements
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: zig-fmt
+        name: zig fmt
+        entry: zig fmt
+        language: system
+        files: \.zig$
+        pass_filenames: true
+
+      - id: check-version-sync
+        name: Check version sync
+        entry: python -c "
+import tomllib
+with open('pyproject.toml', 'rb') as f:
+    pyproject_version = tomllib.load(f)['project']['version']
+with open('pyz3/__init__.py') as f:
+    for line in f:
+        if line.startswith('__version__'):
+            init_version = line.split('=')[1].strip().strip('\"')
+            break
+if pyproject_version != init_version:
+    raise SystemExit(f'Version mismatch: pyproject.toml={pyproject_version}, __init__.py={init_version}')
+print(f'Version {pyproject_version} is in sync')
+"
+        language: system
+        files: (pyproject\.toml|pyz3/__init__\.py)$
+        pass_filenames: false

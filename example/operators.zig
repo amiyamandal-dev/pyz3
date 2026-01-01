@@ -229,18 +229,20 @@ pub const Operator = py.class(struct {
     }
 
     pub fn __truediv__(self: *const Self, other: py.PyObject) !py.PyObject {
-        const selfCls = try py.self(root, Self);
-        defer selfCls.obj.decref();
-
+        // Check for float first
         if (try py.PyFloat.from.check(other)) {
             const numF: f64 = @floatFromInt(self.num_);
             return py.create(root, numF / try py.as(root, f64, other));
         } else if (try py.PyLong.from.check(other)) {
             return py.create(root, self.num_ / try py.as(root, u64, other));
-        } else if (try py.isinstance(root, other, selfCls)) { // TODO(ngates): #193
-            const otherO: *Self = try py.as(root, *Self, other);
-            return py.object(root, try py.init(root, Self, .{ .num_ = self.num_ / otherO.num_ }));
         } else {
+            // Check if other is an instance of Self
+            const selfCls = try py.self(root, Self);
+            defer selfCls.obj.decref();
+            if (try py.isinstance(root, other, selfCls)) {
+                const otherO: *Self = try py.as(root, *Self, other);
+                return py.object(root, try py.init(root, Self, .{ .num_ = self.num_ / otherO.num_ }));
+            }
             return py.TypeError(root).raise("Unsupported number type for Operator division");
         }
     }

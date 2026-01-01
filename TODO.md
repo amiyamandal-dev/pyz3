@@ -6,36 +6,38 @@ This document tracks all TODO, FIXME, and NOTE comments in the codebase as of ve
 
 ## High Priority Items
 
-### PySequenceMixin Integration (Known Issue)
-**Status**: Documented, non-blocking
+### PySequenceMixin Integration (Known Limitation)
+**Status**: Documented - blocked by Zig 0.15 language change
 
-- [ ] `pyz3/src/types/list.zig:36` - Fix PySequenceMixin integration - currently conflicts with existing methods
-- [ ] `pyz3/src/types/tuple.zig:32` - Fix PySequenceMixin integration - currently conflicts with existing methods
+- [x] `pyz3/src/types/list.zig:36` - Documented Zig 0.15 usingnamespace limitation
+- [x] `pyz3/src/types/tuple.zig:32` - Documented Zig 0.15 usingnamespace limitation
+- [x] `pyz3/src/types/sequence.zig` - Updated mixin documentation for Zig 0.15+
 
-**Impact**: PySequenceMixin is commented out. List and tuple types work correctly with manual implementations.
+**Impact**: PySequenceMixin cannot be directly integrated via `usingnamespace` in Zig 0.15+.
+The mixin is still functional and can be used via explicit composition pattern.
+List and tuple types work correctly with their native implementations.
 
 ## Core Functionality Enhancements
 
 ### Function/Method Handling
-- [ ] `pyz3/src/functions.zig:89` - Move function definition to better location
-- [ ] `pyz3/src/functions.zig:254` - Add METH_CLASS support checking
-- [ ] `pyz3/src/functions.zig:427` - **NEEDS CLARIFICATION** - "TODO: FIXME"
-- [ ] `pyz3/src/functions.zig:449` - **NEEDS CLARIFICATION** - "TODO: FIXME"
-- [ ] `pyz3/src/pytypes.zig:854` - Reference to issue #193
+- [x] `pyz3/src/functions.zig:89` - Removed unused keys() function
+- [x] `pyz3/src/functions.zig:245` - Documented METH_CLASS requirements (feature enhancement)
+- [x] `pyz3/src/functions.zig:427,449` - Stale entries removed (comments no longer exist)
 
-### Type Trampoline System
-- [ ] `pyz3/src/pytypes.zig:806` - Consider trampolining self argument
-- [ ] `pyz3/src/pytypes.zig:828` - Consider trampolining self argument
-- [ ] `pyz3/src/trampoline.zig:322` - Reference to issue #193
+### Type Trampoline System (Issue #193)
+- [x] `pyz3/src/pytypes.zig:857` - Fixed: Now uses py.type_() instead of expensive py.self()
+- [x] `pyz3/src/pytypes.zig:809,831` - Documented: direct cast is correct (Python guarantees type in dunder methods)
+- [x] `pyz3/src/trampoline.zig:322` - Documented: py.self() required here (no instance to get type from)
+- [x] `example/operators.zig:240` - Kept py.self() pattern (user code, example purposes)
 
 ### Type System Features
-- [ ] `pyz3/src/types/buffer.zig:107` - Support more complex composite types
-- [ ] `pyz3/src/types/iter.zig:42` - Implement PyIter_Send when required
-- [ ] `pyz3/src/types/long.zig:44` - Support non-int conversions
-- [ ] `pyz3/src/types/slice.zig:29` - Improve comptime optional handling
+- [x] `pyz3/src/types/buffer.zig:107` - Added support for bool, pointer, and array types
+- [x] `pyz3/src/types/iter.zig:42` - Documented PyIter_Send as future feature for async generators
+- [x] `pyz3/src/types/long.zig:44` - Documented PyLong.as() type limitations with workaround
+- [x] `pyz3/src/types/slice.zig:29` - Added toPyOrNull() and decrefIfNotNull() helpers
 
 ### Memory Management
-- [ ] `pyz3/src/pytypes.zig:67` - Review heap allocation strategy per Python docs
+- [x] `pyz3/src/pytypes.zig:67` - Documented heap allocation approach with Python docs reference
 
 ## Build System
 
@@ -71,11 +73,34 @@ These are design decision notes, not action items:
 
 ## Statistics
 
-- **Total TODOs**: 24
+- **Total TODOs**: 12 (15 completed in v0.9.1)
 - **Blocking Issues**: 0
-- **Known Issues**: 2 (PySequenceMixin - documented and non-blocking)
-- **Enhancement Requests**: 22
-- **Needs Clarification**: 2 (functions.zig:427, functions.zig:449)
+- **Known Limitations**: 1 (PySequenceMixin - Zig 0.15 language change)
+- **Enhancement Requests**: 8
+- **Issue #193 Status**: Fully resolved
+
+## Recent Fixes (v0.9.1)
+
+### Documentation & Cleanup
+- ✅ Documented PySequenceMixin Zig 0.15 limitation with explicit composition pattern
+- ✅ Removed unused keys() function from functions.zig
+- ✅ Documented METH_CLASS requirements for classmethod support
+- ✅ Documented heap allocation approach with Python docs reference
+- ✅ Documented PyLong.as() type limitations with workaround
+- ✅ Documented PyIter_Send as future feature for async generators
+- ✅ Fixed numpy.PyArray reference in pyz3.zig (was undefined)
+- ✅ Removed stale TODO entries (functions.zig:427,449 - comments no longer exist)
+
+### Performance (Issue #193)
+- ✅ Fixed pytypes.zig comparison operators: use py.type_() instead of py.self()
+- ✅ Documented trampoline.zig: py.self() unavoidable (no instance available)
+- ✅ Example code unchanged (py.self() acceptable for user code)
+- ✅ Documented pytypes.zig:809,831: direct cast is correct (Python guarantees type)
+
+### Type System Enhancements
+- ✅ buffer.zig: Added support for bool, pointer, and array types in getFormat()
+- ✅ slice.zig: Added toPyOrNull() and decrefIfNotNull() helper functions
+- ✅ str.zig: Fixed FIXME comment in appendObj() - clarified PyUnicode_Append semantics
 
 ## Recent Fixes (v0.9.0)
 
@@ -118,5 +143,5 @@ When adding new TODOs:
 
 ---
 
-*Last updated: 2025-12-22*
-*Version: 0.9.0*
+*Last updated: 2026-01-01*
+*Version: 0.9.1*

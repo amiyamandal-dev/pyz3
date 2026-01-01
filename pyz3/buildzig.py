@@ -60,16 +60,26 @@ def _needs_copy(source: Path, dest: Path) -> bool:
     return _file_hash(source) != _file_hash(dest)
 
 
-def zig_build(argv: list[str], conf: config.ToolPydust | None = None):
+def zig_build(
+    argv: list[str],
+    conf: config.ToolPydust | None = None,
+    env: dict[str, str] | None = None,
+) -> None:
+    """
+    Run zig build with the given arguments.
+
+    Args:
+        argv: Arguments to pass to zig build
+        conf: Configuration object (loaded from pyproject.toml if not provided)
+        env: Environment variables to pass to the subprocess
+    """
     conf = conf or config.load()
 
     # Generate the supporting pyz3.build.zig (only if changed)
     source_build_zig = Path(pyz3.__file__).parent.joinpath("src/pyz3.build.zig")
     if _needs_copy(source_build_zig, conf.pyz3_build_zig):
-        print(f"📝 Updating build script: {conf.pyz3_build_zig}")
+        print(f"Updating build script: {conf.pyz3_build_zig}")
         shutil.copy(source_build_zig, conf.pyz3_build_zig)
-    else:
-        print(f"✓ Build script up-to-date: {conf.pyz3_build_zig}")
 
     if not conf.self_managed:
         # Generate the build.zig if we're managing the ext_modules ourselves
@@ -78,9 +88,11 @@ def zig_build(argv: list[str], conf: config.ToolPydust | None = None):
 
     zig_exe = [os.path.expanduser(conf.zig_exe)] if conf.zig_exe else [sys.executable, "-m", "ziglang"]
 
-    cmds = zig_exe + ["build", "--build-file", conf.build_zig] + argv
+    cmds = zig_exe + ["build", "--build-file", str(conf.build_zig)] + argv
 
-    subprocess.run(cmds, check=True)
+    # Use provided env or inherit from current process
+    run_env = env if env is not None else None
+    subprocess.run(cmds, check=True, env=run_env)
 
 
 def _format_zig_array(items: list[str]) -> str:
@@ -124,8 +136,8 @@ def generate_build_zig(fileobj: TextIO, conf=None):
         )
 
         for ext_module in conf.ext_modules:
-            # TODO(ngates): fix the out filename for non-limited modules
-            assert ext_module.limited_api, "Only limited_api is supported for now"
+            if not ext_module.limited_api:
+                raise NotImplementedError("Only limited_api modules are supported currently")
 
             # Convert Windows backslashes to forward slashes for Zig compatibility
             root_path = str(ext_module.root).replace("\\", "/")
