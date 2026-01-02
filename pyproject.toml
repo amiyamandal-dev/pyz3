@@ -1,6 +1,6 @@
 [project]
 name = "pyz3"
-version = "0.10.1"
+version = "0.10.2"
 description = "Build high-performance Python extensions in Zig with automatic memory management."
 authors = [{ name = "amiya mandal", email = "amiya19mandal@pm.me" }]
 license = { text = "Apache-2.0" }

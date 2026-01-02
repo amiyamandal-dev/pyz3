@@ -17,7 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-__version__ = "0.10.1"
+__version__ = "0.10.2"
 __author__ = "amiya mandal"
 __email__ = "amiya19mandal@pm.me"
 __url__ = "https://github.com/pyz3-project/pyz3"
