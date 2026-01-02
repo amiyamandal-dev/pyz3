@@ -28,6 +28,8 @@ pub fn build(b: *std.Build) void {
     const pythonHome = getPythonHome(python_exe, b.allocator) catch @panic("Missing python");
     const pythonLibName = std.fmt.allocPrint(b.allocator, "python{s}", .{pythonVer}) catch @panic("Missing python");
 
+    const numpyInc = getNumpyIncludePath(python_exe, b.allocator) catch null;
+
     const test_step = b.step("test", "Run library tests");
     const docs_step = b.step("docs", "Generate docs");
 
@@ -38,6 +40,17 @@ pub fn build(b: *std.Build) void {
     });
     translate_c.defineCMacro("Py_LIMITED_API", "0x030D0000");
     translate_c.addIncludePath(.{ .cwd_relative = pythonInc });
+
+    // NumPy FFI translation
+    const translate_numpy = b.addTranslateC(.{
+        .root_source_file = b.path("pyz3/src/numpy_ffi.h"),
+        .target = target,
+        .optimize = optimize,
+    });
+    translate_numpy.addIncludePath(.{ .cwd_relative = pythonInc });
+    if (numpyInc) |np_inc| {
+        translate_numpy.addIncludePath(.{ .cwd_relative = np_inc });
+    }
 
     // We never build this lib, but we use it to generate docs.
     const pyz3_lib = b.addLibrary(.{
@@ -52,6 +65,7 @@ pub fn build(b: *std.Build) void {
     const pyz3_lib_mod = b.createModule(.{ .root_source_file = b.path("./pyconf.dummy.zig") });
     pyz3_lib_mod.addIncludePath(.{ .cwd_relative = pythonInc });
     pyz3_lib.root_module.addImport("ffi", translate_c.createModule());
+    pyz3_lib.root_module.addImport("numpy_ffi", translate_numpy.createModule());
     pyz3_lib.root_module.addImport("pyconf", pyz3_lib_mod);
 
     const pyz3_docs = b.addInstallDirectory(.{
@@ -90,6 +104,7 @@ pub fn build(b: *std.Build) void {
     const main_tests_mod = b.createModule(.{ .root_source_file = b.path("./pyconf.dummy.zig") });
     main_tests_mod.addIncludePath(.{ .cwd_relative = pythonInc });
     main_tests.root_module.addImport("ffi", translate_c.createModule());
+    main_tests.root_module.addImport("numpy_ffi", translate_numpy.createModule());
     main_tests.root_module.addImport("pyconf", main_tests_mod);
 
     const run_main_tests = b.addRunArtifact(main_tests);
@@ -123,6 +138,7 @@ pub fn build(b: *std.Build) void {
     const example_lib_mod = b.createModule(.{ .root_source_file = b.path("pyz3/src/pyz3.zig") });
     example_lib_mod.addIncludePath(.{ .cwd_relative = pythonInc });
     example_lib.root_module.addImport("ffi", translate_c.createModule());
+    example_lib.root_module.addImport("numpy_ffi", translate_numpy.createModule());
     example_lib.root_module.addImport("pyz3", example_lib_mod);
     example_lib.root_module.addImport(
         "pyconf",
@@ -176,6 +192,15 @@ fn getPythonHome(python_exe: []const u8, allocator: std.mem.Allocator) ![]const 
     });
     defer allocator.free(homeResult.stderr);
     return homeResult.stdout;
+}
+
+fn getNumpyIncludePath(python_exe: []const u8, allocator: std.mem.Allocator) ![]const u8 {
+    const includeResult = try runProcess(.{
+        .allocator = allocator,
+        .argv = &.{ python_exe, "-c", "import numpy; print(numpy.get_include(), end='')" },
+    });
+    defer allocator.free(includeResult.stderr);
+    return includeResult.stdout;
 }
 
 const runProcess = if (builtin.zig_version.minor >= 12) std.process.Child.run else std.process.Child.exec;

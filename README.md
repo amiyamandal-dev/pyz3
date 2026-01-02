@@ -35,7 +35,7 @@
 pyz3 is a complete framework for building high-performance Python extension modules in Zig. It provides:
 
 - 🚀 **Seamless Python-Zig Interop** - Automatic argument marshalling and type conversion
-- 📊 **NumPy Integration** - Zero-copy array access with type-safe dtype mapping
+- 📊 **NumPy Integration** - Call NumPy functions from Zig via Python object interface
 - 🔧 **Complete CLI Toolkit** - Maturin-style commands for project lifecycle management
 - 📦 **Cross-Platform Builds** - Build wheels for Linux, macOS, and Windows
 - 🔗 **C/C++ Integration** - Automatic binding generation for C/C++ libraries
@@ -74,40 +74,50 @@ print(mymodule.fibonacci(10))  # Output: 55
 
 ## NumPy Integration Example
 
+NumPy can be used from Zig code via the Python object interface:
+
 ```zig
 const py = @import("pyz3");
 
-pub fn double_array(args: struct { arr: py.PyArray(@This()) }) !py.PyArray(@This()) {
-    // Zero-copy access to NumPy array
-    const data = try args.arr.asSliceMut(f64);
+const root = @This();
 
-    for (data) |*val| {
-        val.* *= 2.0;
-    }
+/// Create and manipulate NumPy arrays from Zig
+pub fn array_stats() !py.PyObject {
+    const np = try py.numpy.getModule(@This());
+    defer np.decref();
 
-    return args.arr;
+    // Create arange(1, 11)
+    const arange_method = try np.getAttribute("arange");
+    defer arange_method.decref();
+    const arr = try py.call(root, py.PyObject, arange_method, .{ 1, 11 }, .{});
+    defer arr.decref();
+
+    // Get mean
+    const mean_method = try arr.getAttribute("mean");
+    defer mean_method.decref();
+    return try py.call(root, py.PyObject, mean_method, .{}, .{});
 }
 
 comptime {
-    py.rootmodule(@This());
+    py.rootmodule(root);
 }
 ```
 
 ```python
-import numpy as np
 import mymodule
 
-arr = np.array([1.0, 2.0, 3.0])
-result = mymodule.double_array(arr)
-print(result)  # Output: [2.0, 4.0, 6.0]
+result = mymodule.array_stats()
+print(result)  # Output: 5.5
 ```
+
+> **Note:** Direct zero-copy array access via `PyArray` is not yet implemented. Arrays are currently accessed through Python method calls.
 
 ## Compatibility
 
 - **Zig**: 0.15.x (tested with 0.15.1)
 - **Python**: 3.11, 3.12, 3.13 (CPython)
 - **Platforms**: Linux (x86_64, aarch64), macOS (x86_64, arm64), Windows (x64)
-- **pyz3 Version**: 0.9.2
+- **pyz3 Version**: 0.9.3
 
 ## Installation
 
@@ -197,7 +207,7 @@ Automatic conversion between Python and Zig types:
 | `f32`, `f64` | `float` |
 | `[]const u8` | `str` |
 | `struct {...}` | `dict` |
-| `py.PyArray(root)` | `numpy.ndarray` |
+| `py.PyObject` | `numpy.ndarray` (via `py.numpy.getModule`) |
 
 ### Classes and Methods
 
@@ -264,10 +274,10 @@ pyz3 leverages Zig's performance advantages:
 This project is a hard fork of [ziggy-pydust](https://github.com/fulcrum-so/ziggy-pydust) by [Fulcrum](https://fulcrum.so).
 
 Major differences in pyz3:
-- ✅ Built-in NumPy integration with zero-copy array access
+- ✅ NumPy integration via Python object interface (zero-copy PyArray planned)
 - ✅ Enhanced cross-compilation support
 - ✅ Updated CLI commands and workflows
-- ✅ Comprehensive NumPy examples and tests
+- ✅ NumPy examples and tests
 - ✅ Improved documentation for data science use cases
 
 Special thanks to the original ziggy-pydust contributors for creating an excellent foundation!

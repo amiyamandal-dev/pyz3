@@ -1,7 +1,7 @@
 # pyz3 Codebase Analysis
 
 **Date:** 2025-01-27  
-**Version:** 0.9.2  
+**Version:** 0.9.3  
 **Status:** Production-ready framework
 
 ## Executive Summary
@@ -529,5 +529,4 @@ This is a high-quality, production-ready codebase that successfully achieves its
 
 **Analysis Date:** 2025-01-27  
 **Analyzer:** AI Code Analysis  
-**Version Analyzed:** 0.9.2
-
+**Version Analyzed:** 0.9.3

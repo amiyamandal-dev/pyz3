@@ -69,6 +69,8 @@ pub const PyZ3Step = struct {
 
     pyz3_source_file: []const u8,
     ffi_header_file: []const u8,
+    numpy_ffi_header_file: []const u8,
+    numpy_include_dir: []const u8,
     python_include_dir: []const u8,
     python_library_dir: []const u8,
 
@@ -135,6 +137,8 @@ pub const PyZ3Step = struct {
             .ext_suffix = "",
             .pyz3_source_file = "",
             .ffi_header_file = "",
+            .numpy_ffi_header_file = "",
+            .numpy_include_dir = "",
             .python_include_dir = "",
             .python_library_dir = "",
         };
@@ -174,6 +178,18 @@ pub const PyZ3Step = struct {
             std.debug.print("   Or install in development mode: pip install -e .\n", .{});
             std.process.exit(1);
         };
+        self.numpy_ffi_header_file = self.pythonOutput(
+            "import pyz3; import os; print(os.path.abspath(os.path.join(os.path.dirname(pyz3.__file__), 'src/numpy_ffi.h')), end='')",
+        ) catch |err| {
+            std.debug.print("\n❌ Failed to locate pyz3 NumPy FFI header file\n", .{});
+            std.debug.print("   Error: {}\n", .{err});
+            std.debug.print("   Ensure pyz3 package is installed: pip install pyz3\n", .{});
+            std.debug.print("   Or install in development mode: pip install -e .\n", .{});
+            std.process.exit(1);
+        };
+        self.numpy_include_dir = self.pythonOutput(
+            "import numpy; print(numpy.get_include(), end='')",
+        ) catch "";
         self.ext_suffix = self.pythonOutput(
             "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX') or '.so', end='')",
         ) catch |err| {
@@ -251,11 +267,17 @@ pub const PyZ3Step = struct {
         lib.root_module.addOptions("pyconf", pyconf);
         const translate_c = self.addTranslateC(options);
         translate_c.addIncludePath(b.path(self.python_include_dir));
+        const translate_numpy = self.addTranslateCNumpy(options);
+        translate_numpy.addIncludePath(b.path(self.python_include_dir));
+        if (self.numpy_include_dir.len > 0) {
+            translate_numpy.addIncludePath(.{ .cwd_relative = self.numpy_include_dir });
+        }
         const lib_module = b.createModule(.{
             .root_source_file = b.path(self.pyz3_source_file),
             .imports = &.{
                 .{ .name = "pyconf", .module = pyconf.createModule() },
                 .{ .name = "ffi", .module = translate_c.createModule() },
+                .{ .name = "numpy_ffi", .module = translate_numpy.createModule() },
             },
         });
         lib_module.addIncludePath(b.path(self.python_include_dir));
@@ -333,6 +355,7 @@ pub const PyZ3Step = struct {
             .imports = &.{
                 .{ .name = "pyconf", .module = pyconf.createModule() },
                 .{ .name = "ffi", .module = translate_c.createModule() },
+                .{ .name = "numpy_ffi", .module = translate_numpy.createModule() },
             },
         });
         libtest_module.addIncludePath(b.path(self.python_include_dir));
@@ -431,6 +454,16 @@ pub const PyZ3Step = struct {
         if (options.limited_api)
             translate_c.defineCMacro("Py_LIMITED_API", self.hexversion);
         return translate_c;
+    }
+
+    fn addTranslateCNumpy(self: PyZ3Step, options: PythonModuleOptions) *std.Build.Step.TranslateC {
+        const b = self.owner;
+        const translate_numpy = b.addTranslateC(.{
+            .root_source_file = .{ .cwd_relative = self.numpy_ffi_header_file },
+            .target = b.resolveTargetQuery(options.target),
+            .optimize = options.optimize,
+        });
+        return translate_numpy;
     }
 };
 

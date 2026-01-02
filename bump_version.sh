@@ -58,24 +58,18 @@ else
   exit 1
 fi
 
-# Update cookiecutter template version if it exists
-TEMPLATE_JSON="pyz3/pyZ3-template/cookiecutter.json"
-if [ -f "$TEMPLATE_JSON" ]; then
-  echo -n "Updating template cookiecutter.json... "
-  if sed -i '' "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/" "$TEMPLATE_JSON"; then
-    echo -e "${GREEN}OK${NC}"
-  else
-    echo -e "${RED}FAIL${NC}"
-    exit 1
-  fi
-fi
+# Update pyZ3-template files
+TEMPLATE_DIR="pyz3/pyZ3-template"
+TEMPLATE_PROJECT_DIR="$TEMPLATE_DIR/{{cookiecutter.project_slug}}"
 
-# Update template pyproject.toml if it exists
-TEMPLATE_PYPROJECT="pyz3/pyZ3-template/{{cookiecutter.project_slug}}/pyproject.toml"
+# Update template pyproject.toml (pyz3 dependency versions)
+TEMPLATE_PYPROJECT="$TEMPLATE_PROJECT_DIR/pyproject.toml"
 if [ -f "$TEMPLATE_PYPROJECT" ]; then
   echo -n "Updating template pyproject.toml... "
-  if sed -i '' "s/\"pyz3==[0-9.]*\"/\"pyz3==$NEW_VERSION\"/" "$TEMPLATE_PYPROJECT" && \
-     sed -i '' "s/pyz3 = \"[0-9.]*\"/pyz3 = \"$NEW_VERSION\"/" "$TEMPLATE_PYPROJECT"; then
+  # Update build-system requires: pyz3>=X.Y.Z
+  if sed -i '' "s/pyz3>=[0-9.]*\"/pyz3>=$NEW_VERSION\"/" "$TEMPLATE_PYPROJECT" && \
+     # Update dev dependencies: pyz3 = ">=X.Y.Z"
+     sed -i '' "s/pyz3 = \">=[0-9.]*\"/pyz3 = \">=$NEW_VERSION\"/" "$TEMPLATE_PYPROJECT"; then
     echo -e "${GREEN}OK${NC}"
   else
     echo -e "${RED}FAIL${NC}"
@@ -89,7 +83,7 @@ echo ""
 echo -e "${BLUE}Next steps:${NC}"
 echo "  1. Review changes: git diff"
 echo "  2. Commit changes:"
-echo "     git add pyproject.toml pyz3/__init__.py"
+echo "     git add pyproject.toml pyz3/__init__.py pyz3/pyZ3-template/"
 echo "     git commit -m \"Bump version to $NEW_VERSION\""
 echo "  3. Create git tag:"
 echo "     git tag v$NEW_VERSION"

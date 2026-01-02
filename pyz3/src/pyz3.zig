@@ -74,7 +74,7 @@ pub const PyComplex = types.PyComplex;
 pub const PyCounter = types.PyCounter;
 pub const PyCoroutine = types.PyCoroutine;
 pub const PyAwaitable = types.PyAwaitable;
-pub const PyAsyncGenerator = types.PyAsyncGenerator;
+// pub const PyAsyncGenerator = types.PyAsyncGenerator; // Disabled - compilation issues
 pub const PyDate = types.PyDate;
 pub const PyDateTime = types.PyDateTime;
 pub const PyDecimal = types.PyDecimal;
@@ -93,13 +93,12 @@ pub const PyList = types.PyList;
 pub const PyLong = types.PyLong;
 pub const PyMemoryView = types.PyMemoryView;
 pub const PyModule = types.PyModule;
-// NumPy integration disabled: Requires NumPy C API headers at compile time.
-// The numpy module uses ffi bindings to NumPy's C API (PyArray_API).
-// To enable: ensure numpy-dev headers are available and update ffi.zig.
-// See docs/numpy.md for setup instructions.
-// pub const numpy = types.numpy;
-// pub const PyArray = types.numpy.PyArray;
-// pub const DType = types.numpy.DType;
+// NumPy integration - provides type-safe zero-copy access to NumPy arrays via C API
+const numpy_api = @import("numpy_api.zig");
+pub const PyArray = numpy_api.PyArray;
+pub const DType = numpy_api.DType;
+pub const PyArrayObject = numpy_api.PyArrayObject;
+pub const npy_intp = numpy_api.npy_intp;
 pub const PyObject = types.PyObject;
 pub const PyPath = types.PyPath;
 pub const PyRange = types.PyRange;

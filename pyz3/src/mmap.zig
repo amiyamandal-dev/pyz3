@@ -9,6 +9,14 @@ const std = @import("std");
 const py = @import("pyz3.zig");
 const builtin = @import("builtin");
 
+// msync flags - platform-specific
+const MS_SYNC: i32 = switch (builtin.os.tag) {
+    .macos, .ios, .tvos, .watchos => 0x0010,
+    .linux => 4,
+    .freebsd, .openbsd, .netbsd, .dragonfly => 0,
+    else => 4, // default to Linux value
+};
+
 /// Error types for mmap operations
 pub const MmapError = error{
     OpenFailed,
@@ -45,7 +53,7 @@ pub const Protection = struct {
 
 /// Memory-mapped file handle
 pub const MmapFile = struct {
-    data: []align(std.mem.page_size) u8,
+    data: []align(std.heap.page_size_min) u8,
     len: usize,
     fd: std.posix.fd_t,
     is_readonly: bool,
@@ -152,13 +160,9 @@ pub const MmapFile = struct {
             return;
         }
 
-        const result = std.posix.msync(
-            self.data,
-            .{ .SYNC = true },
-        );
-        if (result != 0) {
+        std.posix.msync(self.data, MS_SYNC) catch {
             return MmapError.FlushFailed;
-        }
+        };
     }
 
     /// Advise kernel about expected access pattern
@@ -202,7 +206,7 @@ pub fn createSharedBuffer(comptime T: type, count: usize) !struct {
     slice: []T,
 } {
     const size = count * @sizeOf(T);
-    const aligned_size = std.mem.alignForward(usize, size, std.mem.page_size);
+    const aligned_size = std.mem.alignForward(usize, size, std.heap.page_size_min);
 
     // Create anonymous mapping
     const data = std.posix.mmap(

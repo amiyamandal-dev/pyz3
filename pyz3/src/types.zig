@@ -38,7 +38,6 @@ pub const PyList = @import("types/list.zig").PyList;
 pub const PyLong = @import("types/long.zig").PyLong;
 pub const PyMemoryView = @import("types/memoryview.zig").PyMemoryView;
 pub const PyModule = @import("types/module.zig").PyModule;
-// pub const numpy = @import("types/numpy.zig"); // Disabled - compilation issues
 pub const PyObject = @import("types/obj.zig").PyObject;
 pub const PyPath = @import("types/path.zig").PyPath;
 pub const PyRange = @import("types/range.zig").PyRange;

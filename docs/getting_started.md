@@ -109,7 +109,7 @@ Your `pyproject.toml` defines the extension modules:
 
 ```toml
 [build-system]
-requires = ["poetry-core", "pyz3>=0.9.2"]
+requires = ["poetry-core", "pyz3>=0.9.3"]
 build-backend = "poetry.core.masonry.api"
 
 [[tool.pyz3.ext_module]]
